@@ -39,6 +39,9 @@
   "author": "Daniel Cook",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
   "devDependencies": {
     "@types/node": "^26.6.3",
     "electron": "^44.4.5",
