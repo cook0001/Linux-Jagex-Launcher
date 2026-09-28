@@ -8,6 +8,15 @@
     "dist/**/*",
     "package.json"
   ],
+  "protocols": [
+    {
+      "name": "Jagex Launcher Protocol",
+      "schemes": [
+        "jagex",
+        "runescape"
+      ]
+    }
+  ],
   "linux": {
     "target": [
       "AppImage",
@@ -17,7 +26,38 @@
     "category": "Game",
     "icon": "resources/icon.png",
     "desktop": {
-      "StartupWMClass": "linux-jagex-launcher"
+      "entry": {
+        "StartupWMClass": "linux-jagex-launcher",
+        "Keywords": "runescape;osrs;jagex;runelite;hdos;game;",
+        "Comment": "Official Jagex Launcher for Linux (RuneScape 3 & Old School RuneScape)"
+      }
     }
+  },
+  "deb": {
+    "packageName": "jagex-launcher",
+    "artifactName": "${packageName}_${version}_${arch}.${ext}",
+    "category": "games",
+    "priority": "optional",
+    "synopsis": "Official Jagex Launcher for Linux",
+    "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape (RuneLite, HDOS, and Official client) with direct OAuth 2.0 PKCE authentication.",
+    "maintainer": "Daniel Cook <danielcook2016@outlook.com>",
+    "depends": [
+      "libgtk-3-0",
+      "libnotify4",
+      "libnss3",
+      "libxss1",
+      "libxtst6",
+      "xdg-utils",
+      "libatspi2-0",
+      "libdrm2",
+      "libgbm1",
+      "libasound2",
+      "tar",
+      "xz-utils"
+    ],
+    "recommends": [
+      "default-jre",
+      "gamemode"
+    ]
   }
 }
