@@ -118,7 +118,7 @@ jobs:
 
       - name: Publish to GitHub Releases Tab
         if: steps.release_target.outputs.should_publish == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.release_target.outputs.tag_name }}
           files: |
