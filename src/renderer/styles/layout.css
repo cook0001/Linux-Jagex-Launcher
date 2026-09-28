@@ -199,7 +199,7 @@
 /* Stage Header Bar */
 .stage-header {
   height: 60px;
-  padding: 0 32px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -213,17 +213,19 @@
   display: flex;
   align-items: baseline;
   gap: 12px;
+  min-width: 0;
 }
 
 .game-title {
   font-family: var(--font-fantasy);
-  font-size: 24px;
+  font-size: clamp(20px, 2.5vw, 24px);
   font-weight: 700;
   letter-spacing: 1px;
   background: var(--gold-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 }
 
 .game-subtitle {
@@ -232,6 +234,7 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
+  white-space: nowrap;
 }
 
 /* Stage Scroll Area */
@@ -239,7 +242,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 32px 110px 32px; /* Bottom padding so content is not obscured by dock */
+  padding: 0 24px 110px 24px; /* Bottom padding so content is not obscured by dock */
 }
 
 /* Official Action Dock (Bottom fixed bar) */
@@ -249,11 +252,11 @@
   left: 0;
   right: 0;
   height: 90px;
-  padding: 0 32px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(10, 13, 20, 0.88);
+  background: rgba(10, 13, 20, 0.92);
   backdrop-filter: blur(20px);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
@@ -266,17 +269,20 @@
 }
 
 .dock-left {
-  flex: 1;
+  flex: 0 1 230px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .dock-center {
-  flex: 1.5;
+  flex: 1 1 auto;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
+  min-width: 0;
 }
 
 .dock-right {
-  flex: 1;
+  flex: 0 0 auto;
   justify-content: flex-end;
-  gap: 16px;
+  gap: 12px;
 }

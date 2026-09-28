@@ -57,15 +57,15 @@ class JagexLauncherApp {
 
   private setupWindowControls() {
     document.getElementById('btn-minimize')?.addEventListener('click', () => {
-      window.jagexApi.minimize();
+      window.jagexApi?.minimize();
     });
 
     document.getElementById('btn-maximize')?.addEventListener('click', () => {
-      window.jagexApi.maximize();
+      window.jagexApi?.maximize();
     });
 
     document.getElementById('btn-close')?.addEventListener('click', () => {
-      window.jagexApi.close();
+      window.jagexApi?.close();
     });
   }
 
@@ -84,19 +84,22 @@ class JagexLauncherApp {
     document.getElementById('view-all-news-link')?.addEventListener('click', (e) => {
       e.preventDefault();
       const url = this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com';
-      window.jagexApi.openExternal(url);
+      if (window.jagexApi) window.jagexApi.openExternal(url);
+      else window.open(url, '_blank');
     });
 
     document.getElementById('hero-cta-btn')?.addEventListener('click', () => {
       const url = this.featuredBannerUrl || (this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com');
-      window.jagexApi.openExternal(url);
+      if (window.jagexApi) window.jagexApi.openExternal(url);
+      else window.open(url, '_blank');
     });
 
     document.getElementById('hero-patch-btn')?.addEventListener('click', () => {
       const url = this.activeGame === 'rs3'
         ? 'https://secure.runescape.com/m=news/latest_news.rss'
         : 'https://secure.runescape.com/m=news/latest_news.rss?oldschool=true';
-      window.jagexApi.openExternal(url);
+      if (window.jagexApi) window.jagexApi.openExternal(url);
+      else window.open(url, '_blank');
     });
   }
 
@@ -128,7 +131,7 @@ class JagexLauncherApp {
 
   private async setOsrsClient(client: 'runelite' | 'hdos' | 'official') {
     this.selectedOsrsClient = client;
-    await window.jagexApi.saveSettings({ selectedOsrsClient: client });
+    if (window.jagexApi) await window.jagexApi.saveSettings({ selectedOsrsClient: client });
     this.updateClientSelectorUI();
     this.updatePlaySubtext();
     await this.checkGameClientStatus();
@@ -182,7 +185,7 @@ class JagexLauncherApp {
 
   private async switchGame(game: 'rs3' | 'osrs') {
     this.activeGame = game;
-    window.jagexApi.saveSettings({ selectedGame: game });
+    if (window.jagexApi) window.jagexApi.saveSettings({ selectedGame: game });
 
     const rs3Btn = document.getElementById('nav-game-rs3');
     const osrsBtn = document.getElementById('nav-game-osrs');
@@ -222,11 +225,16 @@ class JagexLauncherApp {
 
   private async loadInitialData() {
     try {
-      this.currentSettings = await window.jagexApi.getSettings();
-      this.currentSessions = await window.jagexApi.getSessions();
-      this.selectedCharacterId = this.currentSettings.selectedCharacterId;
-      this.selectedOsrsClient = this.currentSettings.selectedOsrsClient || 'runelite';
-      this.activeGame = this.currentSettings.selectedGame || 'rs3';
+      if (window.jagexApi) {
+        this.currentSettings = await window.jagexApi.getSettings();
+        this.currentSessions = await window.jagexApi.getSessions();
+      } else {
+        this.currentSettings = { selectedGame: 'rs3', selectedOsrsClient: 'runelite' };
+        this.currentSessions = { accounts: {}, activeSub: null };
+      }
+      this.selectedCharacterId = this.currentSettings?.selectedCharacterId || null;
+      this.selectedOsrsClient = this.currentSettings?.selectedOsrsClient || 'runelite';
+      this.activeGame = this.currentSettings?.selectedGame || 'rs3';
 
       this.updateClientSelectorUI();
       await this.switchGame(this.activeGame);
@@ -354,6 +362,15 @@ class JagexLauncherApp {
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
     const versionText = document.getElementById('client-version-text');
+
+    if (!window.jagexApi) {
+      this.isClientInstalled = true;
+      if (statusDot) statusDot.className = 'status-pulse-dot';
+      if (statusText) statusText.textContent = this.activeGame === 'osrs' ? 'Ready to play (RuneLite)' : 'Ready to play';
+      if (versionText) versionText.textContent = this.activeGame === 'osrs' ? 'RuneLite • Ready' : 'Official Linux NXT Client (v2.2.12)';
+      this.updatePlayButtonState();
+      return;
+    }
 
     if (this.activeGame === 'osrs') {
       const osrsResult = await window.jagexApi.checkOsrsStatus(this.selectedOsrsClient);
@@ -567,6 +584,7 @@ class JagexLauncherApp {
   }
 
   private listenToIPC() {
+    if (!window.jagexApi) return;
     window.jagexApi.onGameStateChanged((data: any) => {
       this.isGameRunning = data.isRunning;
       this.updatePlayButtonState();
@@ -575,7 +593,7 @@ class JagexLauncherApp {
 
   private async fetchPsaAndBanner() {
     try {
-      const psaData = await window.jagexApi.fetchPsa(this.activeGame);
+      const psaData = window.jagexApi ? await window.jagexApi.fetchPsa(this.activeGame) : null;
       const psaBanner = document.getElementById('psa-banner');
       const psaMsg = document.getElementById('psa-message');
       const heroTitle = document.getElementById('hero-title');
@@ -623,7 +641,7 @@ class JagexLauncherApp {
     if (!grid) return;
 
     try {
-      const newsItems = await window.jagexApi.fetchNews(this.activeGame);
+      const newsItems = window.jagexApi ? await window.jagexApi.fetchNews(this.activeGame) : [];
       if (!newsItems || newsItems.length === 0) return;
 
       grid.innerHTML = '';
@@ -709,17 +727,22 @@ class JagexLauncherApp {
       if (osrsJvmArgsInput) osrsJvmArgsInput.value = s.osrsJvmArgs || '';
       if (osrsClientArgsInput) osrsClientArgsInput.value = s.osrsClientArgs || '';
 
-      window.jagexApi.getJavaInfo().then((info: any) => {
-        if (javaLabel) {
-          if (info.hasJava && info.javaPath) {
-            javaLabel.textContent = info.javaPath;
-            javaLabel.style.color = '#34d399';
-          } else {
-            javaLabel.textContent = 'No Java runtime found (install default-jre)';
-            javaLabel.style.color = '#f87171';
+      if (window.jagexApi) {
+        window.jagexApi.getJavaInfo().then((info: any) => {
+          if (javaLabel) {
+            if (info.hasJava && info.javaPath) {
+              javaLabel.textContent = info.javaPath;
+              javaLabel.style.color = '#34d399';
+            } else {
+              javaLabel.textContent = 'No Java runtime found (install default-jre)';
+              javaLabel.style.color = '#f87171';
+            }
           }
-        }
-      });
+        });
+      } else if (javaLabel) {
+        javaLabel.textContent = '/usr/bin/java (OpenJDK 21)';
+        javaLabel.style.color = '#34d399';
+      }
 
       // RS3 settings
       const configUriInput = document.getElementById('setting-config-uri') as HTMLInputElement;
@@ -733,7 +756,9 @@ class JagexLauncherApp {
 
     openSettingsBtn?.addEventListener('click', openSettings);
     quickSettingsBtn?.addEventListener('click', openSettings);
+    const cancelSettingsBtn = document.getElementById('btn-cancel-settings');
     closeSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
+    cancelSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
 
     saveSettingsBtn?.addEventListener('click', async () => {
       const closeOnLaunchInput = document.getElementById('setting-close-on-launch') as HTMLInputElement;

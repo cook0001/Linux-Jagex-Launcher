@@ -388,17 +388,24 @@
 .status-text-group {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .status-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .version-label {
   font-size: 11px;
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 210px;
 }
 
 /* OSRS Client Selector */
@@ -406,7 +413,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 200px;
+  width: 190px;
+  flex: 0 1 190px;
+  min-width: 140px;
 }
 
 .client-dropdown {
@@ -476,12 +485,13 @@
   bottom: calc(100% + 8px);
   left: 0;
   right: 0;
-  min-width: 260px;
+  min-width: 250px;
+  max-height: 280px;
+  overflow-y: auto;
   background: #131a26;
   border: 1px solid var(--border-gold);
   border-radius: 8px;
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
   z-index: 100;
 }
 
@@ -511,7 +521,9 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  width: 260px;
+  width: 240px;
+  flex: 0 1 240px;
+  min-width: 150px;
 }
 
 .character-label {
@@ -622,6 +634,7 @@
 .btn-dock-icon {
   width: 44px;
   height: 44px;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -645,8 +658,9 @@
 
 .btn-play {
   position: relative;
-  width: 170px;
-  height: 52px;
+  width: 165px;
+  height: 50px;
+  flex-shrink: 0;
   border-radius: 8px;
   background: var(--btn-play-bg);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -722,7 +736,10 @@
 
 .modal-window {
   width: 580px;
-  max-width: 90vw;
+  max-width: 92vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
   background: #111724;
   border: 1px solid var(--border-gold);
   border-radius: 12px;
@@ -742,6 +759,7 @@
   justify-content: space-between;
   border-bottom: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
 }
 
 .modal-title {
@@ -763,8 +781,9 @@
 
 .modal-body {
   padding: 24px;
-  max-height: 70vh;
+  flex: 1;
   overflow-y: auto;
+  min-height: 0;
 }
 
 /* Settings Tabs */
