@@ -18,6 +18,7 @@
     }
   ],
   "linux": {
+    "syncDesktopName": true,
     "target": [
       "AppImage",
       "deb",
@@ -35,7 +36,7 @@
   },
   "deb": {
     "packageName": "jagex-launcher",
-    "artifactName": "${packageName}_${version}_${arch}.${ext}",
+    "artifactName": "jagex-launcher_${version}_${arch}.${ext}",
     "category": "games",
     "priority": "optional",
     "synopsis": "Official Jagex Launcher for Linux",

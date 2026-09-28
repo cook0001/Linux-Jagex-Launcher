@@ -47,7 +47,7 @@ jobs:
 
       - name: Build Linux packages with Electron Builder
         run: |
-          npx electron-builder --linux AppImage deb tar.gz
+          npx electron-builder --linux AppImage deb tar.gz --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
