@@ -3,6 +3,10 @@ name: Publish to Arch User Repository (AUR)
 on:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish-aur:
     runs-on: ubuntu-latest

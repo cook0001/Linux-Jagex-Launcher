@@ -34,6 +34,10 @@ permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'release' && github.event.release.id || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-linux:
     name: Build Linux (AppImage, DEB, tar.gz)

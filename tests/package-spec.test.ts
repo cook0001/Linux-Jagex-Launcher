@@ -62,5 +62,7 @@ test('Repository and package configuration', async (t) => {
     assert.ok(content.includes('release/*.deb'), 'workflow must upload deb to release');
     assert.ok(content.includes('release/*.tar.gz'), 'workflow must upload tar.gz to release');
     assert.ok(content.includes('SHA256SUMS.txt'), 'workflow must generate and upload SHA-256 checksums to release');
+    assert.ok(content.includes('concurrency:'), 'workflow must configure concurrency');
+    assert.ok(content.includes('cancel-in-progress: true'), 'workflow must cancel previous in-progress jobs');
   });
 });
