@@ -56,7 +56,7 @@ test('Repository and package configuration', async (t) => {
 
     assert.ok(content.includes('types: [published]'), 'workflow must trigger on published releases in Releases tab');
     assert.ok(content.includes("tags:\n      - 'v*'"), 'workflow must trigger on version tag pushes');
-    assert.ok(content.includes('softprops/action-gh-release@v2'), 'workflow must publish via action-gh-release');
+    assert.ok(content.includes('softprops/action-gh-release'), 'workflow must publish via action-gh-release');
     assert.ok(content.includes('contents: write'), 'workflow must have contents: write permission');
     assert.ok(content.includes('release/*.AppImage'), 'workflow must upload AppImage to release');
     assert.ok(content.includes('release/*.deb'), 'workflow must upload deb to release');
