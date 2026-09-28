@@ -15,29 +15,27 @@
 </head>
 <body class="theme-dark">
   <div id="app" class="app-container">
-    <!-- Custom Frameless Titlebar -->
+    <!-- Custom Frameless Titlebar with Official Linux Controls on the Left -->
     <header class="titlebar">
+      <!-- Official Linux Window Controls (Left side) -->
+      <div class="titlebar-controls linux-controls">
+        <button id="btn-close" class="titlebar-btn btn-close" title="Close">
+          <svg viewBox="0 0 16 16"><path d="M4 4l8 8m0-8l-8 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button id="btn-minimize" class="titlebar-btn btn-minimize" title="Minimize">
+          <svg viewBox="0 0 16 16"><path d="M3.5 8h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button id="btn-maximize" class="titlebar-btn btn-maximize" title="Maximize / Resize">
+          <svg viewBox="0 0 16 16"><rect x="3.75" y="3.75" width="8.5" height="8.5" rx="1.2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        </button>
+      </div>
+
       <div class="titlebar-drag-region">
         <div class="brand">
-          <svg class="jagex-logo" viewBox="0 0 100 24" fill="currentColor">
-            <!-- Stylized Jagex text logo mark -->
-            <path d="M12 4C7.5 4 4 7.5 4 12s3.5 8 8 8 8-3.5 8-8H12V4zm20 0h-4v16h14v-4h-10V4zm24 0h-4l-6 16h4.5l1.3-4h7.4l1.3 4h4.5L56 4zm-2.8 8.5l2.3-7.5 2.3 7.5h-4.6zM80 12h-8V4h-4v16h12c4.4 0 8-3.6 8-8s-3.6-8-8-8zm0 4h-8v-4h8c2.2 0 4 1.8 4 4s-1.8 4-4 4z"/>
-          </svg>
-          <span class="brand-divider">/</span>
+          <img src="./assets/icon.png" class="brand-app-icon" alt="Launcher Icon">
           <span class="brand-title">LAUNCHER</span>
           <span class="badge-linux">LINUX</span>
         </div>
-      </div>
-      <div class="titlebar-controls">
-        <button id="btn-minimize" class="titlebar-btn" title="Minimize">
-          <svg viewBox="0 0 16 16"><path d="M3 8h10v1H3z"/></svg>
-        </button>
-        <button id="btn-maximize" class="titlebar-btn" title="Maximize">
-          <svg viewBox="0 0 16 16"><path d="M3 3h10v10H3V3zm1 1v8h8V4H4z"/></svg>
-        </button>
-        <button id="btn-close" class="titlebar-btn btn-close" title="Close">
-          <svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9m0-9l-9 9"/></svg>
-        </button>
       </div>
     </header>
 
@@ -65,7 +63,6 @@
               </svg>
             </div>
             <span class="nav-label">RuneScape</span>
-            <div class="active-indicator"></div>
           </button>
 
           <button id="nav-game-osrs" class="nav-item" data-game="osrs" title="Old School RuneScape">
@@ -77,6 +74,29 @@
               </svg>
             </div>
             <span class="nav-label">Old School</span>
+          </button>
+
+          <button id="nav-game-dragonwilds" class="nav-item" data-game="dragonwilds" title="RuneScape: Dragonwilds">
+            <div class="nav-icon dragonwilds-icon">
+              <svg viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="22" stroke="url(#dragon-border)" stroke-width="2.5" fill="#141113"/>
+                <path d="M24 7L27 15L36 14L30 21L39 26L29 28L33 37L24 32L15 37L19 28L9 26L18 21L12 14L21 15L24 7Z" fill="url(#dragon-gradient)"/>
+                <circle cx="24" cy="24" r="3.5" fill="#ffd15c"/>
+                <defs>
+                  <linearGradient id="dragon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff9944"/>
+                    <stop offset="50%" stop-color="#e55024"/>
+                    <stop offset="100%" stop-color="#991500"/>
+                  </linearGradient>
+                  <linearGradient id="dragon-border" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff7b39"/>
+                    <stop offset="50%" stop-color="#e5b352"/>
+                    <stop offset="100%" stop-color="#4a1510"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <span class="nav-label">Dragonwilds</span>
           </button>
         </div>
 
@@ -248,7 +268,7 @@
             </div>
 
             <!-- Character Selector -->
-            <div class="character-selector-container">
+            <div class="character-selector-container" id="character-selector-container">
               <label class="character-label">SELECT CHARACTER</label>
               <div class="character-dropdown" id="character-dropdown">
                 <div class="character-preview" id="character-preview">

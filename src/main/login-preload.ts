@@ -29,6 +29,6 @@ try {
       loadTimes: function () {}
     };
   }
-} catch (e) {
+} catch {
   // Ignore in case of restriction
 }

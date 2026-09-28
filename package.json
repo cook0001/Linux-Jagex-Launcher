@@ -16,6 +16,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "electron dist/main/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "qc": "npm run lint && npm run typecheck && npm run test && npm run build",
     "dist": "npm run build && electron-builder --linux"
   },
   "keywords": [
@@ -38,6 +43,8 @@
     "@types/node": "^26.6.3",
     "electron": "^44.4.5",
     "electron-builder": "^26.15.3",
+    "oxlint": "^1.85.0",
+    "sharp": "^0.35.5",
     "typescript": "^7.0.2",
     "vite": "^8.3.1",
     "vite-plugin-electron": "^1.1.2",

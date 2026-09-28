@@ -1,4 +1,4 @@
-name: Build Linux Packages
+name: Build & Release Linux Packages
 
 on:
   push:
@@ -9,10 +9,30 @@ on:
   pull_request:
     branches:
       - main
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag (e.g. v1.0.0). Required for publishing release assets from this dispatch.'
+        required: false
+        default: ''
+      publish_release:
+        description: 'Publish release assets to GitHub Releases tab'
+        type: boolean
+        default: true
+      draft:
+        description: 'Create release as a draft'
+        type: boolean
+        default: false
+      prerelease:
+        description: 'Mark release as pre-release'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   build-linux:
@@ -22,6 +42,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -40,10 +62,14 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
-      - name: Compile & Typecheck
+      - name: Quality Control Checks
         run: |
-          npx tsc --noEmit
-          npm run build
+          npm run lint
+          npm run typecheck
+          npm run test
+
+      - name: Compile Application
+        run: npm run build
 
       - name: Build Linux packages with Electron Builder
         run: |
@@ -58,7 +84,7 @@ jobs:
           sha256sum *.AppImage *.deb *.tar.gz > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
-      - name: Upload Build Artifacts
+      - name: Upload Build Artifacts to Actions Run
         uses: actions/upload-artifact@v4
         with:
           name: linux-jagex-launcher-packages
@@ -69,17 +95,60 @@ jobs:
             release/SHA256SUMS.txt
           retention-days: 14
 
-      - name: Publish GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Determine Release Target
+        id: release_target
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.publish_release }}" = "true" ] && [ -n "${{ inputs.tag_name }}" ]; then
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "tag_name=${{ inputs.tag_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
+            echo "tag_name=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to GitHub Releases Tab
+        if: steps.release_target.outputs.should_publish == 'true'
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.release_target.outputs.tag_name }}
           files: |
             release/*.AppImage
             release/*.deb
             release/*.tar.gz
             release/SHA256SUMS.txt
           generate_release_notes: true
-          draft: false
-          prerelease: false
+          draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft || false }}
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-aur:
+    name: Publish to Arch User Repository (AUR)
+    needs: build-linux
+    if: |
+      always() &&
+      needs.build-linux.result == 'success' &&
+      (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.publish_release && inputs.tag_name != ''))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish linux-jagex-launcher-bin to AUR
+        if: env.AUR_KEY != ''
+        uses: KSXGitHub/github-action-deploy-aur@v3
+        env:
+          AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        with:
+          pkgname: linux-jagex-launcher-bin
+          pkgbuild: ./packaging/aur/PKGBUILD
+          commit_username: 'cook0001'
+          commit_email: 'danielcook2016@outlook.com'
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ github.ref_name }}"

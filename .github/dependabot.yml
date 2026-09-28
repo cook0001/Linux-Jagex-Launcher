@@ -1,0 +1,43 @@
+version: 2
+updates:
+  # Maintain npm dependencies for Electron, Vite, TypeScript, etc.
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 10
+    reviewers:
+      - 'cook0001'
+    labels:
+      - 'dependencies'
+      - 'javascript'
+      - 'automated pr'
+    commit-message:
+      prefix: 'chore(deps)'
+      include: 'scope'
+    ignore:
+      # Keep major frameworks aligned manually if breaking changes are expected
+      - dependency-name: 'electron'
+        update-types: ['version-update:semver-major']
+
+  # Maintain GitHub Actions workflows
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+      timezone: 'UTC'
+    open-pull-requests-limit: 10
+    reviewers:
+      - 'cook0001'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+      - 'automated pr'
+    commit-message:
+      prefix: 'ci(actions)'
+      include: 'scope'

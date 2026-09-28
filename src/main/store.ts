@@ -10,7 +10,7 @@ export interface AppSettings {
   customLaunchCommand: string;
   configUri: string;
   selectedCharacterId: string | null;
-  selectedGame: 'rs3' | 'osrs';
+  selectedGame: 'rs3' | 'osrs' | 'dragonwilds';
   selectedOsrsClient: 'runelite' | 'hdos' | 'official';
   activeAccountId: string | null;
   customJavaPath: string;

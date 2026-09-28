@@ -103,7 +103,7 @@ export class Rs3Installer {
       const latest = await this.checkLatestPackage();
       const current = this.getInstalledHash();
       return current === latest.sha256;
-    } catch (e) {
+    } catch {
       // If offline, check if binary exists
       return fs.existsSync(binary);
     }

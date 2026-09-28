@@ -26,11 +26,15 @@ First off, thank you for considering contributing to the **Linux Jagex Launcher*
    ```bash
    npm run dev
    ```
-4. Run TypeScript checks and production build:
+4. Run automated Quality Control (Lint, Typecheck, Test, Build):
    ```bash
-   npx tsc --noEmit
-   npm run build
+   npm run qc
    ```
+   Or run individual checks:
+   - `npm run lint`: Fast linting with Oxlint
+   - `npm run typecheck`: Strict TypeScript checking with `tsc`
+   - `npm run test`: Native Node.js test suite
+   - `npm run build`: Production bundle compilation
 5. Package Linux binaries locally (AppImage, deb, tar.gz):
    ```bash
    npm run dist

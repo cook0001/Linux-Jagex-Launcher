@@ -16,6 +16,7 @@ export const api = {
   refreshAccount: (sub: string) => ipcRenderer.invoke('auth:refresh', sub),
   getSessions: () => ipcRenderer.invoke('auth:getSessions'),
   getActiveAccount: () => ipcRenderer.invoke('auth:getActiveAccount'),
+  syncCharacters: (sub?: string) => ipcRenderer.invoke('auth:syncCharacters', sub),
 
   // Settings
   getSettings: () => ipcRenderer.invoke('settings:get'),

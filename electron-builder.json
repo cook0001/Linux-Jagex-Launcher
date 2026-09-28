@@ -6,7 +6,8 @@
   },
   "files": [
     "dist/**/*",
-    "package.json"
+    "package.json",
+    "resources/**/*"
   ],
   "protocols": [
     {
@@ -33,6 +34,9 @@
         "Comment": "Official Jagex Launcher for Linux (RuneScape 3 & Old School RuneScape)"
       }
     }
+  },
+  "appImage": {
+    "artifactName": "Jagex-Launcher-${version}.${ext}"
   },
   "deb": {
     "packageName": "jagex-launcher",

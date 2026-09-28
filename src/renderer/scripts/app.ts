@@ -16,6 +16,7 @@ declare global {
       refreshAccount: (sub: string) => Promise<any>;
       getSessions: () => Promise<any>;
       getActiveAccount: () => Promise<any>;
+      syncCharacters: (sub?: string) => Promise<any[]>;
       getSettings: () => Promise<any>;
       saveSettings: (settings: any) => Promise<any>;
       checkClientStatus: () => Promise<{ isReady: boolean; version?: string; hash?: string; error?: string }>;
@@ -34,7 +35,7 @@ declare global {
 }
 
 class JagexLauncherApp {
-  private activeGame: 'rs3' | 'osrs' = 'rs3';
+  private activeGame: 'rs3' | 'osrs' | 'dragonwilds' = 'rs3';
   private selectedOsrsClient: 'runelite' | 'hdos' | 'official' = 'runelite';
   private currentSessions: any = { accounts: {}, activeSub: null };
   private currentSettings: any = {};
@@ -72,6 +73,7 @@ class JagexLauncherApp {
   private setupNavigation() {
     const rs3Btn = document.getElementById('nav-game-rs3');
     const osrsBtn = document.getElementById('nav-game-osrs');
+    const dragonwildsBtn = document.getElementById('nav-game-dragonwilds');
 
     rs3Btn?.addEventListener('click', () => {
       this.switchGame('rs3');
@@ -81,23 +83,35 @@ class JagexLauncherApp {
       this.switchGame('osrs');
     });
 
+    dragonwildsBtn?.addEventListener('click', () => {
+      this.switchGame('dragonwilds');
+    });
+
     document.getElementById('view-all-news-link')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const url = this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com';
+      const url = this.activeGame === 'dragonwilds'
+        ? 'https://store.steampowered.com/app/1374490/RuneScape_Dragonwilds/'
+        : (this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com');
       if (window.jagexApi) window.jagexApi.openExternal(url);
       else window.open(url, '_blank');
     });
 
     document.getElementById('hero-cta-btn')?.addEventListener('click', () => {
-      const url = this.featuredBannerUrl || (this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com');
+      const url = this.featuredBannerUrl || (
+        this.activeGame === 'dragonwilds'
+          ? 'https://store.steampowered.com/app/1374490/RuneScape_Dragonwilds/'
+          : (this.activeGame === 'rs3' ? 'https://secure.runescape.com/m=news' : 'https://oldschool.runescape.com')
+      );
       if (window.jagexApi) window.jagexApi.openExternal(url);
       else window.open(url, '_blank');
     });
 
     document.getElementById('hero-patch-btn')?.addEventListener('click', () => {
-      const url = this.activeGame === 'rs3'
-        ? 'https://secure.runescape.com/m=news/latest_news.rss'
-        : 'https://secure.runescape.com/m=news/latest_news.rss?oldschool=true';
+      const url = this.activeGame === 'dragonwilds'
+        ? 'https://store.steampowered.com/news/app/1374490'
+        : (this.activeGame === 'rs3'
+          ? 'https://secure.runescape.com/m=news/latest_news.rss'
+          : 'https://secure.runescape.com/m=news/latest_news.rss?oldschool=true');
       if (window.jagexApi) window.jagexApi.openExternal(url);
       else window.open(url, '_blank');
     });
@@ -177,44 +191,62 @@ class JagexLauncherApp {
     if (!playSubtext) return;
     if (this.activeGame === 'rs3') {
       playSubtext.textContent = 'RuneScape 3';
+    } else if (this.activeGame === 'dragonwilds') {
+      playSubtext.textContent = 'Dragonwilds 1.0 (Steam)';
     } else {
       const clientLabel = this.selectedOsrsClient === 'hdos' ? 'HDOS' : (this.selectedOsrsClient === 'official' ? 'Official' : 'RuneLite');
       playSubtext.textContent = `Old School (${clientLabel})`;
     }
   }
 
-  private async switchGame(game: 'rs3' | 'osrs') {
+  private async switchGame(game: 'rs3' | 'osrs' | 'dragonwilds') {
     this.activeGame = game;
     if (window.jagexApi) window.jagexApi.saveSettings({ selectedGame: game });
 
     const rs3Btn = document.getElementById('nav-game-rs3');
     const osrsBtn = document.getElementById('nav-game-osrs');
+    const dragonwildsBtn = document.getElementById('nav-game-dragonwilds');
     const stageTitle = document.getElementById('stage-game-title');
     const stageSubtitle = document.getElementById('stage-game-subtitle');
     const clientSelector = document.getElementById('client-selector-container');
+    const characterSelector = document.getElementById('character-selector-container');
     const viewAllLink = document.getElementById('view-all-news-link') as HTMLAnchorElement | null;
 
-    if (stageSubtitle) stageSubtitle.textContent = '';
+    rs3Btn?.classList.remove('active');
+    osrsBtn?.classList.remove('active');
+    dragonwildsBtn?.classList.remove('active');
 
     if (game === 'rs3') {
       rs3Btn?.classList.add('active');
-      osrsBtn?.classList.remove('active');
       clientSelector?.classList.add('hidden');
+      characterSelector?.classList.remove('hidden');
       if (stageTitle) stageTitle.textContent = 'RuneScape';
+      if (stageSubtitle) stageSubtitle.textContent = 'The Classic Adventure';
       if (viewAllLink) {
         viewAllLink.textContent = 'View All On RuneScape.com →';
         viewAllLink.href = 'https://secure.runescape.com/m=news';
       }
-    } else {
+    } else if (game === 'osrs') {
       osrsBtn?.classList.add('active');
-      rs3Btn?.classList.remove('active');
       clientSelector?.classList.remove('hidden');
+      characterSelector?.classList.remove('hidden');
       if (stageTitle) stageTitle.textContent = 'Old School RuneScape';
+      if (stageSubtitle) stageSubtitle.textContent = 'The Iconic MMORPG';
       if (viewAllLink) {
         viewAllLink.textContent = 'View All On OldSchool.RuneScape.com →';
         viewAllLink.href = 'https://oldschool.runescape.com';
       }
       this.updateClientSelectorUI();
+    } else if (game === 'dragonwilds') {
+      dragonwildsBtn?.classList.add('active');
+      clientSelector?.classList.add('hidden');
+      characterSelector?.classList.add('hidden');
+      if (stageTitle) stageTitle.textContent = 'RuneScape: Dragonwilds';
+      if (stageSubtitle) stageSubtitle.textContent = 'Open-World Survival Action RPG';
+      if (viewAllLink) {
+        viewAllLink.textContent = 'View All On Steam Store →';
+        viewAllLink.href = 'https://store.steampowered.com/app/1374490/RuneScape_Dragonwilds/';
+      }
     }
 
     this.updatePlaySubtext();
@@ -233,12 +265,30 @@ class JagexLauncherApp {
         this.currentSessions = { accounts: {}, activeSub: null };
       }
       this.selectedCharacterId = this.currentSettings?.selectedCharacterId || null;
-      this.selectedOsrsClient = this.currentSettings?.selectedOsrsClient || 'runelite';
-      this.activeGame = this.currentSettings?.selectedGame || 'rs3';
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlGame = urlParams.get('game') as 'rs3' | 'osrs' | 'dragonwilds' | null;
+      if (urlGame && ['rs3', 'osrs', 'dragonwilds'].includes(urlGame)) {
+        this.activeGame = urlGame;
+      } else {
+        this.activeGame = this.currentSettings?.selectedGame || 'rs3';
+      }
 
       this.updateClientSelectorUI();
       await this.switchGame(this.activeGame);
       this.updateAccountUI();
+
+      // Background character membership synchronization
+      if (window.jagexApi && this.currentSessions?.activeSub) {
+        window.jagexApi.syncCharacters(this.currentSessions.activeSub).then((updatedChars) => {
+          if (updatedChars && updatedChars.length > 0) {
+            const activeSub = this.currentSessions.activeSub;
+            if (this.currentSessions.accounts[activeSub]) {
+              this.currentSessions.accounts[activeSub].characters = updatedChars;
+              this.updateAccountUI();
+            }
+          }
+        }).catch((err) => console.warn('[App] Character sync warning:', err));
+      }
     } catch (e) {
       console.error('[App] Error during initialization:', e);
     }
@@ -265,6 +315,10 @@ class JagexLauncherApp {
       loginGroup?.classList.remove('hidden');
       accountPill?.classList.add('hidden');
       this.clearCharacterSelector();
+    }
+
+    if (this.activeGame === 'dragonwilds') {
+      document.getElementById('character-selector-container')?.classList.add('hidden');
     }
 
     this.updatePlayButtonState();
@@ -315,7 +369,7 @@ class JagexLauncherApp {
           <span class="character-name">${char.displayName}</span>
           <span class="character-type">${char.isMember ? 'Member' : 'Free to Play'}</span>
         </div>
-        ${char.isMember ? '<span class="badge-member">MEMBER</span>' : ''}
+        ${char.isMember ? '<span class="badge-member">MEMBER</span>' : '<span class="badge-f2p">F2P</span>'}
       `;
 
       item.addEventListener('click', async () => {
@@ -362,6 +416,15 @@ class JagexLauncherApp {
     const statusDot = document.getElementById('status-dot');
     const statusText = document.getElementById('status-text');
     const versionText = document.getElementById('client-version-text');
+
+    if (this.activeGame === 'dragonwilds') {
+      this.isClientInstalled = true;
+      if (statusDot) statusDot.className = 'status-pulse-dot';
+      if (statusText) statusText.textContent = 'Ready to play';
+      if (versionText) versionText.textContent = 'Dragonwilds 1.0 (Steam • App 1374490)';
+      this.updatePlayButtonState();
+      return;
+    }
 
     if (!window.jagexApi) {
       this.isClientInstalled = true;
@@ -429,7 +492,7 @@ class JagexLauncherApp {
 
     btnPlay.classList.remove('playing');
 
-    if (!activeAcc) {
+    if (!activeAcc && this.activeGame !== 'dragonwilds') {
       btnPlay.disabled = false;
       playText.textContent = 'LOG IN';
     } else if (!this.isClientInstalled) {
@@ -445,7 +508,7 @@ class JagexLauncherApp {
     const btnPlay = document.getElementById('btn-play');
     btnPlay?.addEventListener('click', async () => {
       const activeAcc = this.getActiveAccount();
-      if (!activeAcc) {
+      if (!activeAcc && this.activeGame !== 'dragonwilds') {
         await this.triggerLogin();
         return;
       }
@@ -461,7 +524,7 @@ class JagexLauncherApp {
 
   private async triggerLogin() {
     try {
-      const session = await window.jagexApi.login();
+      await window.jagexApi.login();
       this.currentSessions = await window.jagexApi.getSessions();
       this.updateAccountUI();
     } catch (e: any) {
@@ -497,7 +560,7 @@ class JagexLauncherApp {
           }
         }
       }
-    } catch (e) {
+    } catch {
       // Ignore clipboard read errors
     }
   }
@@ -610,25 +673,31 @@ class JagexLauncherApp {
       if (this.activeGame === 'osrs') {
         if (heroTitle) heroTitle.textContent = 'Old School RuneScape';
         if (heroDesc) heroDesc.textContent = 'Experience the classic MMO adventure. Explore Gielinor, challenge epic bosses, and forge your legend with RuneLite and HDOS.';
-      } else {
+      } else if (this.activeGame === 'dragonwilds') {
         if (heroTitle) heroTitle.textContent = 'RuneScape: Dragonwilds';
-        if (heroDesc) heroDesc.textContent = 'Embark on an epic new wilderness expedition. Discover ancient wyrm ruins, forge powerful draconic equipment, and conquer fearsome trials.';
+        if (heroDesc) heroDesc.textContent = 'Embark on an epic new wilderness expedition in Ashenfall. Discover ancient wyrm ruins, forge powerful draconic equipment, and conquer fearsome trials.';
+      } else {
+        if (heroTitle) heroTitle.textContent = 'RuneScape 3';
+        if (heroDesc) heroDesc.textContent = 'Embark on epic quests, master 29 unique skills, and battle ancient elder gods across the vast realms of Gielinor.';
       }
 
-      if (psaData && psaData.banner) {
-        if (psaData.banner.linkUrl) {
-          this.featuredBannerUrl = psaData.banner.linkUrl;
+      if (this.activeGame === 'dragonwilds') {
+        if (heroImg) {
+          heroImg.style.backgroundImage = "url('https://clan.fastly.steamstatic.com/images/45564297/7feb3c34244308ecf776059dc0477e9122b0caf7.png')";
         }
-        if (psaData.banner.fileName) {
-          const gameFolder = this.activeGame === 'rs3' ? 'runescape' : 'osrs';
-          const fullUrl = `https://files.publishing.production.jxp.jagex.com/${gameFolder}/${psaData.banner.fileName}`;
-          if (heroImg) {
-            heroImg.style.backgroundImage = `url('${fullUrl}')`;
-          }
+      } else if (psaData && psaData.banner && psaData.banner.fileName) {
+        const gameFolder = this.activeGame === 'rs3' ? 'runescape' : 'osrs';
+        const fullUrl = `https://files.publishing.production.jxp.jagex.com/${gameFolder}/${psaData.banner.fileName}`;
+        if (heroImg) {
+          heroImg.style.backgroundImage = `url('${fullUrl}')`;
         }
       } else if (this.activeGame === 'osrs') {
         if (heroImg) {
           heroImg.style.backgroundImage = "url('https://cdn.runescape.com/assets/img/external/oldschool/2026/Newsposts/2026-09-23/23-09-TN.jpg')";
+        }
+      } else {
+        if (heroImg) {
+          heroImg.style.backgroundImage = "url('https://cdn.runescape.com/assets/img/external/runescape/2026/Newsposts/2026-09-18/18-09-TN.jpg')";
         }
       }
     } catch (e) {

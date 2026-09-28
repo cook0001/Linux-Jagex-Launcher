@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { BrowserWindow, session, shell } from 'electron';
 import { store, JagexAccountSession, JagexCharacter } from './store';
+import { checkMembershipStatus, CLEAN_USER_AGENT } from './membership';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,13 +16,6 @@ const SCOPES = 'openid offline gamesso.token.create user.profile.read user.entit
 
 const AUTH_ORIGIN = 'https://account.jagex.com';
 const GAME_AUTH_ORIGIN = 'https://auth.jagex.com';
-
-const CHROME_VERSION = process.versions.chrome || '152.0.7977.130';
-const CHROME_MAJOR = CHROME_VERSION.split('.')[0] || '152';
-
-const CLEAN_USER_AGENT = process.platform === 'darwin'
-  ? `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROME_VERSION} Safari/537.36`
-  : `Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${CHROME_VERSION} Safari/537.36`;
 
 function base64UrlEncode(buffer: Buffer): string {
   return buffer.toString('base64')
@@ -526,6 +520,10 @@ export class JagexAuthManager {
     return data.sessionId;
   }
 
+  public async checkMembershipStatus(displayName: string, item: any): Promise<boolean> {
+    return checkMembershipStatus(displayName, item);
+  }
+
   public async fetchCharacters(sessionId: string): Promise<JagexCharacter[]> {
     const res = await fetch(`${GAME_AUTH_ORIGIN}/game-session/v1/accounts`, {
       method: 'GET',
@@ -543,13 +541,19 @@ export class JagexAuthManager {
 
     const data = await res.json();
     if (Array.isArray(data)) {
-      return data.map((item: any) => ({
-        id: item.accountId || item.id,
-        displayName: item.displayName || 'Character',
-        isMember: item.isMember ?? true,
-        isIronman: item.isIronman ?? false,
-        isHardcore: item.isHardcore ?? false,
-      }));
+      return await Promise.all(
+        data.map(async (item: any) => {
+          const displayName = item.displayName || 'Character';
+          const isMember = await this.checkMembershipStatus(displayName, item);
+          return {
+            id: item.accountId || item.id,
+            displayName,
+            isMember,
+            isIronman: item.isIronman ?? false,
+            isHardcore: item.isHardcore ?? false,
+          };
+        })
+      );
     }
     return [];
   }
@@ -601,6 +605,42 @@ export class JagexAuthManager {
       console.error(`[Auth] Error refreshing account ${sub}:`, e);
       return null;
     }
+  }
+
+  public async syncCharacters(sub: string): Promise<JagexCharacter[]> {
+    const sessions = store.getSessions();
+    const account = sessions.accounts[sub];
+    if (!account) return [];
+
+    let characters: JagexCharacter[] = [];
+    if (account.sessionId) {
+      try {
+        characters = await this.fetchCharacters(account.sessionId);
+      } catch (e) {
+        console.warn(`[Auth] fetchCharacters error during sync:`, e);
+      }
+    }
+
+    // Fallback if session endpoint failed but cached characters exist: re-verify membership
+    if (characters.length === 0 && account.characters && account.characters.length > 0) {
+      characters = await Promise.all(
+        account.characters.map(async (char) => {
+          const isMember = await this.checkMembershipStatus(char.displayName, char);
+          return {
+            ...char,
+            isMember,
+          };
+        })
+      );
+    }
+
+    if (characters.length > 0) {
+      account.characters = characters;
+      sessions.accounts[sub] = account;
+      store.saveSessions(sessions);
+    }
+
+    return characters;
   }
 
   public removeAccount(sub: string) {

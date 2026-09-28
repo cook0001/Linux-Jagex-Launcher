@@ -13,11 +13,60 @@
 .titlebar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   height: 38px;
-  background: rgba(10, 13, 20, 0.95);
+  background: rgba(10, 13, 20, 0.98);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 100;
+  user-select: none;
+}
+
+/* Official Linux Controls on the Left (Ubuntu / GNOME style) */
+.titlebar-controls.linux-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px 0 14px;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.linux-controls .titlebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.linux-controls .titlebar-btn svg {
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+
+.linux-controls .titlebar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.linux-controls .titlebar-btn.btn-close:hover {
+  background-color: #e95420; /* Ubuntu orange-red */
+  border-color: #e95420;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(233, 84, 32, 0.6);
+}
+
+.linux-controls .titlebar-btn.btn-minimize:hover,
+.linux-controls .titlebar-btn.btn-maximize:hover {
+  background-color: rgba(255, 255, 255, 0.22);
 }
 
 .titlebar-drag-region {
@@ -25,7 +74,7 @@
   height: 100%;
   display: flex;
   align-items: center;
-  padding-left: 14px;
+  padding-left: 8px;
   -webkit-app-region: drag;
 }
 
@@ -36,16 +85,11 @@
   color: var(--text-secondary);
 }
 
-.jagex-logo {
-  width: 72px;
-  height: 16px;
-  color: var(--text-primary);
-}
-
-.brand-divider {
-  color: var(--text-muted);
-  font-weight: 300;
-  opacity: 0.5;
+.brand-app-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(229, 179, 82, 0.4);
 }
 
 .brand-title {
@@ -64,40 +108,6 @@
   background: rgba(56, 189, 248, 0.15);
   color: var(--accent-blue);
   border: 1px solid rgba(56, 189, 248, 0.3);
-}
-
-.titlebar-controls {
-  display: flex;
-  height: 100%;
-  -webkit-app-region: no-drag;
-}
-
-.titlebar-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 100%;
-  color: var(--text-secondary);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
-}
-
-.titlebar-btn svg {
-  width: 14px;
-  height: 14px;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  fill: none;
-}
-
-.titlebar-btn:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
-}
-
-.titlebar-btn.btn-close:hover {
-  background-color: var(--accent-danger);
-  color: white;
 }
 
 /* App Body: Nav Rail + Main Stage */
@@ -154,6 +164,29 @@
   background: rgba(229, 179, 82, 0.08);
 }
 
+/* Active Tab Indicator Bar (Dynamic for any active game tab) */
+.nav-rail-top .nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3.5px;
+  border-radius: 0 4px 4px 0;
+  background: var(--gold-gradient);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+#nav-game-dragonwilds.active {
+  color: #ff9944;
+  background: rgba(229, 80, 36, 0.1);
+}
+
+#nav-game-dragonwilds.active::before {
+  background: linear-gradient(180deg, #ff9944, #e55024);
+  box-shadow: 0 0 10px rgba(229, 80, 36, 0.7);
+}
+
 .nav-icon {
   width: 36px;
   height: 36px;
@@ -173,17 +206,6 @@
   margin-top: 4px;
   text-align: center;
   white-space: nowrap;
-}
-
-.active-indicator {
-  position: absolute;
-  left: 0;
-  top: 16px;
-  bottom: 16px;
-  width: 3px;
-  border-radius: 0 4px 4px 0;
-  background: var(--gold-gradient);
-  box-shadow: 0 0 10px var(--gold-glow);
 }
 
 /* Main Stage */

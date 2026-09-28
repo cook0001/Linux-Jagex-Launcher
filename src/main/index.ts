@@ -1,4 +1,5 @@
-import { app, BrowserWindow, ipcMain, shell, Tray, Menu, clipboard } from 'electron';
+import { app, BrowserWindow, ipcMain, shell, clipboard, nativeImage } from 'electron';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { store } from './store';
@@ -9,6 +10,29 @@ import { osrs } from './osrs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+function getAppIcon(): Electron.NativeImage | string {
+  const iconCandidates = [
+    path.join(__dirname, '../../resources/icon.png'),
+    path.join(__dirname, '../renderer/assets/icon.png'),
+    path.join(process.resourcesPath, 'resources/icon.png'),
+    path.join(process.resourcesPath, 'icon.png')
+  ];
+
+  for (const candidate of iconCandidates) {
+    try {
+      if (fs.existsSync(candidate)) {
+        const icon = nativeImage.createFromPath(candidate);
+        if (!icon.isEmpty()) {
+          return icon;
+        }
+      }
+    } catch {
+      // Continue to next candidate
+    }
+  }
+  return path.join(__dirname, '../../resources/icon.png');
+}
 
 // Disable Blink automation features so Chromium behaves like a standard browser
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
@@ -26,11 +50,11 @@ if (process.defaultApp) {
 }
 
 let mainWindow: BrowserWindow | null = null;
-let tray: Tray | null = null;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 function createWindow() {
+  const appIcon = getAppIcon();
   mainWindow = new BrowserWindow({
     width: 1080,
     height: 720,
@@ -38,8 +62,9 @@ function createWindow() {
     minHeight: 640,
     frame: false,
     titleBarStyle: 'hidden',
+    trafficLightPosition: { x: -100, y: -100 },
     backgroundColor: '#0a0d14',
-    icon: path.join(__dirname, '../../resources/icon.png'),
+    icon: appIcon,
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
       sandbox: false,
@@ -47,6 +72,10 @@ function createWindow() {
       nodeIntegration: false,
     }
   });
+
+  if (typeof appIcon !== 'string') {
+    mainWindow.setIcon(appIcon);
+  }
 
   if (isDev && process.env.VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
@@ -139,6 +168,12 @@ ipcMain.handle('auth:getSessions', () => {
   return store.getSessions();
 });
 
+ipcMain.handle('auth:syncCharacters', async (_, sub?: string) => {
+  const targetSub = sub || store.getSessions().activeSub;
+  if (!targetSub) return [];
+  return await auth.syncCharacters(targetSub);
+});
+
 ipcMain.handle('auth:getActiveAccount', () => {
   return store.getActiveAccount();
 });
@@ -177,6 +212,10 @@ ipcMain.handle('launcher:launch', async (_, options?: any) => {
   const game = options?.game || settings.selectedGame || 'rs3';
   if (game === 'osrs') {
     return await osrs.launchOsrs(mainWindow || undefined, options);
+  }
+  if (game === 'dragonwilds') {
+    await shell.openExternal('steam://run/1374490');
+    return;
   }
   return await launcher.launchRs3(mainWindow || undefined, options);
 });
@@ -218,6 +257,62 @@ ipcMain.handle('feed:getPsa', async (_, game: string) => {
 });
 
 ipcMain.handle('feed:getNews', async (_, game?: string) => {
+  if (game === 'dragonwilds') {
+    try {
+      const res = await fetch('https://store.steampowered.com/feeds/news/app/1374490');
+      if (!res.ok) return [];
+      const text = await res.text();
+
+      const items: Array<{
+        title: string;
+        link: string;
+        description: string;
+        category: string;
+        pubDate: string;
+        imageUrl?: string;
+      }> = [];
+
+      const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+      let match;
+      while ((match = itemRegex.exec(text)) !== null && items.length < 8) {
+        const itemContent = match[1];
+        const titleMatch = /<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/.exec(itemContent);
+        const linkMatch = /<link>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/link>/.exec(itemContent);
+        const descMatch = /<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/.exec(itemContent);
+        const dateMatch = /<pubDate>(.*?)<\/pubDate>/.exec(itemContent);
+        const imgMatch = /<enclosure[^>]*url="([^"]+)"/.exec(itemContent);
+
+        let title = titleMatch ? titleMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() : '';
+        title = title.replace(/&apos;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+        const link = linkMatch ? linkMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() : '';
+
+        let description = descMatch ? descMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '') : '';
+        description = description
+          .replace(/&lt;[^&>]*&gt;/gi, ' ')
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/&quot;/gi, '"')
+          .replace(/&apos;/gi, "'")
+          .replace(/&amp;/gi, '&')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (description.length > 160) {
+          description = description.slice(0, 157) + '...';
+        }
+
+        const category = 'Dragonwilds Update';
+        const pubDate = dateMatch ? dateMatch[1] : '';
+        const imageUrl = imgMatch ? imgMatch[1] : 'https://clan.fastly.steamstatic.com/images/45564297/7feb3c34244308ecf776059dc0477e9122b0caf7.png';
+
+        items.push({ title, link, description, category, pubDate, imageUrl });
+      }
+
+      return items;
+    } catch (e) {
+      console.error('[Feed] Failed to fetch Dragonwilds Steam news:', e);
+      return [];
+    }
+  }
+
   const isOsrs = game === 'osrs';
   const rssUrl = isOsrs
     ? 'https://secure.runescape.com/m=news/latest_news.rss?oldschool=true'
