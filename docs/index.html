@@ -227,24 +227,36 @@ chmod +x Jagex-Launcher-1.0.0.AppImage
       </div>
 
       <div id="tab-deb" class="tab-panel">
-        <p>Install the native Debian package for system menu integration and automatic desktop icons:</p>
+        <p><strong>Option A (One-Line Automated Install):</strong> Downloads the latest package and resolves all dependencies via apt:</p>
+        <div class="code-block">
+curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
+        </div>
+        <p><strong>Option B (Manual .deb):</strong> Download the package and install with system package manager:</p>
         <div class="code-block">
 # 1. Download the .deb package
 curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.0.0_amd64.deb
 
-# 2. Install with apt
+# 2. Install with apt (automatically pulls required libraries)
 sudo apt install ./jagex-launcher_1.0.0_amd64.deb
         </div>
       </div>
 
       <div id="tab-arch" class="tab-panel">
-        <p>Run via AppImage or extract into your user bin directory. Perfect for Arch and the Steam Deck:</p>
+        <p><strong>Option A (Arch User Repository - AUR):</strong> Install via any AUR helper:</p>
         <div class="code-block">
-# On SteamOS / Arch Linux:
+# Using yay:
+yay -S linux-jagex-launcher-bin
+
+# Using paru:
+paru -S linux-jagex-launcher-bin
+        </div>
+        <p><strong>Option B (AppImage / Steam Deck):</strong></p>
+        <div class="code-block">
 chmod +x Jagex-Launcher-1.0.0.AppImage
 ./Jagex-Launcher-1.0.0.AppImage
 
-# Tip for Steam Deck Game Mode: Add the AppImage as a "Non-Steam Game" in desktop mode!
+# Steam Deck tip: In Steam Desktop Mode, click "Add a Game" -> "Add a Non-Steam Game"
+# and select the AppImage to play directly from SteamOS Game Mode!
         </div>
       </div>
 

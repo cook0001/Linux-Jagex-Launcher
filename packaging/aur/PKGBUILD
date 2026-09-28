@@ -1,0 +1,46 @@
+# Maintainer: Daniel Cook <danielcook2016@outlook.com>
+pkgname=linux-jagex-launcher-bin
+_pkgname=jagex-launcher
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape"
+arch=('x86_64')
+url="https://cook0001.github.io/Linux-Jagex-Launcher/"
+license=('MIT')
+depends=(
+  'gtk3'
+  'nss'
+  'libxss'
+  'libxtst'
+  'xdg-utils'
+  'at-spi2-core'
+  'libdrm'
+  'mesa'
+  'alsa-lib'
+  'tar'
+  'xz'
+)
+optdepends=(
+  'java-runtime: Java runtime required to play RuneLite and HDOS'
+  'gamemode: Feral GameMode support for CPU governor and process scheduling'
+  'mangohud: Real-time hardware and FPS overlay'
+)
+provides=('linux-jagex-launcher' 'jagex-launcher')
+conflicts=('linux-jagex-launcher' 'jagex-launcher')
+source=("https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
+sha256sums=('8e75fc3dbd366cdf7e2818cddb55012dafdc136fa3cdb636f90d3cd55d023e3d')
+
+package() {
+  # Extract the deb payload
+  bsdtar -xf data.tar.xz -C "${pkgdir}"
+
+  # Fix permissions
+  find "${pkgdir}" -type d -exec chmod 755 {} +
+  chmod 755 "${pkgdir}/opt/jagex-launcher/${_pkgname}"
+
+  # Ensure license is installed to standard Arch license directory
+  install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
+  if [ -f "${pkgdir}/usr/share/doc/${_pkgname}/copyright" ]; then
+    install -Dm644 "${pkgdir}/usr/share/doc/${_pkgname}/copyright" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  fi
+}

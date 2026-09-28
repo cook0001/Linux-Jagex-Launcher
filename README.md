@@ -69,27 +69,50 @@ Unlike generic third-party wrappers, this launcher:
 
 Download the latest release package from the **[GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases)**.
 
-### Option 1: Universal AppImage (Recommended)
+### Option 1: Debian / Ubuntu / Linux Mint (`.deb`)
+
+**One-Line Fast Install:**
+```bash
+curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
+```
+
+**Or manual install via `apt`:**
+```bash
+# Download latest .deb from Releases:
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.0.0_amd64.deb
+
+# Install package (apt automatically pulls all required system libraries):
+sudo apt install ./jagex-launcher_1.0.0_amd64.deb
+```
+
+---
+
+### Option 2: Arch Linux / Manjaro / SteamOS (AUR)
+
+Install via any AUR helper:
+```bash
+# Using yay:
+yay -S linux-jagex-launcher-bin
+
+# Using paru:
+paru -S linux-jagex-launcher-bin
+```
+
+---
+
+### Option 3: Universal AppImage
 
 Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, SteamOS, Debian, Mint):
 
 ```bash
-# Download AppImage from Releases, then make it executable:
+# Download AppImage from Releases, make it executable, and run:
 chmod +x Jagex-Launcher-1.0.0.AppImage
 ./Jagex-Launcher-1.0.0.AppImage
 ```
 
 > **Steam Deck tip:** You can add the `.AppImage` as a "Non-Steam Game" in Steam Desktop mode to launch it directly from SteamOS Game Mode!
 
-### Option 2: Debian / Ubuntu / Linux Mint (`.deb`)
-
-```bash
-sudo apt install ./jagex-launcher_1.0.0_amd64.deb
-```
-
-This installs the launcher into `/usr/bin/` and registers desktop shortcuts and icons in your system app menu.
-
-### Option 3: Build from Source
+### Option 4: Build from Source
 
 ```bash
 # Clone the repository

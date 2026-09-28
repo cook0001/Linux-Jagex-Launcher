@@ -1,0 +1,26 @@
+name: Publish to Arch User Repository (AUR)
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish-aur:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Publish linux-jagex-launcher-bin to AUR
+        if: env.AUR_KEY != ''
+        uses: KSXGitHub/github-action-deploy-aur@v3
+        env:
+          AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        with:
+          pkgname: linux-jagex-launcher-bin
+          pkgbuild: ./packaging/aur/PKGBUILD
+          commit_username: 'cook0001'
+          commit_email: 'danielcook2016@outlook.com'
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ github.ref_name }}"
