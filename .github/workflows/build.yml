@@ -89,7 +89,7 @@ jobs:
           cat SHA256SUMS.txt
 
       - name: Upload Build Artifacts to Actions Run
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: linux-jagex-launcher-packages
           path: |
