@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux Jagex Launcher - RuneScape 3 & Old School RuneScape on Linux</title>
+  <meta name="description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape (RuneLite, HDOS, Official). Zero Wine overhead, direct OAuth 2.0 PKCE login, and full privacy.">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Sticky Header -->
+  <header class="header">
+    <div class="header-container">
+      <a href="#" class="brand">
+        <img src="assets/icon.png" alt="Linux Jagex Launcher Logo" class="brand-icon">
+        <span>Linux Jagex Launcher</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#osrs">Old School</a>
+        <a href="#rs3">RuneScape 3</a>
+        <a href="#install">Installation</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/PRIVACY.md" target="_blank">Privacy</a>
+      </nav>
+
+      <div class="header-cta">
+        <a href="https://github.com/cook0001/Linux-Jagex-Launcher" class="btn-github" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-pill">
+      <span>🐧 Native Linux Gaming</span>
+    </div>
+
+    <h1 class="hero-title">
+      RuneScape on Linux.<br>
+      <span class="highlight-gold">Authentic.</span> Fast. <span class="highlight-cyan">Zero Wine.</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      A 1:1 replica of the official Jagex Launcher for Linux. Play RuneScape 3 natively with official ELF binaries and Old School RuneScape with RuneLite, HDOS, or the official client — powered by direct Jagex Account OAuth 2.0 PKCE authentication.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases" class="btn-primary" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download for Linux (.AppImage)
+      </a>
+
+      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases" class="btn-secondary" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        Download Debian / Ubuntu (.deb)
+      </a>
+    </div>
+
+    <!-- UI Screenshot Frame -->
+    <div class="showcase-container">
+      <div class="showcase-frame">
+        <img src="assets/screenshot-osrs.png" alt="Linux Jagex Launcher UI running Old School RuneScape with RuneLite, HDOS, and Account Switcher" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="section-header">
+      <div class="section-tag">Engineered for Perfection</div>
+      <h2 class="section-title">Everything You Expect From Official Software</h2>
+    </div>
+
+    <div class="features-grid">
+      <!-- 1:1 Authentic UI -->
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <h3 class="feature-title">1:1 Authentic Jagex UI</h3>
+        <p class="feature-desc">
+          Crafted to precisely match the Windows and macOS official launcher. Features live hero event artwork, official Jagex maintenance PSA feeds, news banners, and bottom dock controls.
+        </p>
+      </div>
+
+      <!-- Native RS3 Linux Client -->
+      <div class="feature-card cyan">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">Native RS3 Client (No Wine)</h3>
+        <p class="feature-desc">
+          Downloads and unpacks Jagex's official native x86_64 Linux client directly into your user space without requiring root permissions. 100% native CPU performance and Vulkan/OpenGL graphics.
+        </p>
+      </div>
+
+      <!-- Complete OSRS Suite -->
+      <div class="feature-card">
+        <div class="feature-icon">⚔️</div>
+        <h3 class="feature-title">Full OSRS Client Ecosystem</h3>
+        <p class="feature-desc">
+          Integrated support for <strong>RuneLite</strong>, <strong>HDOS</strong>, and the <strong>Official Client</strong>. Automatically preserves your personal <code>~/.runelite</code> settings, plugins, and tile markers.
+        </p>
+      </div>
+
+      <!-- Cloudflare Turnstile & PKCE -->
+      <div class="feature-card cyan">
+        <div class="feature-icon">🛡️</div>
+        <h3 class="feature-title">Cloudflare Turnstile & PKCE</h3>
+        <p class="feature-desc">
+          Authenticates directly with <code>account.jagex.com</code> using standard OAuth 2.0 PKCE. Built-in interactive browser handles Cloudflare verification and 2-Factor Authentication seamlessly.
+        </p>
+      </div>
+
+      <!-- 0 MB RAM Mode -->
+      <div class="feature-card">
+        <div class="feature-icon">🚀</div>
+        <h3 class="feature-title">Zero RAM Mode ("Close on Launch")</h3>
+        <p class="feature-desc">
+          Enable "Close on Launch" in settings to automatically shut down the launcher after your game starts, freeing 100% of the launcher's memory for maximum gaming performance.
+        </p>
+      </div>
+
+      <!-- Zero Telemetry -->
+      <div class="feature-card cyan">
+        <div class="feature-icon">🔒</div>
+        <h3 class="feature-title">100% Privacy & Zero Telemetry</h3>
+        <p class="feature-desc">
+          No external tracker, no intermediate servers, and no analytics. Your tokens and credentials are kept strictly in local user storage (<code>~/.config/linux-jagex-launcher/</code>).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Old School RuneScape Section -->
+  <section id="osrs" class="features-section">
+    <div class="section-header">
+      <div class="section-tag">Old School RuneScape</div>
+      <h2 class="section-title">Play Your Favorite Client with One Click</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">RuneLite</h3>
+        <p class="feature-desc">
+          The community standard open-source client. Automatically detected on your system or downloaded directly from GitHub. Preserves all external plugins, screenshots, and bank tags.
+        </p>
+      </div>
+
+      <div class="feature-card cyan">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 14.5V9.5l6 3.5-6 3.5z"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">HDOS (HD Graphics)</h3>
+        <p class="feature-desc">
+          Breathtaking 2008-era HD graphics engine built on OpenGL/Vulkan with silky-smooth frame rates. Automatically downloaded, verified, and launched with your Jagex character session.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 3v18l15-9L5 3z"/>
+          </svg>
+        </div>
+        <h3 class="feature-title">Official OSRS Client</h3>
+        <p class="feature-desc">
+          The official C++/Java Steam and desktop OSRS client with modern C++ rendering enhancements and native Jagex account single sign-on.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Section -->
+  <section id="install" class="install-section">
+    <div class="section-header">
+      <div class="section-tag">Quick Start</div>
+      <h2 class="section-title">Install on Any Linux Distribution</h2>
+    </div>
+
+    <div class="tab-container">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('appimage', this)">Universal AppImage</button>
+        <button class="tab-btn" onclick="switchTab('deb', this)">Ubuntu / Debian / Mint</button>
+        <button class="tab-btn" onclick="switchTab('arch', this)">Arch Linux / SteamOS</button>
+        <button class="tab-btn" onclick="switchTab('fedora', this)">Fedora / RHEL</button>
+        <button class="tab-btn" onclick="switchTab('source', this)">Build from Source</button>
+      </div>
+
+      <div id="tab-appimage" class="tab-panel active">
+        <p>Works out-of-the-box on almost all modern 64-bit Linux distributions:</p>
+        <div class="code-block">
+# 1. Download the latest .AppImage from GitHub Releases
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.0.0.AppImage
+
+# 2. Make it executable
+chmod +x Jagex-Launcher-1.0.0.AppImage
+
+# 3. Launch!
+./Jagex-Launcher-1.0.0.AppImage
+        </div>
+      </div>
+
+      <div id="tab-deb" class="tab-panel">
+        <p>Install the native Debian package for system menu integration and automatic desktop icons:</p>
+        <div class="code-block">
+# 1. Download the .deb package
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.0.0_amd64.deb
+
+# 2. Install with apt
+sudo apt install ./jagex-launcher_1.0.0_amd64.deb
+        </div>
+      </div>
+
+      <div id="tab-arch" class="tab-panel">
+        <p>Run via AppImage or extract into your user bin directory. Perfect for Arch and the Steam Deck:</p>
+        <div class="code-block">
+# On SteamOS / Arch Linux:
+chmod +x Jagex-Launcher-1.0.0.AppImage
+./Jagex-Launcher-1.0.0.AppImage
+
+# Tip for Steam Deck Game Mode: Add the AppImage as a "Non-Steam Game" in desktop mode!
+        </div>
+      </div>
+
+      <div id="tab-fedora" class="tab-panel">
+        <p>Compatible with Fedora Workstation 38+: install FUSE if using AppImage or run directly:</p>
+        <div class="code-block">
+sudo dnf install fuse-libs
+chmod +x Jagex-Launcher-1.0.0.AppImage
+./Jagex-Launcher-1.0.0.AppImage
+        </div>
+      </div>
+
+      <div id="tab-source" class="tab-panel">
+        <p>Clone and build from scratch in under two minutes:</p>
+        <div class="code-block">
+git clone https://github.com/cook0001/Linux-Jagex-Launcher.git
+cd Linux-Jagex-Launcher
+npm install
+npm run build
+npm run preview
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="faq-section">
+    <div class="section-header">
+      <div class="section-tag">Got Questions?</div>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <div class="faq-question">Will I get banned for using this launcher?</div>
+        <div class="faq-answer">
+          No. This launcher does not modify game code, alter network packets, or inject unauthorized hooks into game clients. It utilizes official Jagex OAuth 2.0 PKCE authentication and passes standard session environment variables (<code>JX_SESSION_ID</code>, <code>JX_CHARACTER_ID</code>) directly to official, verified game binaries (RuneLite, HDOS, or native RuneScape).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How does RuneLite work? Do I lose my plugins or settings?</div>
+        <div class="faq-answer">
+          Your plugins, tile markers, bank tags, and configurations remain 100% untouched. The launcher executes RuneLite using your standard user home directory, perfectly preserving <code>~/.runelite</code> and allowing web links in-game to open in your default browser.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How does the native Linux RS3 client run without root?</div>
+        <div class="faq-answer">
+          The launcher extracts Jagex's official Ubuntu <code>.deb</code> package into your local user data directory (<code>~/.local/share/linux-jagex-launcher/client/</code>) using userspace archive utilities (<code>tar</code> / <code>ar</code>), allowing it to install and update without ever requesting <code>sudo</code> or root permissions.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Does it support Feral GameMode and MangoHud?</div>
+        <div class="faq-answer">
+          Yes! Both <strong>Feral GameMode</strong> (<code>gamemoderun</code>) and <strong>MangoHud</strong> can be toggled on/off in the Launcher Settings modal for high-performance CPU governor scheduling and real-time performance metrics.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="brand">
+          <img src="assets/icon.png" alt="Linux Jagex Launcher Logo" style="width: 28px; height: 28px; border-radius: 6px;">
+          <span>Linux Jagex Launcher</span>
+        </div>
+
+        <div class="footer-links">
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher" target="_blank">GitHub</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases" target="_blank">Releases</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/PRIVACY.md" target="_blank">Privacy Policy</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/LICENSE" target="_blank">MIT License</a>
+        </div>
+      </div>
+
+      <div class="disclaimer-box">
+        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. This software is an independent open-source project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function switchTab(targetId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      
+      btn.classList.add('active');
+      const panel = document.getElementById('tab-' + targetId);
+      if (panel) panel.classList.add('active');
+    }
+  </script>
+</body>
+</html>

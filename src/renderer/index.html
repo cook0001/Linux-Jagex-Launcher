@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jagex Launcher (Linux)</title>
+  <!-- Google Fonts: Inter and Cinzel for RuneScape aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles/main.css">
+  <link rel="stylesheet" href="./styles/layout.css">
+  <link rel="stylesheet" href="./styles/components.css">
+  <link rel="stylesheet" href="./styles/animations.css">
+</head>
+<body class="theme-dark">
+  <div id="app" class="app-container">
+    <!-- Custom Frameless Titlebar -->
+    <header class="titlebar">
+      <div class="titlebar-drag-region">
+        <div class="brand">
+          <svg class="jagex-logo" viewBox="0 0 100 24" fill="currentColor">
+            <!-- Stylized Jagex text logo mark -->
+            <path d="M12 4C7.5 4 4 7.5 4 12s3.5 8 8 8 8-3.5 8-8H12V4zm20 0h-4v16h14v-4h-10V4zm24 0h-4l-6 16h4.5l1.3-4h7.4l1.3 4h4.5L56 4zm-2.8 8.5l2.3-7.5 2.3 7.5h-4.6zM80 12h-8V4h-4v16h12c4.4 0 8-3.6 8-8s-3.6-8-8-8zm0 4h-8v-4h8c2.2 0 4 1.8 4 4s-1.8 4-4 4z"/>
+          </svg>
+          <span class="brand-divider">/</span>
+          <span class="brand-title">LAUNCHER</span>
+          <span class="badge-linux">LINUX</span>
+        </div>
+      </div>
+      <div class="titlebar-controls">
+        <button id="btn-minimize" class="titlebar-btn" title="Minimize">
+          <svg viewBox="0 0 16 16"><path d="M3 8h10v1H3z"/></svg>
+        </button>
+        <button id="btn-maximize" class="titlebar-btn" title="Maximize">
+          <svg viewBox="0 0 16 16"><path d="M3 3h10v10H3V3zm1 1v8h8V4H4z"/></svg>
+        </button>
+        <button id="btn-close" class="titlebar-btn btn-close" title="Close">
+          <svg viewBox="0 0 16 16"><path d="M3.5 3.5l9 9m0-9l-9 9"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Application Body -->
+    <div class="app-body">
+      <!-- Left Navigation Rail -->
+      <nav class="nav-rail">
+        <div class="nav-rail-top">
+          <button id="nav-game-rs3" class="nav-item active" data-game="rs3" title="RuneScape">
+            <div class="nav-icon rs3-icon">
+              <svg viewBox="0 0 48 48" fill="none">
+                <!-- Golden RuneScape Rune/Sword Crest -->
+                <circle cx="24" cy="24" r="22" stroke="url(#gold-gradient)" stroke-width="2.5" fill="#131924"/>
+                <path d="M24 6L28 16H20L24 6Z" fill="url(#gold-gradient)"/>
+                <path d="M22 17H26V36H22V17Z" fill="url(#gold-gradient)"/>
+                <path d="M16 26H32V29H16V26Z" fill="url(#gold-gradient)"/>
+                <circle cx="24" cy="38" r="2.5" fill="url(#gold-gradient)"/>
+                <defs>
+                  <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fae084"/>
+                    <stop offset="50%" stop-color="#dfaa38"/>
+                    <stop offset="100%" stop-color="#9a6e16"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <span class="nav-label">RuneScape</span>
+            <div class="active-indicator"></div>
+          </button>
+
+          <button id="nav-game-osrs" class="nav-item" data-game="osrs" title="Old School RuneScape">
+            <div class="nav-icon osrs-icon">
+              <svg viewBox="0 0 48 48" fill="none">
+                <rect x="4" y="4" width="40" height="40" rx="8" stroke="#8792a2" stroke-width="2" fill="#10151f"/>
+                <path d="M14 18L24 10L34 18V34L24 40L14 34V18Z" stroke="#c09643" stroke-width="2" fill="#201a14"/>
+                <path d="M24 14V34M19 22L29 22" stroke="#e0be6c" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="nav-label">Old School</span>
+          </button>
+        </div>
+
+        <div class="nav-rail-bottom">
+          <button id="btn-open-settings" class="nav-item" title="Settings">
+            <div class="nav-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </div>
+            <span class="nav-label">Settings</span>
+          </button>
+        </div>
+      </nav>
+
+      <!-- Main Stage Content Area -->
+      <main class="main-stage">
+        <!-- Top Stage Bar: Game Name & Account Header -->
+        <div class="stage-header">
+          <div class="game-meta">
+            <h1 class="game-title" id="stage-game-title">Old School RuneScape</h1>
+            <span class="game-subtitle" id="stage-game-subtitle"></span>
+          </div>
+
+          <!-- Account Pill / Login Trigger -->
+          <div class="account-widget" id="account-widget">
+            <div id="account-logged-in" class="account-pill hidden">
+              <div class="account-avatar">
+                <span id="account-initials">J</span>
+              </div>
+              <div class="account-info">
+                <span id="account-username" class="account-name">Jagex Account</span>
+                <span class="account-status">Connected</span>
+              </div>
+              <svg class="chevron-down" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+            </div>
+
+            <div id="login-trigger-group" style="display: flex; align-items: center; gap: 8px;">
+              <button id="btn-login" class="btn-login">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                <span>Log In</span>
+              </button>
+              <button id="btn-browser-login-help" class="btn-dock-icon" style="width: 34px; height: 34px;" title="Trouble with Cloudflare? Sign in via your Default Web Browser">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Game Content Container -->
+        <div class="stage-scroll-area">
+          <!-- PSA Alert Bar (dynamic) -->
+          <div id="psa-banner" class="psa-banner hidden">
+            <span class="psa-icon">📢</span>
+            <span id="psa-message" class="psa-text">Game updates or maintenance notices will appear here.</span>
+          </div>
+
+          <!-- Hero Banner Section -->
+          <section id="hero-banner" class="hero-banner">
+            <div class="hero-backdrop" id="hero-image"></div>
+            <div class="hero-gradient-overlay"></div>
+            <div class="hero-content">
+              <span class="hero-tag">FEATURED UPDATE</span>
+              <h2 class="hero-title" id="hero-title">RuneScape: Dragonwilds</h2>
+              <p class="hero-description" id="hero-description">
+                Embark on an epic new wilderness expedition. Discover ancient wyrm ruins, forge powerful draconic equipment, and conquer fearsome trials.
+              </p>
+              <div class="hero-actions">
+                <button id="hero-cta-btn" class="btn-hero-primary">Read Update</button>
+                <button id="hero-patch-btn" class="btn-hero-secondary">Patch Notes</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- News & Updates Section -->
+          <section class="news-section">
+            <div class="section-header">
+              <h3 class="section-title">Latest News & Updates</h3>
+              <a href="#" id="view-all-news-link" class="section-link">View All On RuneScape.com &rarr;</a>
+            </div>
+
+            <div id="news-grid" class="news-grid">
+              <!-- Dynamically populated news cards -->
+              <div class="news-card skeleton">
+                <div class="news-card-thumb"></div>
+                <div class="news-card-body">
+                  <div class="news-skeleton-line short"></div>
+                  <div class="news-skeleton-line"></div>
+                </div>
+              </div>
+              <div class="news-card skeleton">
+                <div class="news-card-thumb"></div>
+                <div class="news-card-body">
+                  <div class="news-skeleton-line short"></div>
+                  <div class="news-skeleton-line"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Official Jagex Launcher Action Dock (Bottom Bar) -->
+        <footer class="action-dock">
+          <!-- Status & Version -->
+          <div class="dock-left">
+            <div class="status-indicator">
+              <div class="status-pulse-dot" id="status-dot"></div>
+              <div class="status-text-group">
+                <span class="status-label" id="status-text">Ready to play</span>
+                <span class="version-label" id="client-version-text">Official Linux NXT Client (v2.2.12)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Character & Client Selector -->
+          <div class="dock-center">
+            <!-- Client Selector (Visible for OSRS) -->
+            <div class="client-selector-container hidden" id="client-selector-container">
+              <label class="character-label">SELECT CLIENT</label>
+              <div class="client-dropdown" id="client-dropdown">
+                <div class="client-preview" id="client-preview">
+                  <div class="client-avatar" id="client-avatar-preview">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2.5l2 2-7.5 7.5-2-2 7.5-7.5zm4 4l2 2-2 2-2-2 2-2zM3 21l3-1 2-2-2-2-2 2-1 3zm3.5-3.5l1.5-1.5-1-1-1.5 1.5 1 1z"/></svg>
+                  </div>
+                  <div class="client-meta">
+                    <span class="client-name" id="selected-client-name">RuneLite</span>
+                    <span class="client-type" id="selected-client-type">Recommended</span>
+                  </div>
+                  <svg class="chevron-icon" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </div>
+
+                <div class="client-dropdown-menu hidden" id="client-list-menu">
+                  <div class="client-dropdown-item active" data-client="runelite">
+                    <div class="client-avatar">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.5 2.5l2 2-7.5 7.5-2-2 7.5-7.5zm4 4l2 2-2 2-2-2 2-2zM3 21l3-1 2-2-2-2-2 2-1 3zm3.5-3.5l1.5-1.5-1-1-1.5 1.5 1 1z"/></svg>
+                    </div>
+                    <div class="client-meta">
+                      <span class="client-name">RuneLite</span>
+                      <span class="client-type">Open Source OSRS Client</span>
+                    </div>
+                    <span class="badge-member">POPULAR</span>
+                  </div>
+
+                  <div class="client-dropdown-item" data-client="hdos">
+                    <div class="client-avatar">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2zm0 2.3L6 7.7v6.6l6 3.4 6-3.4V7.7L12 4.3z"/></svg>
+                    </div>
+                    <div class="client-meta">
+                      <span class="client-name">HDOS</span>
+                      <span class="client-type">2009 Era HD Graphics</span>
+                    </div>
+                    <span class="badge-member" style="background: rgba(96, 165, 250, 0.2); color: #93c5fd; border-color: rgba(96, 165, 250, 0.4);">HD</span>
+                  </div>
+
+                  <div class="client-dropdown-item" data-client="official">
+                    <div class="client-avatar">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    </div>
+                    <div class="client-meta">
+                      <span class="client-name">Official Client</span>
+                      <span class="client-type">Steam / Proton / Custom Runner</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Character Selector -->
+            <div class="character-selector-container">
+              <label class="character-label">SELECT CHARACTER</label>
+              <div class="character-dropdown" id="character-dropdown">
+                <div class="character-preview" id="character-preview">
+                  <div class="character-avatar" id="character-avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                  </div>
+                  <div class="character-meta">
+                    <span class="character-name" id="selected-character-name">Select an account</span>
+                    <span class="character-type" id="selected-character-type">No character selected</span>
+                  </div>
+                  <svg class="chevron-icon" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </div>
+
+                <!-- Dropdown Menu List -->
+                <div class="character-dropdown-list hidden" id="character-list-menu">
+                  <!-- Populated dynamically with linked characters -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Launch Controls -->
+          <div class="dock-right">
+            <button id="btn-quick-settings" class="btn-dock-icon" title="Game Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </button>
+
+            <!-- Iconic Jagex Play Button -->
+            <button id="btn-play" class="btn-play" disabled>
+              <div class="play-content">
+                <span id="play-text" class="play-text">PLAY</span>
+                <span id="play-subtext" class="play-subtext">RuneScape 3</span>
+              </div>
+              <div class="play-glow"></div>
+            </button>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Modal: Settings -->
+    <div id="modal-settings" class="modal-overlay hidden">
+      <div class="modal-window" style="width: 640px;">
+        <div class="modal-header">
+          <h3 class="modal-title">Launcher & Game Settings</h3>
+          <button id="btn-close-settings" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Settings Navigation Tabs -->
+          <div class="settings-tabs">
+            <button class="settings-tab-btn active" data-tab="tab-general" id="tab-btn-general">General</button>
+            <button class="settings-tab-btn" data-tab="tab-osrs" id="tab-btn-osrs">Old School RuneScape</button>
+            <button class="settings-tab-btn" data-tab="tab-rs3" id="tab-btn-rs3">RuneScape 3</button>
+          </div>
+
+          <!-- Tab Content: General -->
+          <div class="settings-tab-content" id="tab-general">
+            <div class="settings-section">
+              <h4 class="settings-section-title">Startup & Launcher Behavior</h4>
+              
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-close-on-launch">
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Close Launcher when Game Starts</span>
+                  <span class="setting-desc">Recommended for Linux. Frees up 100% of launcher RAM while playing.</span>
+                </div>
+              </label>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-minimize-to-tray">
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Minimize to System Tray</span>
+                  <span class="setting-desc">Keeps launcher running minimized in the background.</span>
+                </div>
+              </label>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-use-gamemode">
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Enable Feral GameMode (gamemoderun)</span>
+                  <span class="setting-desc">Optimizes CPU frequency scaling and priority for maximum FPS (works for both RS3 and OSRS).</span>
+                </div>
+              </label>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-use-mangohud">
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Enable MangoHud Performance Overlay</span>
+                  <span class="setting-desc">Displays GPU/CPU load, temperatures, framerate, and frame-time graph.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Tab Content: Old School RuneScape -->
+          <div class="settings-tab-content hidden" id="tab-osrs">
+            <div class="settings-section">
+              <h4 class="settings-section-title">Client Selection</h4>
+              <div class="setting-input-group">
+                <label for="setting-osrs-default-client" class="input-label">Default OSRS Client</label>
+                <select id="setting-osrs-default-client" class="setting-text-input">
+                  <option value="runelite">RuneLite (Recommended - Open Source Client)</option>
+                  <option value="hdos">HDOS (2009 Era HD Graphics Client)</option>
+                  <option value="official">Official Client (Steam / Proton / Custom)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">Java Runtime Environment (JRE / JDK)</h4>
+              <div class="java-status-box" style="margin-bottom: 12px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                  <span style="font-size: 12px; color: #e2e8f0; font-weight: 600;">System Java Runtime</span>
+                </div>
+                <span id="setting-java-detected-label" style="font-size: 11px; color: #94a3b8; font-family: monospace;">Detecting...</span>
+              </div>
+
+              <div class="setting-input-group">
+                <label for="setting-osrs-java-path" class="input-label">Custom Java Executable Path (Optional)</label>
+                <input type="text" id="setting-osrs-java-path" class="setting-text-input" placeholder="e.g. /usr/lib/jvm/java-17-openjdk/bin/java (leave empty for auto-detect)">
+                <span class="input-hint">Specify a custom Java 11, 17, or 21 executable if you have multiple JDKs installed.</span>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">Client Paths & Arguments</h4>
+              <div class="setting-input-group">
+                <label for="setting-osrs-custom-client" class="input-label">Custom Client Path / Executable (Optional)</label>
+                <input type="text" id="setting-osrs-custom-client" class="setting-text-input" placeholder="e.g. /usr/bin/runelite or ~/Applications/RuneLite.AppImage (leave empty for managed JAR)">
+                <span class="input-hint">If specified, the launcher will run your custom client binary or JAR instead of downloading one.</span>
+              </div>
+
+              <div class="setting-input-group">
+                <label for="setting-osrs-jvm-args" class="input-label">Custom JVM Parameters</label>
+                <input type="text" id="setting-osrs-jvm-args" class="setting-text-input" placeholder="e.g. -Xmx2048m -Dsun.java2d.uiScale=1.5">
+                <span class="input-hint">Parameters passed to Java before <code>-jar</code>.</span>
+              </div>
+
+              <div class="setting-input-group">
+                <label for="setting-osrs-client-args" class="input-label">Custom Client Arguments</label>
+                <input type="text" id="setting-osrs-client-args" class="setting-text-input" placeholder="e.g. --insecure-write-credentials --scale=2">
+                <span class="input-hint">Flags passed directly to RuneLite or HDOS client process.</span>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">OSRS Client Maintenance</h4>
+              <div class="maintenance-row" style="margin-bottom: 10px;">
+                <div>
+                  <span class="setting-name">RuneLite Launcher JAR</span>
+                  <span class="setting-desc" id="status-desc-runelite">~/.local/share/linux-jagex-launcher/runelite/RuneLite.jar</span>
+                </div>
+                <button id="btn-reinstall-runelite" class="btn-secondary">Reinstall / Update</button>
+              </div>
+
+              <div class="maintenance-row">
+                <div>
+                  <span class="setting-name">HDOS Launcher JAR</span>
+                  <span class="setting-desc" id="status-desc-hdos">~/.local/share/linux-jagex-launcher/hdos/hdos-launcher.jar</span>
+                </div>
+                <button id="btn-reinstall-hdos" class="btn-secondary">Reinstall / Update</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Content: RuneScape 3 -->
+          <div class="settings-tab-content hidden" id="tab-rs3">
+            <div class="settings-section">
+              <h4 class="settings-section-title">Client Configuration</h4>
+              
+              <div class="setting-input-group">
+                <label for="setting-config-uri" class="input-label">Configuration URI (jav_config.ws)</label>
+                <input type="text" id="setting-config-uri" class="setting-text-input" value="https://www.runescape.com/k=5/l=0/jav_config.ws">
+              </div>
+
+              <div class="setting-input-group">
+                <label for="setting-custom-cmd" class="input-label">Custom Launch Command Wrapper</label>
+                <input type="text" id="setting-custom-cmd" class="setting-text-input" placeholder="e.g. prime-run %command% (leave empty for default)">
+                <span class="input-hint">Use <code>%command%</code> as placeholder for the game executable.</span>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">Client Maintenance</h4>
+              <div class="maintenance-row">
+                <div>
+                  <span class="setting-name">RuneScape Linux Client Package</span>
+                  <span class="setting-desc">Native Linux NXT Client (~/.local/share/linux-jagex-launcher/client)</span>
+                </div>
+                <button id="btn-reinstall-client" class="btn-secondary">Verify & Reinstall</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="btn-save-settings" class="btn-primary">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Account & Characters Manager -->
+    <div id="modal-account" class="modal-overlay hidden">
+      <div class="modal-window modal-medium">
+        <div class="modal-header">
+          <h3 class="modal-title">Jagex Account Management</h3>
+          <button id="btn-close-account" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="account-card">
+            <div class="account-card-header">
+              <div class="account-avatar-large">
+                <span id="modal-account-initials">J</span>
+              </div>
+              <div>
+                <h4 id="modal-account-name" class="account-card-title">Jagex Account</h4>
+                <span id="modal-account-email" class="account-card-email">user@email.com</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="character-list-header">
+            <h4>Linked Characters</h4>
+            <button id="btn-add-character-web" class="btn-link">Manage On Jagex.com &rarr;</button>
+          </div>
+
+          <div id="modal-character-list" class="modal-character-list">
+            <!-- Dynamically populated character entries -->
+          </div>
+        </div>
+        <div class="modal-footer space-between">
+          <button id="btn-sign-out" class="btn-danger">Sign Out</button>
+          <button id="btn-switch-account" class="btn-secondary">Add Another Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Sign In to Jagex Account -->
+    <div id="modal-browser-login" class="modal-overlay hidden">
+      <div class="modal-window modal-medium" style="max-width: 530px;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#e5b85a"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+            <div>
+              <h3 class="modal-title" style="margin: 0; font-size: 16px;">Sign In to Jagex Account</h3>
+              <p style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">Official OAuth 2.0 PKCE Authentication</p>
+            </div>
+          </div>
+          <button id="btn-close-browser-login" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding-top: 14px;">
+          <!-- Primary Recommendation: System Browser -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <span style="font-weight: 700; color: #34d399; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                Step 1: Sign In via System Browser
+              </span>
+              <span style="background: rgba(52, 211, 153, 0.2); color: #6ee7b7; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Bypasses Cloudflare</span>
+            </div>
+            <p style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin: 0 0 14px 0;">
+              Opens your default browser (Chrome, Firefox, Safari) where Cloudflare Turnstile bot checks pass seamlessly.
+            </p>
+            <button id="btn-open-browser-auth" class="btn-primary" style="width: 100%; padding: 12px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-color: #34d399;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <span>Open Jagex Login in Browser</span>
+            </button>
+          </div>
+
+          <!-- Step 2: Redirect / Clipboard Section -->
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <label for="input-browser-redirect-url" class="input-label" style="margin: 0; font-size: 12px; font-weight: 600; color: #e2e8f0;">
+                Step 2: Paste Redirect URL or Code:
+              </label>
+              <button id="btn-paste-clipboard" class="btn-secondary" style="padding: 4px 10px; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Paste from Clipboard
+              </button>
+            </div>
+            <div style="position: relative;">
+              <input type="text" id="input-browser-redirect-url" class="setting-text-input" placeholder="https://secure.runescape.com/m=weblogin/launcher-redirect?code=..." style="padding-right: 32px;">
+              <div id="clipboard-detect-indicator" class="hidden" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #10b981;" title="Auto-detected from clipboard">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </div>
+            <div id="login-flow-hint" style="margin-top: 8px; font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>Copy the URL ending with <code>code=...</code> from your browser. Clipboard auto-detection is active.</span>
+            </div>
+            <div style="margin-top: 10px; padding: 8px 10px; background: rgba(234, 179, 8, 0.1); border-left: 3px solid #eab308; border-radius: 4px; font-size: 11px; color: #fde047; line-height: 1.4;">
+              <strong>Tip:</strong> If your browser shows a Cloudflare check on the final redirect page, <strong>the login is already complete!</strong> Simply copy the URL from your address bar.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer space-between">
+          <button id="btn-try-embedded-again" class="btn-secondary" style="font-size: 12px; color: #94a3b8;">
+            Try Embedded Window
+          </button>
+          <button id="btn-submit-browser-code" class="btn-primary" style="min-width: 150px;">
+            Complete Sign In
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Download Progress Overlay -->
+    <div id="overlay-progress" class="modal-overlay hidden">
+      <div class="modal-window progress-window">
+        <h3 id="progress-title" class="progress-title">Updating RuneScape</h3>
+        <p id="progress-subtitle" class="progress-subtitle">Downloading latest Linux client from Jagex CDN...</p>
+        <div class="progress-bar-container">
+          <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="progress-status-row">
+          <span id="progress-status-text">Connecting...</span>
+          <span id="progress-percent-text">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./scripts/app.ts"></script>
+</body>
+</html>

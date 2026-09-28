@@ -1,0 +1,23 @@
+{
+  "appId": "com.jagex.launcher.linux",
+  "productName": "Jagex Launcher",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "dist/**/*",
+    "package.json"
+  ],
+  "linux": {
+    "target": [
+      "AppImage",
+      "deb",
+      "tar.gz"
+    ],
+    "category": "Game",
+    "icon": "resources/icon.png",
+    "desktop": {
+      "StartupWMClass": "linux-jagex-launcher"
+    }
+  }
+}

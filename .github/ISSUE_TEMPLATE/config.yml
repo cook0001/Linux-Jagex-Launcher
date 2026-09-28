@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Jagex Support & Account Help
+    url: https://support.runescape.com/
+    about: For Jagex account, password resets, bans, or billing issues, please contact official Jagex Support.
+  - name: RuneLite Support
+    url: https://runelite.net/
+    about: For plugin or RuneLite specific issues, visit the RuneLite community.

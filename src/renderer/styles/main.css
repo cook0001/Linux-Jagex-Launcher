@@ -1,0 +1,115 @@
+/* Design Tokens & CSS Variables */
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-fantasy: 'Cinzel', serif;
+
+  /* Color Palette */
+  --bg-deep: #080a0f;
+  --bg-app: #0c1017;
+  --bg-surface: #121824;
+  --bg-surface-elevated: #182030;
+  --bg-card: rgba(22, 30, 46, 0.75);
+  --bg-card-hover: rgba(30, 42, 64, 0.9);
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.15);
+  --border-gold: rgba(212, 175, 55, 0.35);
+  --border-gold-bright: #d4af37;
+
+  /* RuneScape Gold & Metallic Accents */
+  --gold-primary: #e5b352;
+  --gold-light: #fae084;
+  --gold-dark: #9a6e16;
+  --gold-gradient: linear-gradient(135deg, #fae084 0%, #dfaa38 50%, #9a6e16 100%);
+  --gold-glow: rgba(223, 170, 56, 0.4);
+
+  /* Play Button Gradients */
+  --btn-play-bg: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  --btn-play-hover: linear-gradient(180deg, #34d399 0%, #059669 100%);
+  --btn-play-glow: rgba(16, 185, 129, 0.45);
+
+  /* Text Colors */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-gold: #fcd34d;
+
+  /* Accents */
+  --accent-cyan: #00e1d9;
+  --accent-blue: #38bdf8;
+  --accent-danger: #ef4444;
+  --accent-warning: #f59e0b;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-gold: 0 0 20px rgba(223, 170, 56, 0.25);
+  --shadow-play: 0 0 24px rgba(16, 185, 129, 0.35);
+
+  /* Transitions */
+  --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

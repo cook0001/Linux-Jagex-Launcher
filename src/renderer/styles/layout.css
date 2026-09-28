@@ -1,0 +1,282 @@
+/* App Container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-app);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+/* Frameless Titlebar */
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  background: rgba(10, 13, 20, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 100;
+}
+
+.titlebar-drag-region {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 14px;
+  -webkit-app-region: drag;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.jagex-logo {
+  width: 72px;
+  height: 16px;
+  color: var(--text-primary);
+}
+
+.brand-divider {
+  color: var(--text-muted);
+  font-weight: 300;
+  opacity: 0.5;
+}
+
+.brand-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-primary);
+}
+
+.badge-linux {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-blue);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.titlebar-controls {
+  display: flex;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.titlebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 100%;
+  color: var(--text-secondary);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.titlebar-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.titlebar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.titlebar-btn.btn-close:hover {
+  background-color: var(--accent-danger);
+  color: white;
+}
+
+/* App Body: Nav Rail + Main Stage */
+.app-body {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 38px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Navigation Rail */
+.nav-rail {
+  width: 80px;
+  background: var(--bg-deep);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  z-index: 20;
+}
+
+.nav-rail-top, .nav-rail-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  color: var(--text-muted);
+  transition: all var(--transition-normal);
+  background: transparent;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-item.active {
+  color: var(--gold-primary);
+  background: rgba(229, 179, 82, 0.08);
+}
+
+.nav-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-normal);
+}
+
+.nav-item:hover .nav-icon {
+  transform: translateY(-2px);
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.active-indicator {
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 3px;
+  border-radius: 0 4px 4px 0;
+  background: var(--gold-gradient);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+
+/* Main Stage */
+.main-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: var(--bg-app);
+  overflow: hidden;
+}
+
+/* Stage Header Bar */
+.stage-header {
+  height: 60px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(12, 16, 23, 0.6);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 10;
+}
+
+.game-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.game-title {
+  font-family: var(--font-fantasy);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.game-subtitle {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* Stage Scroll Area */
+.stage-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 32px 110px 32px; /* Bottom padding so content is not obscured by dock */
+}
+
+/* Official Action Dock (Bottom fixed bar) */
+.action-dock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 13, 20, 0.88);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 30;
+}
+
+.dock-left, .dock-center, .dock-right {
+  display: flex;
+  align-items: center;
+}
+
+.dock-left {
+  flex: 1;
+}
+
+.dock-center {
+  flex: 1.5;
+  justify-content: center;
+  gap: 16px;
+}
+
+.dock-right {
+  flex: 1;
+  justify-content: flex-end;
+  gap: 16px;
+}

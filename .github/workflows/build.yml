@@ -1,0 +1,84 @@
+name: Build Linux Packages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux (AppImage, DEB, tar.gz)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libarchive-tools \
+            fakeroot \
+            dpkg
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Compile & Typecheck
+        run: |
+          npx tsc --noEmit
+          npm run build
+
+      - name: Build Linux packages with Electron Builder
+        run: |
+          npx electron-builder --linux AppImage deb tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate SHA-256 Checksums
+        working-directory: release
+        run: |
+          sha256sum *.{AppImage,deb,tar.gz} > SHA256SUMS.txt || true
+          cat SHA256SUMS.txt || true
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-jagex-launcher-packages
+          path: |
+            release/*.AppImage
+            release/*.deb
+            release/*.tar.gz
+            release/SHA256SUMS.txt
+          retention-days: 14
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/*.AppImage
+            release/*.deb
+            release/*.tar.gz
+            release/SHA256SUMS.txt
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

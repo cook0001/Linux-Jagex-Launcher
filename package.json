@@ -1,0 +1,45 @@
+{
+  "name": "linux-jagex-launcher",
+  "version": "1.0.0",
+  "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape (RuneLite, HDOS, Official Client).",
+  "main": "dist/main/index.js",
+  "homepage": "https://cook0001.github.io/Linux-Jagex-Launcher/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cook0001/Linux-Jagex-Launcher.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cook0001/Linux-Jagex-Launcher/issues"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "electron dist/main/index.js",
+    "dist": "npm run build && electron-builder --linux"
+  },
+  "keywords": [
+    "runescape",
+    "oldschool-runescape",
+    "osrs",
+    "rs3",
+    "jagex",
+    "jagex-launcher",
+    "runelite",
+    "hdos",
+    "linux",
+    "electron",
+    "gaming-on-linux"
+  ],
+  "author": "Daniel Cook",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vite-plugin-electron": "^1.1.2",
+    "vite-plugin-electron-renderer": "^1.0.0"
+  }
+}

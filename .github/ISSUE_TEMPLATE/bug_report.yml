@@ -1,0 +1,63 @@
+name: Bug Report
+description: Create a report to help us improve Linux Jagex Launcher
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue! Please check existing issues before submitting.
+  - type: dropdown
+    id: game
+    attributes:
+      label: Game / Client
+      description: Which game or client is affected?
+      options:
+        - RuneScape 3 (Native Linux Client)
+        - Old School RuneScape - RuneLite
+        - Old School RuneScape - HDOS
+        - Old School RuneScape - Official Client
+        - Launcher UI / Authentication (Turnstile/OAuth)
+        - Other / General Launcher
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: Linux Distribution & Desktop Environment
+      description: e.g. Ubuntu 24.04 (GNOME, Wayland), Arch Linux (KDE, X11), SteamOS, Fedora 40
+      placeholder: Ubuntu 24.04 LTS (GNOME, Wayland)
+    validations:
+      required: true
+  - type: input
+    id: package_type
+    attributes:
+      label: Installation Method
+      description: Which package format are you running?
+      placeholder: AppImage / .deb / built from source
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior.
+      placeholder: |
+        1. Open launcher
+        2. Click 'PLAY' on RuneLite
+        3. See error in terminal...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Terminal Output / Logs
+      description: Paste any terminal output or console logs here.
+      render: shell
