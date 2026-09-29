@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="./styles/layout.css">
   <link rel="stylesheet" href="./styles/components.css">
   <link rel="stylesheet" href="./styles/animations.css">
+  <link rel="stylesheet" href="./styles/steamdeck.css">
 </head>
 <body class="theme-dark">
   <div id="app" class="app-container">
@@ -35,6 +36,11 @@
           <img src="./assets/icon.png" class="brand-app-icon" alt="Launcher Icon">
           <span class="brand-title">LAUNCHER</span>
           <span class="badge-linux">LINUX</span>
+          <span id="deck-badge" class="deck-pill-badge hidden">🎮 STEAM DECK</span>
+        </div>
+        <div id="titlebar-update-banner" class="titlebar-update-banner hidden" title="Click to view launcher update details">
+          <span class="update-icon">⚡</span>
+          <span id="titlebar-update-text">Update Available</span>
         </div>
       </div>
     </header>
@@ -228,6 +234,7 @@
                     <span class="client-name" id="selected-client-name">RuneLite</span>
                     <span class="client-type" id="selected-client-type">Recommended</span>
                   </div>
+                  <span class="gamepad-glyph glyph-x" title="Gamepad (X) Button">X</span>
                   <svg class="chevron-icon" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </div>
 
@@ -279,6 +286,7 @@
                     <span class="character-name" id="selected-character-name">Select an account</span>
                     <span class="character-type" id="selected-character-type">No character selected</span>
                   </div>
+                  <span class="gamepad-glyph glyph-y" title="Gamepad (Y) Button">Y</span>
                   <svg class="chevron-icon" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                 </div>
 
@@ -302,7 +310,10 @@
             <!-- Iconic Jagex Play Button -->
             <button id="btn-play" class="btn-play" disabled>
               <div class="play-content">
-                <span id="play-text" class="play-text">PLAY</span>
+                <div style="display: flex; align-items: center; justify-content: center;">
+                  <span class="gamepad-glyph glyph-a" style="margin-right: 6px;" title="Gamepad (A) Button">A</span>
+                  <span id="play-text" class="play-text">PLAY</span>
+                </div>
                 <span id="play-subtext" class="play-subtext">RuneScape 3</span>
               </div>
               <div class="play-glow"></div>
@@ -367,6 +378,46 @@
                   <span class="setting-desc">Displays GPU/CPU load, temperatures, framerate, and frame-time graph.</span>
                 </div>
               </label>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">Software Updates</h4>
+
+              <div class="maintenance-row" style="margin-bottom: 12px;">
+                <div>
+                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.0.0</span>
+                  <span class="setting-desc" id="setting-updater-format-label">Detecting package format...</span>
+                </div>
+                <button id="btn-check-updates-now" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;">Check for Updates</button>
+              </div>
+
+              <div id="setting-update-status-msg" style="font-size: 11px; color: #94a3b8; margin-bottom: 10px; display: none;"></div>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-auto-check-updates" checked>
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Check for updates automatically on startup</span>
+                  <span class="setting-desc">Notifies you as soon as a new launcher release is published on GitHub.</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="settings-section">
+              <h4 class="settings-section-title">Steam Deck & Handheld Gaming</h4>
+
+              <div class="maintenance-row" style="margin-bottom: 12px;">
+                <div>
+                  <span class="setting-name" id="setting-deck-hardware-label">Standard Linux PC / Desktop</span>
+                  <span class="setting-desc" id="setting-deck-model-label">Checking SteamOS environment & display</span>
+                </div>
+                <button id="btn-add-to-steam" class="btn-secondary" style="font-size: 11px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5a2.5 2.5 0 1 1-2.5-2.5 2.5 2.5 0 0 1 2.5 2.5zm0-6a2.5 2.5 0 1 1-2.5-2.5 2.5 2.5 0 0 1 2.5 2.5z"/></svg>
+                  <span>Add to Steam Library</span>
+                </button>
+              </div>
+
+              <div id="setting-deck-status-msg" style="font-size: 11px; color: #94a3b8; margin-bottom: 6px; display: none;"></div>
             </div>
           </div>
 
@@ -444,12 +495,72 @@
 
           <!-- Tab Content: RuneScape 3 -->
           <div class="settings-tab-content hidden" id="tab-rs3">
+            <!-- Linux System Diagnostics & Doctor -->
+            <div class="settings-section">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h4 class="settings-section-title" style="margin: 0;">System Compatibility & Pre-Flight Diagnostics</h4>
+                <button id="btn-run-doctor" class="btn-secondary" style="font-size: 11px; padding: 4px 10px; display: flex; align-items: center; gap: 5px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <span>Run Diagnostics</span>
+                </button>
+              </div>
+              <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.4;">
+                Diagnoses common Ubuntu 22.04/24.04 issues including the <code>libssl1.1</code> dependency mismatch, missing OpenGL/Vulkan libraries, and Wayland compositor locks.
+              </p>
+
+              <div id="doctor-results-box" class="doctor-results-box" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                <div id="doctor-summary-line" style="display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: #cbd5e1; margin-bottom: 8px;">
+                  <span id="doctor-status-text">Click "Run Diagnostics" to check system libraries and drivers.</span>
+                  <span id="doctor-badge" class="badge-member hidden" style="font-size: 10px;">READY</span>
+                </div>
+                <div id="doctor-items-list" style="display: flex; flex-direction: column; gap: 6px; font-size: 11px;"></div>
+                <div id="doctor-apt-suggestion" class="hidden" style="margin-top: 10px; padding: 8px; background: rgba(234, 179, 8, 0.1); border-left: 3px solid #eab308; border-radius: 4px; font-size: 11px; color: #fde047;">
+                  <div style="font-weight: 600; margin-bottom: 4px;">Recommended Package Installation:</div>
+                  <code id="doctor-apt-code" style="display: block; background: rgba(0,0,0,0.4); padding: 6px; border-radius: 4px; color: #a7f3d0; word-break: break-all; user-select: all;"></code>
+                </div>
+              </div>
+            </div>
+
+            <!-- Graphics & Display Workarounds -->
+            <div class="settings-section">
+              <h4 class="settings-section-title">Display & Graphics Workarounds (Ubuntu / Wayland)</h4>
+              
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-rs3-force-x11" checked>
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Force X11 / XWayland Backend (Recommended)</span>
+                  <span class="setting-desc">Injects <code>GDK_BACKEND=x11</code> and <code>SDL_VIDEODRIVER=x11</code>. Resolves startup freezes at "Loading application resources" on Wayland desktops.</span>
+                </div>
+              </label>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-rs3-audio-latency" checked>
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">PulseAudio / PipeWire Buffer Fix (PULSE_LATENCY_MSEC=100)</span>
+                  <span class="setting-desc">Eliminates audio buffer underruns that deadlock the client during asset loading.</span>
+                </div>
+              </label>
+
+              <div class="setting-input-group" style="margin-top: 10px;">
+                <label for="setting-rs3-gpu-workaround" class="input-label">GPU Driver Compatibility Mode</label>
+                <select id="setting-rs3-gpu-workaround" class="setting-text-input">
+                  <option value="none">Standard / Default (Native Mesa & Proprietary Drivers)</option>
+                  <option value="zink">Mesa Zink Override (OpenGL over Vulkan - Recommended for NVIDIA on Wayland)</option>
+                  <option value="prime">NVIDIA PRIME Offload (__NV_PRIME_RENDER_OFFLOAD=1 for Dual GPU Laptops)</option>
+                </select>
+                <span class="input-hint">If your game freezes at "Loading application resources", Mesa Zink routes OpenGL calls cleanly over Vulkan.</span>
+              </div>
+            </div>
+
+            <!-- Client Configuration -->
             <div class="settings-section">
               <h4 class="settings-section-title">Client Configuration</h4>
               
               <div class="setting-input-group">
                 <label for="setting-config-uri" class="input-label">Configuration URI (jav_config.ws)</label>
-                <input type="text" id="setting-config-uri" class="setting-text-input" value="https://www.runescape.com/k=5/l=0/jav_config.ws">
+                <input type="text" id="setting-config-uri" class="setting-text-input" value="https://rs.config.runescape.com/k=5/l=0/jav_config.ws">
               </div>
 
               <div class="setting-input-group">
@@ -459,12 +570,30 @@
               </div>
             </div>
 
+            <!-- Client Maintenance & Fixes -->
             <div class="settings-section">
-              <h4 class="settings-section-title">Client Maintenance</h4>
+              <h4 class="settings-section-title">Client Maintenance & Recovery</h4>
+
+              <div class="maintenance-row" style="margin-bottom: 10px;">
+                <div>
+                  <span class="setting-name">OpenSSL 1.1 Compatibility Libraries</span>
+                  <span class="setting-desc" id="status-desc-compat-ssl">Isolated libssl.so.1.1 & libcrypto.so.1.1 (Keeps system apt clean)</span>
+                </div>
+                <button id="btn-install-compat-libs" class="btn-secondary">Install / Reinstall</button>
+              </div>
+
+              <div class="maintenance-row" style="margin-bottom: 10px;">
+                <div>
+                  <span class="setting-name">Clear Cache & Reset Resources</span>
+                  <span class="setting-desc">Clears corrupt ~/.jagex_launcher and cache files to unstick "Loading application resources"</span>
+                </div>
+                <button id="btn-clear-rs3-cache" class="btn-secondary" style="border-color: rgba(239, 68, 68, 0.4); color: #fca5a5;">Clear Cache</button>
+              </div>
+
               <div class="maintenance-row">
                 <div>
                   <span class="setting-name">RuneScape Linux Client Package</span>
-                  <span class="setting-desc">Native Linux NXT Client (~/.local/share/linux-jagex-launcher/client)</span>
+                  <span class="setting-desc">Official Linux NXT Client (~/.local/share/linux-jagex-launcher/client)</span>
                 </div>
                 <button id="btn-reinstall-client" class="btn-secondary">Verify & Reinstall</button>
               </div>
@@ -579,6 +708,73 @@
           <button id="btn-submit-browser-code" class="btn-primary" style="min-width: 150px;">
             Complete Sign In
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Auto Updater -->
+    <div id="modal-updater" class="modal-overlay hidden">
+      <div class="modal-window modal-medium" style="max-width: 580px;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="updater-icon-badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="modal-title" style="margin: 0; font-size: 16px;">Launcher Update Available</h3>
+              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.0.0 &rarr; v1.1.0</p>
+            </div>
+          </div>
+          <button id="btn-close-updater" class="modal-close">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding-top: 14px;">
+          <!-- Format and Version Box -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-size: 13px; font-weight: 700; color: #34d399;" id="modal-updater-headline">A new version of Linux Jagex Launcher is ready!</div>
+              <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" id="modal-updater-format-desc">Package Format: AppImage</div>
+            </div>
+            <span class="badge-member" id="modal-updater-new-badge" style="background: #059669; color: #fff; font-weight: 700;">NEW</span>
+          </div>
+
+          <!-- Release Notes Container -->
+          <div style="margin-bottom: 14px;">
+            <div style="font-size: 12px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px;">Release Notes:</div>
+            <div id="modal-updater-notes" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-size: 11px; color: #cbd5e1; max-height: 180px; overflow-y: auto; white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.5;"></div>
+          </div>
+
+          <!-- Progress Bar & Status (Hidden until download starts) -->
+          <div id="modal-updater-progress-section" class="hidden" style="margin-bottom: 14px;">
+            <div class="progress-bar-container" style="height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+              <div id="modal-updater-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); transition: width 0.2s ease;"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8;">
+              <span id="modal-updater-progress-status">Downloading update...</span>
+              <span id="modal-updater-progress-percent">0%</span>
+            </div>
+          </div>
+
+          <!-- Distribution Notice (for Flatpak / AUR) -->
+          <div id="modal-updater-distro-notice" class="hidden" style="padding: 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 4px; font-size: 11px; color: #93c5fd; margin-bottom: 14px;">
+            <span id="modal-updater-distro-text"></span>
+          </div>
+        </div>
+
+        <div class="modal-footer space-between">
+          <div>
+            <button id="btn-skip-update-version" class="btn-secondary" style="font-size: 11px;">Skip This Version</button>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-cancel-updater" class="btn-secondary">Later</button>
+            <button id="btn-action-updater" class="btn-primary" style="min-width: 140px;">
+              Download & Install
+            </button>
+          </div>
         </div>
       </div>
     </div>

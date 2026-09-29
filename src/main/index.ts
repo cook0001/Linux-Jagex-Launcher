@@ -7,6 +7,14 @@ import { auth } from './auth';
 import { installer } from './installer';
 import { launcher } from './launcher';
 import { osrs } from './osrs';
+import { doctor } from './diagnostics';
+import { updater } from './updater';
+import { deck } from './deck';
+import { steamShortcuts } from './steam-shortcuts';
+
+if (process.platform === 'linux' && typeof process.getuid === 'function' && process.getuid() === 0) {
+  console.warn('[Security] WARNING: Running with sudo/root privileges causes permission corruption on user game data and cache directories!');
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,11 +63,14 @@ const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
 function createWindow() {
   const appIcon = getAppIcon();
+  const deckInfo = deck.getDeckInfo();
+  const isGameMode = deckInfo.isGameMode || (deckInfo.isSteamDeck && !process.env.DESKTOP_START);
+
   mainWindow = new BrowserWindow({
-    width: 1080,
-    height: 720,
-    minWidth: 960,
-    minHeight: 640,
+    width: isGameMode ? 1280 : 1080,
+    height: isGameMode ? 800 : 720,
+    minWidth: isGameMode ? 800 : 960,
+    minHeight: isGameMode ? 600 : 640,
     frame: false,
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: -100, y: -100 },
@@ -72,6 +83,10 @@ function createWindow() {
       nodeIntegration: false,
     }
   });
+
+  if (isGameMode) {
+    mainWindow.maximize();
+  }
 
   if (typeof appIcon !== 'string') {
     mainWindow.setIcon(appIcon);
@@ -96,6 +111,25 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+
+  // Background auto-update check on startup after brief delay
+  setTimeout(async () => {
+    try {
+      const settings = store.getSettings();
+      if (settings.autoCheckUpdates !== false) {
+        const result = await updater.checkForUpdates();
+        if (result.updateAvailable && result.releaseInfo) {
+          if (settings.skippedVersion !== result.releaseInfo.version) {
+            if (mainWindow && !mainWindow.isDestroyed()) {
+              mainWindow.webContents.send('updater:update-available', result);
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[Updater] Background check error:', err);
+    }
+  }, 4000);
 });
 
 app.on('window-all-closed', () => {
@@ -242,6 +276,23 @@ ipcMain.handle('osrs:install', async (_, clientType?: 'runelite' | 'hdos') => {
   });
 });
 
+// IPC: Diagnostics & Compatibility
+ipcMain.handle('diagnostics:runRs3Doctor', () => {
+  return doctor.runDoctor();
+});
+
+ipcMain.handle('diagnostics:installRs3CompatLibs', async () => {
+  return await installer.installLibSslCompat((progress) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('install-progress', progress);
+    }
+  });
+});
+
+ipcMain.handle('diagnostics:clearRs3Cache', () => {
+  return installer.clearClientCache();
+});
+
 // IPC: Feed & News
 ipcMain.handle('feed:getPsa', async (_, game: string) => {
   const targetGame = game === 'osrs' ? 'osrs' : 'runescape';
@@ -359,3 +410,43 @@ ipcMain.handle('feed:getNews', async (_, game?: string) => {
     return [];
   }
 });
+
+// IPC: Auto Updater
+ipcMain.handle('updater:check', async () => {
+  return await updater.checkForUpdates();
+});
+
+ipcMain.handle('updater:download', async (_, releaseInfo: any) => {
+  return await updater.downloadUpdate(releaseInfo, (progress) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('updater:progress', progress);
+    }
+  });
+});
+
+ipcMain.handle('updater:applyAndRestart', () => {
+  return updater.applyUpdateAndRestart();
+});
+
+ipcMain.handle('updater:getFormatInfo', () => {
+  return {
+    format: updater.getPackageFormat(),
+    label: updater.getFormatDisplayLabel(),
+    currentVersion: updater.getCurrentVersion()
+  };
+});
+
+ipcMain.handle('updater:skipVersion', (_, version: string) => {
+  return store.saveSettings({ skippedVersion: version });
+});
+
+// IPC: Steam Deck & SteamOS Handheld Support
+ipcMain.handle('deck:getInfo', () => {
+  return deck.getDeckInfo();
+});
+
+ipcMain.handle('steam:addToSteam', () => {
+  return steamShortcuts.addToSteam();
+});
+
+

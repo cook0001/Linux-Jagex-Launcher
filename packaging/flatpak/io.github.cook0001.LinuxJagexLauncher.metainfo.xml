@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.cook0001.LinuxJagexLauncher</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Linux Jagex Launcher</name>
+  <summary>Authentic Jagex Launcher for RuneScape 3, Old School RuneScape, and Dragonwilds</summary>
+
+  <description>
+    <p>
+      An authentic, native open-source Jagex Launcher for Linux designed to replicate the official Windows and macOS client experience with zero Wine or Proton overhead.
+    </p>
+    <p>Key features include:</p>
+    <ul>
+      <li>Native 64-bit execution for RuneScape 3 using official Linux binaries with full hardware acceleration.</li>
+      <li>Integrated Old School RuneScape multi-client switcher supporting RuneLite, HDOS, and the official client.</li>
+      <li>One-click launch for RuneScape: Dragonwilds with live Steam RSS patch feeds.</li>
+      <li>Direct Jagex Account OAuth 2.0 PKCE authentication with built-in Cloudflare Turnstile handling.</li>
+      <li>Preserves local ~/.runelite configuration, plugins, screenshots, and bank tags.</li>
+      <li>Zero RAM mode automatically closes the launcher after game start to optimize memory.</li>
+      <li>Optional Feral GameMode (gamemoderun) and MangoHud overlay toggles.</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.cook0001.LinuxJagexLauncher.desktop</launchable>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#e5b352</color>
+    <color type="primary" scheme_preference="dark">#161c28</color>
+  </branding>
+
+  <categories>
+    <category>Game</category>
+    <category>RolePlaying</category>
+  </categories>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-rs3.png</image>
+      <caption xml:lang="en">RuneScape 3 running natively on Linux</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-osrs.png</image>
+      <caption xml:lang="en">Old School RuneScape view with RuneLite and HDOS client selection</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-dragonwilds.png</image>
+      <caption xml:lang="en">RuneScape: Dragonwilds integration</caption>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://cook0001.github.io/Linux-Jagex-Launcher/</url>
+  <url type="bugtracker">https://github.com/cook0001/Linux-Jagex-Launcher/issues</url>
+  <url type="vcs-browser">https://github.com/cook0001/Linux-Jagex-Launcher</url>
+  <url type="help">https://forms.gle/KvagBxcmVBB3Q721A</url>
+
+  <developer id="io.github.cook0001">
+    <name>Daniel Cook</name>
+  </developer>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="1.0.0" date="2026-09-28" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.0.0</url>
+      <description>
+        <p>Initial stable release of the Linux Jagex Launcher featuring RS3 native support, RuneLite/HDOS integration, and Dragonwilds launching.</p>
+      </description>
+    </release>
+  </releases>
+</component>

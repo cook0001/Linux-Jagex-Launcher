@@ -1,0 +1,10 @@
+linux-jagex-launcher (1.0.0-1ubuntu1~noble) noble; urgency=medium
+
+  * Initial stable release of Linux Jagex Launcher for Ubuntu 24.04 (Noble).
+  * Native 64-bit ELF execution for RuneScape 3 with isolated OpenSSL 1.1 support.
+  * Old School RuneScape multi-client switcher (RuneLite, HDOS, Official Client).
+  * RuneScape: Dragonwilds launch integration and live patch feeds.
+  * Direct Jagex Account OAuth 2.0 PKCE authentication with Cloudflare Turnstile.
+  * Steam Deck & SteamOS handheld enhancements with full Gamepad navigation.
+
+ -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 18:00:00 -0500

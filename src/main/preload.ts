@@ -45,9 +45,35 @@ export const api = {
   installOsrsClient: (clientType?: string) => ipcRenderer.invoke('osrs:install', clientType),
   getJavaInfo: () => ipcRenderer.invoke('osrs:getJavaInfo'),
 
+  // Diagnostics & Compatibility
+  runRs3Doctor: () => ipcRenderer.invoke('diagnostics:runRs3Doctor'),
+  installRs3CompatLibs: () => ipcRenderer.invoke('diagnostics:installRs3CompatLibs'),
+  clearRs3Cache: () => ipcRenderer.invoke('diagnostics:clearRs3Cache'),
+
   // PSA & News proxy (to avoid CORS in renderer)
   fetchPsa: (game: string) => ipcRenderer.invoke('feed:getPsa', game),
   fetchNews: (game?: string) => ipcRenderer.invoke('feed:getNews', game),
+
+  // Auto Updater
+  checkForUpdates: () => ipcRenderer.invoke('updater:check'),
+  downloadUpdate: (releaseInfo: any) => ipcRenderer.invoke('updater:download', releaseInfo),
+  applyUpdateAndRestart: () => ipcRenderer.invoke('updater:applyAndRestart'),
+  getUpdaterFormatInfo: () => ipcRenderer.invoke('updater:getFormatInfo'),
+  skipUpdateVersion: (version: string) => ipcRenderer.invoke('updater:skipVersion', version),
+  onUpdateAvailable: (callback: (data: any) => void) => {
+    const sub = (_: any, val: any) => callback(val);
+    ipcRenderer.on('updater:update-available', sub);
+    return () => ipcRenderer.removeListener('updater:update-available', sub);
+  },
+  onUpdateProgress: (callback: (data: any) => void) => {
+    const sub = (_: any, val: any) => callback(val);
+    ipcRenderer.on('updater:progress', sub);
+    return () => ipcRenderer.removeListener('updater:progress', sub);
+  },
+
+  // Steam Deck & SteamOS
+  getDeckInfo: () => ipcRenderer.invoke('deck:getInfo'),
+  addToSteam: () => ipcRenderer.invoke('steam:addToSteam'),
 };
 
 contextBridge.exposeInMainWorld('jagexApi', api);

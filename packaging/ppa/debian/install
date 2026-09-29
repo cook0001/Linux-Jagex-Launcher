@@ -1,0 +1,8 @@
+packaging/ppa/linux-jagex-launcher.sh usr/bin/
+packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop usr/share/applications/
+packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml usr/share/metainfo/
+resources/icons/512x512.png usr/share/icons/hicolor/512x512/apps/
+resources/icons/256x256.png usr/share/icons/hicolor/256x256/apps/
+resources/icons/128x128.png usr/share/icons/hicolor/128x128/apps/
+resources/icons/64x64.png usr/share/icons/hicolor/64x64/apps/
+resources/icons/32x32.png usr/share/icons/hicolor/32x32/apps/

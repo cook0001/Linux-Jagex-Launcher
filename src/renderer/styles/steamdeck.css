@@ -1,0 +1,164 @@
+/* ==============================================================================
+   Steam Deck & Handheld Gaming Mode Stylesheet
+   Optimized for 1280x800 16:10 Displays, Touch, and Controller Navigation
+   ============================================================================== */
+
+/* Steam Deck Root Mode */
+.steam-deck-mode {
+  --touch-target-min: 44px;
+}
+
+/* In Gamescope Game Mode: Hide Redundant Window Controls */
+.steam-deck-mode.game-mode-active .titlebar-controls.linux-controls {
+  display: none !important;
+}
+
+.steam-deck-mode.game-mode-active .titlebar-drag-region {
+  padding-left: 16px;
+}
+
+/* Deck Header Badge */
+.deck-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  color: #a5b4fc;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+}
+
+/* Touch-Friendly Targets */
+.steam-deck-mode .nav-item {
+  min-height: 52px;
+  padding: 8px 12px;
+}
+
+.steam-deck-mode .btn-dock-icon {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.steam-deck-mode .character-preview,
+.steam-deck-mode .client-preview {
+  min-height: 44px;
+  padding: 6px 14px;
+}
+
+.steam-deck-mode .toggle-slider {
+  min-width: 48px;
+  min-height: 26px;
+}
+
+.steam-deck-mode .toggle-slider:before {
+  height: 20px;
+  width: 20px;
+}
+
+.steam-deck-mode input[type="checkbox"]:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+/* 1280x800 Vertical Space Adjustments */
+@media (max-height: 820px) {
+  .steam-deck-mode .hero-banner {
+    padding: 24px 32px;
+    margin-bottom: 16px;
+  }
+
+  .steam-deck-mode .hero-title {
+    font-size: 26px;
+    margin-bottom: 6px;
+  }
+
+  .steam-deck-mode .hero-description {
+    font-size: 12px;
+    line-height: 1.4;
+    max-width: 580px;
+    margin-bottom: 12px;
+  }
+
+  .steam-deck-mode .action-dock {
+    height: 74px;
+    padding: 0 16px;
+  }
+
+  .steam-deck-mode .modal-window {
+    max-height: 86vh;
+    overflow-y: auto;
+  }
+}
+
+/* Gamepad Focus Ring & Navigation Glow */
+.gamepad-active .gamepad-focused,
+.gamepad-active button:focus-visible,
+.gamepad-active input:focus-visible,
+.gamepad-active select:focus-visible,
+.gamepad-active .nav-item.gamepad-focused,
+.gamepad-active .btn-play:focus-visible {
+  outline: 2px solid #dfaa38 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 14px rgba(223, 170, 56, 0.75) !important;
+  transition: all 0.12s ease-out;
+}
+
+/* Controller Button Glyphs */
+.gamepad-glyph {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f1f5f9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.gamepad-glyph.glyph-a {
+  background: #15803d; /* Green */
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+.gamepad-glyph.glyph-b {
+  background: #b91c1c; /* Red */
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.gamepad-glyph.glyph-x {
+  background: #1d4ed8; /* Blue */
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.gamepad-glyph.glyph-y {
+  background: #b45309; /* Yellow / Amber */
+  border-color: #f59e0b;
+  color: #ffffff;
+}
+
+.gamepad-glyph.glyph-bumper {
+  background: #334155;
+  border-color: #64748b;
+  font-size: 9px;
+  letter-spacing: -0.5px;
+}
+
+/* Display Glyphs only when gamepad is active */
+.gamepad-active .gamepad-glyph {
+  display: inline-flex;
+}

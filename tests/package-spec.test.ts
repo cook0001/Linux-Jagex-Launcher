@@ -65,4 +65,85 @@ test('Repository and package configuration', async (t) => {
     assert.ok(content.includes('concurrency:'), 'workflow must configure concurrency');
     assert.ok(content.includes('cancel-in-progress: true'), 'workflow must cancel previous in-progress jobs');
   });
+
+  await t.test('Flathub submission and packaging compliance', () => {
+    const flatpakDir = path.resolve(process.cwd(), 'packaging/flatpak');
+    const manifestPath = path.join(flatpakDir, 'io.github.cook0001.LinuxJagexLauncher.yml');
+    const metainfoPath = path.join(flatpakDir, 'io.github.cook0001.LinuxJagexLauncher.metainfo.xml');
+    const desktopPath = path.join(flatpakDir, 'io.github.cook0001.LinuxJagexLauncher.desktop');
+
+    assert.ok(fs.existsSync(manifestPath), 'Flatpak manifest must exist');
+    assert.ok(fs.existsSync(metainfoPath), 'AppStream metainfo.xml must exist');
+    assert.ok(fs.existsSync(desktopPath), 'Desktop entry must exist');
+
+    const manifest = fs.readFileSync(manifestPath, 'utf8');
+    const metainfo = fs.readFileSync(metainfoPath, 'utf8');
+    const desktop = fs.readFileSync(desktopPath, 'utf8');
+
+    // 1. App ID consistency
+    const expectedAppId = 'io.github.cook0001.LinuxJagexLauncher';
+    assert.ok(manifest.includes(`app-id: ${expectedAppId}`), 'Manifest must declare canonical app-id');
+    assert.ok(metainfo.includes(`<id>${expectedAppId}</id>`), 'Metainfo must declare canonical id');
+    assert.ok(desktop.includes(`Icon=${expectedAppId}`), 'Desktop file must reference app-id icon');
+    assert.ok(metainfo.includes(`<launchable type="desktop-id">${expectedAppId}.desktop</launchable>`), 'Metainfo must reference desktop entry');
+
+    // 2. Metainfo Quality Guidelines
+    assert.ok(metainfo.includes('<metadata_license>CC0-1.0</metadata_license>'), 'Metadata license must be CC0-1.0 or FSFAP');
+    assert.ok(metainfo.includes('<project_license>MIT</project_license>'), 'Project license must be MIT');
+    assert.ok(metainfo.includes('<branding>'), 'Metainfo must include branding block for Flathub Quality Guidelines');
+    assert.ok(metainfo.includes('scheme_preference="light"'), 'Branding must have light scheme color');
+    assert.ok(metainfo.includes('scheme_preference="dark"'), 'Branding must have dark scheme color');
+    assert.ok(metainfo.includes('<categories>'), 'Metainfo must define categories');
+    assert.ok(metainfo.includes('<screenshots>'), 'Metainfo must include screenshots');
+    assert.ok(metainfo.includes('<content_rating type="oars-1.1" />'), 'Metainfo must define OARS 1.1 content rating');
+    assert.ok(metainfo.includes('<releases>'), 'Metainfo must define releases');
+
+    // Summary validation (must not end with period, under 111 chars)
+    const summaryMatch = metainfo.match(/<summary>([^<]+)<\/summary>/);
+    assert.ok(summaryMatch, 'Metainfo must have a summary tag');
+    const summaryText = summaryMatch[1].trim();
+    assert.ok(!summaryText.endsWith('.'), 'AppStream summary must not end with a period');
+    assert.ok(summaryText.length <= 111, 'AppStream summary must be <= 111 characters');
+
+    // 3. Manifest Runtime and Permissions
+    assert.ok(manifest.includes("base: org.electronjs.Electron2.BaseApp"), 'Manifest must specify Electron BaseApp');
+    assert.ok(manifest.includes("runtime: org.freedesktop.Platform"), 'Manifest must specify freedesktop runtime');
+    assert.ok(manifest.includes("--socket=x11"), 'Manifest must grant X11 access');
+    assert.ok(manifest.includes("--socket=wayland"), 'Manifest must grant Wayland access');
+    assert.ok(manifest.includes("--device=dri"), 'Manifest must grant DRI GPU acceleration');
+    assert.ok(manifest.includes("--socket=pulseaudio"), 'Manifest must grant audio access');
+    assert.ok(manifest.includes("--share=network"), 'Manifest must grant network access');
+
+    // 4. Desktop entry compliance
+    assert.ok(desktop.includes('[Desktop Entry]'), 'Desktop file must have standard header');
+    assert.ok(desktop.includes('Type=Application'), 'Desktop file must be Type=Application');
+    assert.ok(desktop.includes('Categories=Game;RolePlaying;'), 'Desktop file must have valid FreeDesktop categories');
+  });
+
+  await t.test('Launchpad PPA packaging specification and files', () => {
+    const ppaDir = path.resolve(process.cwd(), 'packaging/ppa');
+    const debianDir = path.join(ppaDir, 'debian');
+
+    assert.ok(fs.existsSync(path.join(ppaDir, 'README.md')), 'PPA README guide must exist');
+    assert.ok(fs.existsSync(path.join(ppaDir, 'build-source-package.sh')), 'PPA builder script must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'control')), 'debian/control must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'rules')), 'debian/rules must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'changelog')), 'debian/changelog must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'copyright')), 'debian/copyright must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'install')), 'debian/install must exist');
+    assert.ok(fs.existsSync(path.join(debianDir, 'source/format')), 'debian/source/format must exist');
+
+    const control = fs.readFileSync(path.join(debianDir, 'control'), 'utf8');
+    assert.ok(control.includes('Package: linux-jagex-launcher'));
+    assert.ok(control.includes('Architecture: amd64'));
+    assert.ok(control.includes('Build-Depends: debhelper-compat (= 13)'));
+
+    const changelog = fs.readFileSync(path.join(debianDir, 'changelog'), 'utf8');
+    assert.ok(changelog.includes('linux-jagex-launcher'));
+    assert.ok(changelog.includes('noble; urgency=medium'));
+
+    const format = fs.readFileSync(path.join(debianDir, 'source/format'), 'utf8');
+    assert.strictEqual(format.trim(), '3.0 (quilt)');
+  });
 });
+

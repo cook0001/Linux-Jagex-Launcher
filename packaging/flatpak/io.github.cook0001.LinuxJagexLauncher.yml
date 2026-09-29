@@ -1,0 +1,91 @@
+app-id: io.github.cook0001.LinuxJagexLauncher
+base: org.electronjs.Electron2.BaseApp
+base-version: '24.08'
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.openjdk21
+command: linux-jagex-launcher
+
+finish-args:
+  # Display & Graphics Acceleration (OpenGL, Vulkan, Wayland & X11)
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --device=all # Required for physical gamepads and handheld controllers
+
+  # Audio (PulseAudio / PipeWire)
+  - --socket=pulseaudio
+
+  # Network (OAuth 2.0 PKCE, client updates, CDN feeds)
+  - --share=network
+
+  # File Access for Launcher Data, RS3 Cache, and RuneLite Settings
+  - --filesystem=xdg-data/linux-jagex-launcher:create
+  - --filesystem=xdg-config/linux-jagex-launcher:create
+  - --filesystem=~/.runelite:create
+  - --filesystem=~/.jagex_launcher:create
+  - --filesystem=~/.jagex_cache_32:create
+
+  # Desktop Integration, Feral GameMode & Notifications
+  - --talk-name=org.freedesktop.portal.OpenURI
+  - --talk-name=org.freedesktop.Notifications
+  - --talk-name=com.feralinteractive.GameMode
+
+build-options:
+  append-path: /usr/lib/sdk/openjdk21/bin
+  env:
+    JAVA_HOME: /usr/lib/sdk/openjdk21
+
+modules:
+  # OpenJDK 21 SDK Extension setup for runtime execution of RuneLite / HDOS
+  - name: openjdk
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/openjdk21/install.sh
+
+  # GTK 2.0 Shared Module (Required by the official RS3 NXT bootstrap client)
+  - shared-modules/gtk2/gtk2.json
+
+  # OpenSSL 1.1.1 (Required by native RS3 NXT client on modern Linux runtimes)
+  - name: openssl
+    buildsystem: simple
+    build-commands:
+      - ./config --prefix=/app --openssldir=/app/ssl shared zlib
+      - make -j $FLATPAK_BUILDER_N_JOBS
+      - make install_sw
+    sources:
+      - type: git
+        url: https://github.com/openssl/openssl.git
+        tag: OpenSSL_1_1_1w
+        commit: e04bd3433fd84e1861bf258ea37928d9845e6a86
+
+  # Main Application module
+  - name: linux-jagex-launcher
+    buildsystem: simple
+    build-options:
+      env:
+        ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    build-commands:
+      # Install pre-packaged binary or compile with offline npm dependencies
+      - install -Dm755 -d /app/bin
+      - install -Dm755 -d /app/share/linux-jagex-launcher
+      - cp -r * /app/share/linux-jagex-launcher/
+      - ln -s /app/share/linux-jagex-launcher/linux-jagex-launcher /app/bin/linux-jagex-launcher
+      # Install FreeDesktop Metadata and Icons
+      - install -Dm644 io.github.cook0001.LinuxJagexLauncher.desktop /app/share/applications/io.github.cook0001.LinuxJagexLauncher.desktop
+      - install -Dm644 io.github.cook0001.LinuxJagexLauncher.metainfo.xml /app/share/metainfo/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
+      - install -Dm644 resources/icons/512x512.png /app/share/icons/hicolor/512x512/apps/io.github.cook0001.LinuxJagexLauncher.png
+      - install -Dm644 resources/icons/256x256.png /app/share/icons/hicolor/256x256/apps/io.github.cook0001.LinuxJagexLauncher.png
+      - install -Dm644 resources/icons/128x128.png /app/share/icons/hicolor/128x128/apps/io.github.cook0001.LinuxJagexLauncher.png
+      - install -Dm644 resources/icons/64x64.png /app/share/icons/hicolor/64x64/apps/io.github.cook0001.LinuxJagexLauncher.png
+      - install -Dm644 resources/icons/32x32.png /app/share/icons/hicolor/32x32/apps/io.github.cook0001.LinuxJagexLauncher.png
+    sources:
+      - type: git
+        url: https://github.com/cook0001/Linux-Jagex-Launcher.git
+        tag: v1.0.0
+        commit: HEAD
+      # Flathub builds require offline npm dependencies generated with flatpak-node-generator:
+      # - node-sources.json

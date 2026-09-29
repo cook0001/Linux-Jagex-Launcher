@@ -17,6 +17,12 @@ export interface AppSettings {
   osrsJvmArgs: string;
   osrsClientArgs: string;
   osrsCustomClientPath: string;
+  rs3GpuWorkaround: 'none' | 'zink' | 'prime';
+  rs3ForceX11: boolean;
+  rs3AudioLatencyFix: boolean;
+  autoCheckUpdates: boolean;
+  lastUpdateCheck: number;
+  skippedVersion: string | null;
 }
 
 export interface JagexCharacter {
@@ -50,7 +56,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   useGameMode: false,
   useMangoHud: false,
   customLaunchCommand: '',
-  configUri: 'https://www.runescape.com/k=5/l=0/jav_config.ws',
+  configUri: 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws',
   selectedCharacterId: null,
   selectedGame: 'rs3',
   selectedOsrsClient: 'runelite',
@@ -59,6 +65,12 @@ const DEFAULT_SETTINGS: AppSettings = {
   osrsJvmArgs: '',
   osrsClientArgs: '',
   osrsCustomClientPath: '',
+  rs3GpuWorkaround: 'none',
+  rs3ForceX11: true,
+  rs3AudioLatencyFix: true,
+  autoCheckUpdates: true,
+  lastUpdateCheck: 0,
+  skippedVersion: null,
 };
 
 export class StoreManager {

@@ -1,4 +1,4 @@
-export {};
+import { GamepadNavigator } from './gamepad.ts';
 
 // Declare the injected IPC API from preload.ts
 declare global {
@@ -30,6 +30,39 @@ declare global {
       onGameStateChanged: (callback: (data: any) => void) => () => void;
       fetchPsa: (game: string) => Promise<any>;
       fetchNews: (game?: string) => Promise<any[]>;
+      runRs3Doctor: () => Promise<any>;
+      installRs3CompatLibs: () => Promise<string>;
+      clearRs3Cache: () => Promise<{ cleared: string[]; errors: string[] }>;
+      checkForUpdates: () => Promise<{
+        updateAvailable: boolean;
+        currentVersion: string;
+        latestVersion: string;
+        packageFormat: string;
+        releaseInfo?: any;
+        error?: string;
+      }>;
+      downloadUpdate: (releaseInfo: any) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+      applyUpdateAndRestart: () => Promise<boolean>;
+      getUpdaterFormatInfo: () => Promise<{ format: string; label: string; currentVersion: string }>;
+      skipUpdateVersion: (version: string) => Promise<any>;
+      onUpdateAvailable: (callback: (data: any) => void) => () => void;
+      onUpdateProgress: (callback: (data: any) => void) => () => void;
+      getDeckInfo: () => Promise<{
+        isSteamDeck: boolean;
+        isSteamOS: boolean;
+        isGameMode: boolean;
+        model: string;
+        productName: string;
+        refreshRateTarget: number;
+        steamPath: string | null;
+      }>;
+      addToSteam: () => Promise<{
+        success: boolean;
+        message: string;
+        shortcutsModified: number;
+        artworkCopied: number;
+        error?: string;
+      }>;
     };
   }
 }
@@ -43,6 +76,10 @@ class JagexLauncherApp {
   private isClientInstalled: boolean = false;
   private isGameRunning: boolean = false;
   private featuredBannerUrl: string | null = null;
+  private pendingUpdateResult: any = null;
+  private isUpdateDownloaded: boolean = false;
+  private deckInfo: any = null;
+  private gamepadNav: GamepadNavigator | null = null;
 
   public async init() {
     this.setupWindowControls();
@@ -51,8 +88,10 @@ class JagexLauncherApp {
     this.setupModals();
     this.setupCharacterDropdown();
     this.setupPlayButton();
+    this.setupGamepad();
     this.listenToIPC();
 
+    await this.applyDeckAdaptations();
     await this.loadInitialData();
   }
 
@@ -606,6 +645,22 @@ class JagexLauncherApp {
       return;
     }
 
+    if (targetGameOrClient === 'compat-libs') {
+      if (title) title.textContent = 'Installing OpenSSL 1.1 Compatibility';
+      if (subtitle) subtitle.textContent = 'Downloading isolated libssl1.1 libraries from Ubuntu security archive...';
+      try {
+        await window.jagexApi.installRs3CompatLibs();
+        overlay?.classList.add('hidden');
+        alert('OpenSSL 1.1 compatibility libraries installed successfully in ~/.local/share/linux-jagex-launcher/compat/lib64/');
+      } catch (e: any) {
+        alert(`Failed to install compat libraries: ${e.message}`);
+        overlay?.classList.add('hidden');
+      } finally {
+        unsubscribe();
+      }
+      return;
+    }
+
     // RS3 install logic
     if (title) title.textContent = 'Installing RuneScape 3';
     if (subtitle) subtitle.textContent = 'Downloading native Linux package from Jagex CDN...';
@@ -652,7 +707,166 @@ class JagexLauncherApp {
       this.isGameRunning = data.isRunning;
       this.updatePlayButtonState();
     });
+
+    if (window.jagexApi.onUpdateAvailable) {
+      window.jagexApi.onUpdateAvailable((res: any) => {
+        this.displayUpdateAvailable(res);
+      });
+    }
   }
+
+  private displayUpdateAvailable(res: any) {
+    this.pendingUpdateResult = res;
+    const banner = document.getElementById('titlebar-update-banner');
+    const bannerText = document.getElementById('titlebar-update-text');
+    if (banner) banner.classList.remove('hidden');
+    if (bannerText) bannerText.textContent = `Update v${res.latestVersion} Available`;
+  }
+
+  private openUpdateModal(result?: any) {
+    if (result) this.pendingUpdateResult = result;
+    const res = this.pendingUpdateResult;
+    if (!res) return;
+
+    const modal = document.getElementById('modal-updater');
+    const versionTag = document.getElementById('modal-updater-version-tag');
+    const formatDesc = document.getElementById('modal-updater-format-desc');
+    const notesBox = document.getElementById('modal-updater-notes');
+    const actionBtn = document.getElementById('btn-action-updater');
+    const distroNotice = document.getElementById('modal-updater-distro-notice');
+    const distroText = document.getElementById('modal-updater-distro-text');
+    const progressSection = document.getElementById('modal-updater-progress-section');
+
+    if (versionTag) versionTag.textContent = `v${res.currentVersion} → v${res.latestVersion}`;
+    if (formatDesc) formatDesc.textContent = `Package Format: ${res.packageFormat.toUpperCase()}`;
+    if (notesBox) notesBox.textContent = res.releaseInfo?.releaseNotes || 'No release notes provided.';
+
+    if (progressSection) progressSection.classList.add('hidden');
+
+    if (res.packageFormat === 'appimage') {
+      if (actionBtn) actionBtn.textContent = this.isUpdateDownloaded ? 'Restart & Install' : 'Download & Install';
+      if (distroNotice) distroNotice.classList.add('hidden');
+    } else if (res.packageFormat === 'deb') {
+      if (actionBtn) actionBtn.textContent = 'Download .deb Package';
+      if (distroNotice) distroNotice.classList.add('hidden');
+    } else if (res.packageFormat === 'flatpak') {
+      if (actionBtn) actionBtn.textContent = 'View on GitHub';
+      if (distroNotice && distroText) {
+        distroNotice.classList.remove('hidden');
+        distroText.innerHTML = 'Flatpak packages update via your software center or <code>flatpak update</code>.';
+      }
+    } else if (res.packageFormat === 'aur') {
+      if (actionBtn) actionBtn.textContent = 'View on GitHub';
+      if (distroNotice && distroText) {
+        distroNotice.classList.remove('hidden');
+        distroText.innerHTML = 'Arch Linux packages update via AUR. Run <code>yay -Syu</code> or <code>paru -Syu</code>.';
+      }
+    } else {
+      if (actionBtn) actionBtn.textContent = 'View on GitHub';
+      if (distroNotice) distroNotice.classList.add('hidden');
+    }
+
+    modal?.classList.remove('hidden');
+  }
+
+  private setupGamepad() {
+    this.gamepadNav = new GamepadNavigator({
+      onSwitchGame: (dir) => {
+        const games: Array<'rs3' | 'osrs' | 'dragonwilds'> = ['rs3', 'osrs', 'dragonwilds'];
+        const idx = games.indexOf(this.activeGame);
+        let nextIdx = dir === 'next' ? idx + 1 : idx - 1;
+        if (nextIdx >= games.length) nextIdx = 0;
+        if (nextIdx < 0) nextIdx = games.length - 1;
+        this.switchGame(games[nextIdx]);
+      },
+      onToggleCharacterMenu: () => {
+        const preview = document.getElementById('character-preview');
+        preview?.click();
+      },
+      onToggleClientMenu: () => {
+        if (this.activeGame === 'osrs') {
+          const preview = document.getElementById('client-preview');
+          preview?.click();
+        } else {
+          document.getElementById('btn-quick-settings')?.click();
+        }
+      },
+      onToggleSettings: () => {
+        const settingsModal = document.getElementById('modal-settings');
+        if (settingsModal && !settingsModal.classList.contains('hidden')) {
+          settingsModal.classList.add('hidden');
+        } else {
+          document.getElementById('btn-open-settings')?.click();
+        }
+      },
+      onCloseModalOrMenu: () => {
+        const clientMenu = document.getElementById('client-list-menu');
+        if (clientMenu && !clientMenu.classList.contains('hidden')) {
+          clientMenu.classList.add('hidden');
+          return;
+        }
+        const charMenu = document.getElementById('character-list-menu');
+        if (charMenu && !charMenu.classList.contains('hidden')) {
+          charMenu.classList.add('hidden');
+          return;
+        }
+        const openModal = Array.from(document.querySelectorAll('.modal-overlay:not(.hidden)')).pop();
+        if (openModal) {
+          openModal.classList.add('hidden');
+        }
+      },
+      onPrimaryAction: () => {
+        const playBtn = document.getElementById('btn-play') as HTMLButtonElement;
+        if (playBtn && !playBtn.disabled) {
+          playBtn.click();
+        }
+      }
+    });
+    this.gamepadNav.init();
+  }
+
+  private async applyDeckAdaptations() {
+    if (!window.jagexApi?.getDeckInfo) return;
+    try {
+      this.deckInfo = await window.jagexApi.getDeckInfo();
+      const appContainer = document.getElementById('app');
+      const deckBadge = document.getElementById('deck-badge');
+
+      if (this.deckInfo.isSteamDeck || this.deckInfo.isGameMode) {
+        appContainer?.classList.add('steam-deck-mode');
+
+        if (this.deckInfo.isGameMode) {
+          appContainer?.classList.add('game-mode-active');
+        }
+
+        if (deckBadge) {
+          deckBadge.classList.remove('hidden');
+          if (this.deckInfo.model === 'OLED') {
+            deckBadge.textContent = '🎮 DECK OLED (90Hz)';
+          } else if (this.deckInfo.model === 'LCD') {
+            deckBadge.textContent = '🎮 DECK LCD';
+          } else if (this.deckInfo.isGameMode) {
+            deckBadge.textContent = '🎮 GAMESCOPE';
+          } else {
+            deckBadge.textContent = '🎮 STEAM DECK';
+          }
+        }
+
+        // Auto-invoke Steam On-Screen Keyboard on input focus in Game Mode
+        if (this.deckInfo.isGameMode) {
+          document.querySelectorAll('input').forEach((inp) => {
+            inp.addEventListener('focus', () => {
+              window.jagexApi.openExternal('steam://open/keyboard').catch(() => {});
+            });
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('[Deck] Failed to apply handheld adaptations:', e);
+    }
+  }
+
+
 
   private async fetchPsaAndBanner() {
     try {
@@ -782,6 +996,33 @@ class JagexLauncherApp {
       if (gameModeInput) gameModeInput.checked = s.useGameMode ?? false;
       if (mangoHudInput) mangoHudInput.checked = s.useMangoHud ?? false;
 
+      // Software updates in General tab
+      const autoCheckUpdatesInput = document.getElementById('setting-auto-check-updates') as HTMLInputElement;
+      if (autoCheckUpdatesInput) autoCheckUpdatesInput.checked = s.autoCheckUpdates !== false;
+
+      if (window.jagexApi?.getUpdaterFormatInfo) {
+        window.jagexApi.getUpdaterFormatInfo().then((info: any) => {
+          const vLabel = document.getElementById('setting-updater-version-label');
+          const fLabel = document.getElementById('setting-updater-format-label');
+          if (vLabel) vLabel.textContent = `Linux Jagex Launcher v${info.currentVersion}`;
+          if (fLabel) fLabel.textContent = info.label;
+        });
+      }
+
+      // Steam Deck & Handheld in General tab
+      const deckHardwareLabel = document.getElementById('setting-deck-hardware-label');
+      const deckModelLabel = document.getElementById('setting-deck-model-label');
+      if (this.deckInfo) {
+        if (deckHardwareLabel) {
+          deckHardwareLabel.textContent = this.deckInfo.isSteamDeck
+            ? `Valve Steam Deck (${this.deckInfo.model})`
+            : (this.deckInfo.isSteamOS ? 'SteamOS Handheld Device' : 'Standard Linux PC / Desktop');
+        }
+        if (deckModelLabel) {
+          deckModelLabel.textContent = `Display: ${this.deckInfo.refreshRateTarget}Hz target • Mode: ${this.deckInfo.isGameMode ? 'Gamescope (Game Mode)' : 'Desktop Mode'}`;
+        }
+      }
+
       // OSRS settings
       const osrsDefaultClientSelect = document.getElementById('setting-osrs-default-client') as HTMLSelectElement;
       const osrsJavaPathInput = document.getElementById('setting-osrs-java-path') as HTMLInputElement;
@@ -816,9 +1057,15 @@ class JagexLauncherApp {
       // RS3 settings
       const configUriInput = document.getElementById('setting-config-uri') as HTMLInputElement;
       const customCmdInput = document.getElementById('setting-custom-cmd') as HTMLInputElement;
+      const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
+      const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
+      const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
-      if (configUriInput) configUriInput.value = s.configUri || 'https://www.runescape.com/k=5/l=0/jav_config.ws';
+      if (configUriInput) configUriInput.value = s.configUri || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws';
       if (customCmdInput) customCmdInput.value = s.customLaunchCommand || '';
+      if (rs3ForceX11Input) rs3ForceX11Input.checked = s.rs3ForceX11 !== false;
+      if (rs3AudioLatencyInput) rs3AudioLatencyInput.checked = s.rs3AudioLatencyFix !== false;
+      if (rs3GpuWorkaroundSelect) rs3GpuWorkaroundSelect.value = s.rs3GpuWorkaround || 'none';
 
       settingsModal?.classList.remove('hidden');
     };
@@ -834,6 +1081,7 @@ class JagexLauncherApp {
       const minimizeInput = document.getElementById('setting-minimize-to-tray') as HTMLInputElement;
       const gameModeInput = document.getElementById('setting-use-gamemode') as HTMLInputElement;
       const mangoHudInput = document.getElementById('setting-use-mangohud') as HTMLInputElement;
+      const autoCheckUpdatesInput = document.getElementById('setting-auto-check-updates') as HTMLInputElement;
 
       const osrsDefaultClientSelect = document.getElementById('setting-osrs-default-client') as HTMLSelectElement;
       const osrsJavaPathInput = document.getElementById('setting-osrs-java-path') as HTMLInputElement;
@@ -843,19 +1091,26 @@ class JagexLauncherApp {
 
       const configUriInput = document.getElementById('setting-config-uri') as HTMLInputElement;
       const customCmdInput = document.getElementById('setting-custom-cmd') as HTMLInputElement;
+      const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
+      const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
+      const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
       const newSettings = {
         closeOnLaunch: closeOnLaunchInput?.checked ?? false,
         minimizeToTray: minimizeInput?.checked ?? false,
         useGameMode: gameModeInput?.checked ?? false,
         useMangoHud: mangoHudInput?.checked ?? false,
+        autoCheckUpdates: autoCheckUpdatesInput?.checked ?? true,
         selectedOsrsClient: osrsDefaultClientSelect?.value || this.selectedOsrsClient,
         customJavaPath: osrsJavaPathInput?.value.trim() || '',
         osrsCustomClientPath: osrsCustomClientInput?.value.trim() || '',
         osrsJvmArgs: osrsJvmArgsInput?.value.trim() || '',
         osrsClientArgs: osrsClientArgsInput?.value.trim() || '',
-        configUri: configUriInput?.value || 'https://www.runescape.com/k=5/l=0/jav_config.ws',
-        customLaunchCommand: customCmdInput?.value || ''
+        configUri: configUriInput?.value || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws',
+        customLaunchCommand: customCmdInput?.value || '',
+        rs3ForceX11: rs3ForceX11Input?.checked ?? true,
+        rs3AudioLatencyFix: rs3AudioLatencyInput?.checked ?? true,
+        rs3GpuWorkaround: rs3GpuWorkaroundSelect?.value || 'none'
       };
 
       this.currentSettings = await window.jagexApi.saveSettings(newSettings);
@@ -882,6 +1137,90 @@ class JagexLauncherApp {
       settingsModal?.classList.add('hidden');
       await this.installGameClient('rs3');
     });
+
+    document.getElementById('btn-install-compat-libs')?.addEventListener('click', async () => {
+      settingsModal?.classList.add('hidden');
+      await this.installGameClient('compat-libs');
+    });
+
+    document.getElementById('btn-clear-rs3-cache')?.addEventListener('click', async () => {
+      if (!window.jagexApi?.clearRs3Cache) return;
+      if (confirm('Clear RuneScape client caches and temporary resources? This helps fix the "Loading application resources" startup hang.')) {
+        try {
+          const res = await window.jagexApi.clearRs3Cache();
+          if (res.cleared.length > 0) {
+            alert(`Cleared ${res.cleared.length} cache location(s):\n${res.cleared.join('\n')}`);
+          } else {
+            alert('No existing cache folders needed cleaning.');
+          }
+        } catch (e: any) {
+          alert(`Error clearing cache: ${e.message}`);
+        }
+      }
+    });
+
+    // Pre-flight Doctor Runner
+    const runDoctorBtn = document.getElementById('btn-run-doctor');
+    const doctorItemsList = document.getElementById('doctor-items-list');
+    const doctorStatusText = document.getElementById('doctor-status-text');
+    const doctorBadge = document.getElementById('doctor-badge');
+    const doctorAptSuggestion = document.getElementById('doctor-apt-suggestion');
+    const doctorAptCode = document.getElementById('doctor-apt-code');
+
+    const executeDoctor = async () => {
+      if (!window.jagexApi?.runRs3Doctor) return;
+      if (doctorStatusText) doctorStatusText.textContent = 'Running diagnostics...';
+      try {
+        const report = await window.jagexApi.runRs3Doctor();
+        if (doctorStatusText) {
+          doctorStatusText.textContent = `${report.osName} (${report.arch}) - Display: ${report.displayServer.toUpperCase()}`;
+        }
+        if (doctorBadge) {
+          doctorBadge.classList.remove('hidden');
+          if (report.allOk) {
+            doctorBadge.textContent = 'ALL CHECKS PASSED';
+            doctorBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+            doctorBadge.style.color = '#34d399';
+            doctorBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          } else {
+            doctorBadge.textContent = 'ACTION REQUIRED';
+            doctorBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+            doctorBadge.style.color = '#f87171';
+            doctorBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          }
+        }
+
+        if (doctorItemsList) {
+          doctorItemsList.innerHTML = report.checks.map((c: any) => {
+            const icon = c.status === 'ok' ? '✓' : (c.status === 'warning' ? '⚠' : '✗');
+            const color = c.status === 'ok' ? '#34d399' : (c.status === 'warning' ? '#fde047' : '#f87171');
+            return `
+              <div style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-weight: 700; color: ${color}; width: 14px; text-align: center;">${icon}</span>
+                <div style="flex: 1;">
+                  <div style="font-weight: 600; color: #e2e8f0;">${c.name}</div>
+                  <div style="color: #94a3b8; font-size: 10.5px; margin-top: 1px;">${c.message}</div>
+                  ${c.remediation ? `<div style="color: #60a5fa; font-size: 10.5px; margin-top: 2px;">💡 <em>${c.remediation}</em></div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        if (doctorAptSuggestion && doctorAptCode) {
+          if (report.suggestedAptCommand) {
+            doctorAptSuggestion.classList.remove('hidden');
+            doctorAptCode.textContent = report.suggestedAptCommand;
+          } else {
+            doctorAptSuggestion.classList.add('hidden');
+          }
+        }
+      } catch (err: any) {
+        if (doctorStatusText) doctorStatusText.textContent = `Diagnostics error: ${err.message}`;
+      }
+    };
+
+    runDoctorBtn?.addEventListener('click', executeDoctor);
 
     // Browser login modal
     const browserLoginModal = document.getElementById('modal-browser-login');
@@ -992,6 +1331,180 @@ class JagexLauncherApp {
     switchAccountBtn?.addEventListener('click', async () => {
       accountModal?.classList.add('hidden');
       await this.triggerLogin();
+    });
+
+    // Software updates button in General Settings tab
+    const checkUpdatesNowBtn = document.getElementById('btn-check-updates-now');
+    const updateStatusMsg = document.getElementById('setting-update-status-msg');
+
+    checkUpdatesNowBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.checkForUpdates) return;
+      if (updateStatusMsg) {
+        updateStatusMsg.style.display = 'block';
+        updateStatusMsg.textContent = 'Checking GitHub releases for updates...';
+        updateStatusMsg.style.color = '#94a3b8';
+      }
+      try {
+        const res = await window.jagexApi.checkForUpdates();
+        if (res.updateAvailable) {
+          if (updateStatusMsg) {
+            updateStatusMsg.textContent = `Update available: v${res.latestVersion}`;
+            updateStatusMsg.style.color = '#34d399';
+          }
+          this.displayUpdateAvailable(res);
+          this.openUpdateModal(res);
+        } else if (res.error) {
+          if (updateStatusMsg) {
+            updateStatusMsg.textContent = `Check error: ${res.error}`;
+            updateStatusMsg.style.color = '#f87171';
+          }
+        } else {
+          if (updateStatusMsg) {
+            updateStatusMsg.textContent = `You are running the latest version (v${res.currentVersion}).`;
+            updateStatusMsg.style.color = '#34d399';
+          }
+        }
+      } catch (err: any) {
+        if (updateStatusMsg) {
+          updateStatusMsg.textContent = `Failed to check for updates: ${err.message}`;
+          updateStatusMsg.style.color = '#f87171';
+        }
+      }
+    });
+
+    // Auto Updater modal wiring
+    const updaterModal = document.getElementById('modal-updater');
+    const closeUpdaterBtn = document.getElementById('btn-close-updater');
+    const cancelUpdaterBtn = document.getElementById('btn-cancel-updater');
+    const actionUpdaterBtn = document.getElementById('btn-action-updater');
+    const skipUpdateBtn = document.getElementById('btn-skip-update-version');
+    const titlebarUpdateBanner = document.getElementById('titlebar-update-banner');
+
+    titlebarUpdateBanner?.addEventListener('click', () => {
+      this.openUpdateModal();
+    });
+
+    closeUpdaterBtn?.addEventListener('click', () => {
+      updaterModal?.classList.add('hidden');
+    });
+
+    cancelUpdaterBtn?.addEventListener('click', () => {
+      updaterModal?.classList.add('hidden');
+    });
+
+    skipUpdateBtn?.addEventListener('click', async () => {
+      if (this.pendingUpdateResult?.latestVersion && window.jagexApi?.skipUpdateVersion) {
+        await window.jagexApi.skipUpdateVersion(this.pendingUpdateResult.latestVersion);
+      }
+      titlebarUpdateBanner?.classList.add('hidden');
+      updaterModal?.classList.add('hidden');
+    });
+
+    actionUpdaterBtn?.addEventListener('click', async () => {
+      if (!this.pendingUpdateResult) return;
+      const res = this.pendingUpdateResult;
+      const format = res.packageFormat;
+
+      if (format === 'appimage') {
+        if (this.isUpdateDownloaded) {
+          try {
+            await window.jagexApi.applyUpdateAndRestart();
+          } catch (e: any) {
+            alert(`Failed to restart: ${e.message}`);
+          }
+          return;
+        }
+
+        const progressSection = document.getElementById('modal-updater-progress-section');
+        const progressBar = document.getElementById('modal-updater-progress-bar');
+        const progressStatus = document.getElementById('modal-updater-progress-status');
+        const progressPercent = document.getElementById('modal-updater-progress-percent');
+
+        progressSection?.classList.remove('hidden');
+        actionUpdaterBtn.setAttribute('disabled', 'true');
+        actionUpdaterBtn.textContent = 'Downloading...';
+
+        const unsub = window.jagexApi.onUpdateProgress((p: any) => {
+          if (progressBar) progressBar.style.width = `${p.progress}%`;
+          if (progressStatus) progressStatus.textContent = p.message;
+          if (progressPercent) progressPercent.textContent = `${p.progress}%`;
+        });
+
+        try {
+          const dlRes = await window.jagexApi.downloadUpdate(res.releaseInfo);
+          unsub();
+          if (dlRes.success) {
+            this.isUpdateDownloaded = true;
+            actionUpdaterBtn.removeAttribute('disabled');
+            actionUpdaterBtn.textContent = 'Restart & Install';
+            if (progressStatus) progressStatus.textContent = 'Update verified & ready to install!';
+          } else {
+            actionUpdaterBtn.removeAttribute('disabled');
+            actionUpdaterBtn.textContent = 'Retry Download';
+            alert(`Download failed: ${dlRes.error}`);
+          }
+        } catch (e: any) {
+          unsub();
+          actionUpdaterBtn.removeAttribute('disabled');
+          actionUpdaterBtn.textContent = 'Retry Download';
+          alert(`Download error: ${e.message}`);
+        }
+      } else if (format === 'deb') {
+        actionUpdaterBtn.setAttribute('disabled', 'true');
+        actionUpdaterBtn.textContent = 'Downloading...';
+        try {
+          const dlRes = await window.jagexApi.downloadUpdate(res.releaseInfo);
+          actionUpdaterBtn.removeAttribute('disabled');
+          if (dlRes.success) {
+            actionUpdaterBtn.textContent = 'Downloaded (.deb)';
+            const distroNotice = document.getElementById('modal-updater-distro-notice');
+            const distroText = document.getElementById('modal-updater-distro-text');
+            if (distroNotice && distroText) {
+              distroNotice.classList.remove('hidden');
+              distroText.innerHTML = `Saved to <strong>${dlRes.filePath}</strong>.<br>Install via: <code>sudo apt install ${dlRes.filePath}</code>`;
+            }
+          } else {
+            actionUpdaterBtn.textContent = 'Retry Download';
+            alert(`Download failed: ${dlRes.error}`);
+          }
+        } catch (e: any) {
+          actionUpdaterBtn.removeAttribute('disabled');
+          actionUpdaterBtn.textContent = 'Retry Download';
+          alert(`Download error: ${e.message}`);
+        }
+      } else {
+        const url = res.releaseInfo?.htmlUrl || 'https://github.com/cook0001/Linux-Jagex-Launcher/releases';
+        if (window.jagexApi) {
+          window.jagexApi.openExternal(url);
+        } else {
+          window.open(url, '_blank');
+        }
+      }
+    });
+
+    // Steam Deck & Handheld: Add to Steam button
+    const addToSteamBtn = document.getElementById('btn-add-to-steam');
+    const deckStatusMsg = document.getElementById('setting-deck-status-msg');
+
+    addToSteamBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.addToSteam) return;
+      if (deckStatusMsg) {
+        deckStatusMsg.style.display = 'block';
+        deckStatusMsg.textContent = 'Registering Non-Steam shortcut and grid artwork...';
+        deckStatusMsg.style.color = '#94a3b8';
+      }
+      try {
+        const res = await window.jagexApi.addToSteam();
+        if (deckStatusMsg) {
+          deckStatusMsg.textContent = res.message;
+          deckStatusMsg.style.color = res.success ? '#34d399' : '#f87171';
+        }
+      } catch (err: any) {
+        if (deckStatusMsg) {
+          deckStatusMsg.textContent = `Error adding to Steam: ${err.message}`;
+          deckStatusMsg.style.color = '#f87171';
+        }
+      }
     });
 
     // Close modals on overlay backdrop click

@@ -5,7 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Linux Jagex Launcher - RuneScape 3, OSRS & Dragonwilds on Linux</title>
   <meta name="description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 (NXT Client), Old School RuneScape (RuneLite, HDOS, Official), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE login, and full privacy.">
+  <meta name="keywords" content="linux jagex launcher, runescape linux, osrs linux, runelite linux, hdos linux, steam deck runescape, dragonwilds linux, jagex account linux, jagex launcher wine alternative, runescape steam deck">
+  <link rel="canonical" href="https://cook0001.github.io/Linux-Jagex-Launcher/">
   <link rel="icon" type="image/png" href="assets/icon.png">
+
+  <!-- Open Graph / Facebook / Discord / Reddit Embeds -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cook0001.github.io/Linux-Jagex-Launcher/">
+  <meta property="og:title" content="Linux Jagex Launcher - RuneScape 3, OSRS & Dragonwilds on Linux">
+  <meta property="og:description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3, OSRS (RuneLite, HDOS), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE, and full privacy.">
+  <meta property="og:image" content="https://cook0001.github.io/Linux-Jagex-Launcher/assets/banner.png">
+  <meta property="og:image:alt" content="Linux Jagex Launcher Banner">
+  <meta property="og:site_name" content="Linux Jagex Launcher">
+
+  <!-- Twitter / X Card Embeds -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://cook0001.github.io/Linux-Jagex-Launcher/">
+  <meta name="twitter:title" content="Linux Jagex Launcher - RuneScape 3, OSRS & Dragonwilds on Linux">
+  <meta name="twitter:description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3, OSRS (RuneLite, HDOS), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE, and full privacy.">
+  <meta name="twitter:image" content="https://cook0001.github.io/Linux-Jagex-Launcher/assets/banner.png">
+
+  <!-- JSON-LD Structured Data for Google Search -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Linux Jagex Launcher",
+    "operatingSystem": "Linux, SteamOS",
+    "applicationCategory": "GameApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3, Old School RuneScape (RuneLite, HDOS, Official Client), and Dragonwilds without Wine overhead.",
+    "url": "https://cook0001.github.io/Linux-Jagex-Launcher/",
+    "downloadUrl": "https://github.com/cook0001/Linux-Jagex-Launcher/releases",
+    "softwareVersion": "1.0.0",
+    "author": {
+      "@type": "Person",
+      "name": "Daniel Cook",
+      "url": "https://github.com/cook0001"
+    }
+  }
+  </script>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -233,6 +276,30 @@
           One-click toggle in Settings to engage <code>gamemoderun</code> for CPU governor optimization and <code>mangohud</code> for real-time frametime and temperature overlays.
         </p>
       </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3 class="feature-title">OpenSSL 1.1 Compatibility Isolation</h3>
+        <p class="feature-desc">
+          Ubuntu 22.04 and 24.04+ dropped <code>libssl1.1</code>. The launcher automatically provisions isolated libraries in userspace (<code>~/.local/share/linux-jagex-launcher/compat/lib64/</code>) and injects <code>LD_LIBRARY_PATH</code> safely, leaving system <code>apt</code> 100% clean.
+        </p>
+      </div>
+
+      <div class="feature-card cyan">
+        <div class="feature-icon">🖥️</div>
+        <h3 class="feature-title">Wayland & Resource Hang Fixes</h3>
+        <p class="feature-desc">
+          Eliminates the "Loading application resources" startup freeze with automatic <code>GDK_BACKEND=x11</code>, <code>SDL_VIDEODRIVER=x11</code>, <code>PULSE_LATENCY_MSEC=100</code>, and optional Mesa Zink (OpenGL over Vulkan) overrides.
+        </p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🩺</div>
+        <h3 class="feature-title">Pre-Flight Diagnostics (Rs3Doctor)</h3>
+        <p class="feature-desc">
+          Built-in diagnostic tool in Settings that verifies graphics drivers (OpenGL, Vulkan), display servers, and runtime dependencies, providing copyable terminal commands and one-click fixes.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -438,6 +505,27 @@ npm run preview
         <div class="faq-question">Does it support Feral GameMode and MangoHud?</div>
         <div class="faq-answer">
           Yes! Both <strong>Feral GameMode</strong> (<code>gamemoderun</code>) and <strong>MangoHud</strong> can be toggled on/off in the Launcher Settings modal for high-performance CPU governor scheduling and real-time performance metrics.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">How does this launcher resolve the libssl1.1 error on Ubuntu 22.04 & 24.04?</div>
+        <div class="faq-answer">
+          Modern Ubuntu versions (22.04 LTS and 24.04 LTS+) transitioned to OpenSSL 3 and dropped <code>libssl1.1</code>. The native RS3 NXT client was linked against <code>libssl.so.1.1</code> and fails to start on clean systems. Rather than risking broken package managers by force-installing old Focal deb packages into host <code>apt</code>, Linux Jagex Launcher extracts isolated <code>libssl.so.1.1</code> and <code>libcrypto.so.1.1</code> libraries directly into userspace (<code>~/.local/share/linux-jagex-launcher/compat/lib64/</code>) and injects <code>LD_LIBRARY_PATH</code> only for the game process.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Why does RuneScape 3 freeze on "Loading application resources" and how do I fix it?</div>
+        <div class="faq-answer">
+          This freeze is commonly caused by Wayland compositor conflicts with legacy GTK2/SDL2, missing <code>libopengl0</code>/<code>libvulkan1</code> packages, or PulseAudio buffer underruns. The Linux Jagex Launcher fixes this by enforcing <code>GDK_BACKEND=x11</code>, <code>SDL_VIDEODRIVER=x11</code>, <code>PULSE_LATENCY_MSEC=100</code>, unsetting <code>XMODIFIERS</code>, providing a 1-click "Clear Cache" button, and offering a Mesa Zink (OpenGL over Vulkan) override for NVIDIA GPUs.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">Can I play on Linux if I migrated to a Jagex Account?</div>
+        <div class="faq-answer">
+          Yes! Migrated Jagex Accounts cannot authenticate using legacy username/password screens. Linux Jagex Launcher performs the official OAuth 2.0 PKCE flow, handles Cloudflare Turnstile verification, and securely injects your active <code>JX_SESSION_ID</code>, <code>JX_CHARACTER_ID</code>, and <code>JX_DISPLAY_NAME</code> into the game process.
         </div>
       </div>
     </div>
