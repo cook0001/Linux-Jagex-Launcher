@@ -42,12 +42,23 @@ jobs:
   build-linux:
     name: Build Linux (AppImage, DEB, tar.gz)
     runs-on: ubuntu-latest
+    outputs:
+      has_aur_key: ${{ steps.check_aur.outputs.has_aur_key }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Check AUR Credentials
+        id: check_aur
+        run: |
+          if [ -n "${{ secrets.AUR_SSH_PRIVATE_KEY }}" ]; then
+            echo "has_aur_key=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_aur_key=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
@@ -136,8 +147,8 @@ jobs:
     name: Publish to Arch User Repository (AUR)
     needs: build-linux
     if: |
-      always() &&
       needs.build-linux.result == 'success' &&
+      needs.build-linux.outputs.has_aur_key == 'true' &&
       (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.publish_release && inputs.tag_name != ''))
     runs-on: ubuntu-latest
     steps:
@@ -145,10 +156,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Publish linux-jagex-launcher-bin to AUR
-        if: env.AUR_KEY != ''
-        uses: KSXGitHub/github-actions-deploy-aur@v4
-        env:
-          AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+        uses: KSXGitHub/github-actions-deploy-aur@v4.2.0
         with:
           pkgname: linux-jagex-launcher-bin
           pkgbuild: ./packaging/aur/PKGBUILD
