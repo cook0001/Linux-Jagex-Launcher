@@ -92,6 +92,24 @@ function createWindow() {
     }
   });
 
+  // Security: Prevent spawning untrusted windows and route external URLs to OS browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https://') || url.startsWith('http://')) {
+      shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
+
+  // Security: Prevent in-window navigation away from local launcher app
+  mainWindow.webContents.on('will-navigate', (event, url) => {
+    if (url !== mainWindow?.webContents.getURL()) {
+      event.preventDefault();
+      if (url.startsWith('https://') || url.startsWith('http://')) {
+        shell.openExternal(url);
+      }
+    }
+  });
+
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show();
   });

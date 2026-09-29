@@ -79,4 +79,13 @@ test('World Ping & Latency Benchmarking Suite', async (t) => {
     assert.ok(!('pingDragonwildsWorlds' in (worldPing as any)), 'Dragonwilds must not have world ping probing');
     assert.strictEqual(supportedGames.includes('dragonwilds'), false);
   });
+
+  await t.test('pingHost sanitizes input and rejects flag or command injection attempts', async () => {
+    // Hostnames starting with dash (command injection flags) or containing special chars must return null
+    const dangerousInputs = ['-c', '--help', 'world1.runescape.com; rm -rf /', 'world1.runescape.com`id`', '', '   '];
+    for (const input of dangerousInputs) {
+      const res = await worldPing.pingHost(input);
+      assert.strictEqual(res, null, `Input "${input}" should be rejected by hostname validator`);
+    }
+  });
 });

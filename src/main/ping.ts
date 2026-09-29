@@ -54,6 +54,10 @@ export class WorldPingManager {
   }
 
   public async pingHost(hostname: string): Promise<{ ping: number; rawOutput: string } | null> {
+    if (!hostname || typeof hostname !== 'string' || !/^[a-zA-Z0-9.-]+$/.test(hostname) || hostname.startsWith('-')) {
+      return null;
+    }
+
     return new Promise((resolve) => {
       const isMac = process.platform === 'darwin';
       const args = isMac
