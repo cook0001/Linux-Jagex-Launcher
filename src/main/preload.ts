@@ -14,6 +14,7 @@ export const api = {
   completeBrowserLogin: (codeOrUrl: string) => ipcRenderer.invoke('auth:completeBrowserLogin', codeOrUrl),
   logout: (sub?: string) => ipcRenderer.invoke('auth:logout', sub),
   refreshAccount: (sub: string) => ipcRenderer.invoke('auth:refresh', sub),
+  switchAccount: (sub: string) => ipcRenderer.invoke('auth:switchAccount', sub),
   getSessions: () => ipcRenderer.invoke('auth:getSessions'),
   getActiveAccount: () => ipcRenderer.invoke('auth:getActiveAccount'),
   syncCharacters: (sub?: string) => ipcRenderer.invoke('auth:syncCharacters', sub),

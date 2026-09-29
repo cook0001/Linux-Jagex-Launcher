@@ -42,7 +42,7 @@
     "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3, Old School RuneScape (RuneLite, HDOS, Official Client), and Dragonwilds without Wine overhead.",
     "url": "https://cook0001.github.io/Linux-Jagex-Launcher/",
     "downloadUrl": "https://github.com/cook0001/Linux-Jagex-Launcher/releases",
-    "softwareVersion": "1.1.0",
+    "softwareVersion": "1.2.0",
     "author": {
       "@type": "Person",
       "name": "Daniel Cook",
@@ -73,6 +73,7 @@
         <a href="#rs3">RuneScape 3</a>
         <a href="#osrs">Old School</a>
         <a href="#dragonwilds">Dragonwilds</a>
+        <a href="#install" onclick="selectDeckTab()">Steam Deck</a>
         <a href="#install">Installation</a>
         <a href="#feedback">Feedback</a>
         <a href="#faq">FAQ</a>
@@ -396,78 +397,135 @@
 
     <div class="tab-container">
       <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab('appimage', this)">Universal AppImage</button>
-        <button class="tab-btn" onclick="switchTab('deb', this)">Ubuntu / Debian / Mint</button>
-        <button class="tab-btn" onclick="switchTab('arch', this)">Arch Linux / SteamOS</button>
-        <button class="tab-btn" onclick="switchTab('fedora', this)">Fedora / RHEL</button>
-        <button class="tab-btn" onclick="switchTab('source', this)">Build from Source</button>
+        <button id="tab-btn-deck" class="tab-btn active" onclick="switchTab('deck', this)">🎮 Steam Deck & SteamOS</button>
+        <button id="tab-btn-appimage" class="tab-btn" onclick="switchTab('appimage', this)">Universal AppImage</button>
+        <button id="tab-btn-deb" class="tab-btn" onclick="switchTab('deb', this)">Ubuntu / Debian / Mint</button>
+        <button id="tab-btn-arch" class="tab-btn" onclick="switchTab('arch', this)">Arch Linux (AUR)</button>
+        <button id="tab-btn-fedora" class="tab-btn" onclick="switchTab('fedora', this)">Fedora / RHEL</button>
+        <button id="tab-btn-source" class="tab-btn" onclick="switchTab('source', this)">Build from Source</button>
       </div>
 
-      <div id="tab-appimage" class="tab-panel active">
-        <p>Works out-of-the-box on almost all modern 64-bit Linux distributions:</p>
-        <div class="code-block">
-# 1. Download the latest .AppImage from GitHub Releases
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.1.0.AppImage
+      <!-- Steam Deck Tab -->
+      <div id="tab-deck" class="tab-panel active">
+        <div class="deck-install-card">
+          <div class="deck-badge-row">
+            <span class="badge-deck">🎮 Turnkey Steam Deck & SteamOS</span>
+            <span class="badge-rootless">100% Rootless Userspace</span>
+          </div>
+          <p>
+            Fast automated setup that installs straight into <code>~/Applications/</code> without modifying read-only system partitions. Automatically sets up the Non-Steam Game shortcut in Steam's library, places high-res custom Grid artwork (poster, banner, logo), and enables native controller navigation:
+          </p>
+
+          <div class="code-wrapper">
+            <pre class="code-block"><code>curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/deck-install.sh | bash</code></pre>
+            <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+
+          <ol class="deck-steps-list">
+            <li>Switch to <strong>Desktop Mode</strong> (Press <code>Steam Button</code> &rarr; <code>Power</code> &rarr; <code>Switch to Desktop</code>).</li>
+            <li>Open the <strong>Konsole</strong> application and paste the one-line command above.</li>
+            <li>Double-click <strong>Return to Gaming Mode</strong> on the desktop. Launch <strong>Jagex Launcher</strong> directly from your Library under <strong>Non-Steam</strong>!</li>
+          </ol>
+
+          <div class="deck-features-pills">
+            <span class="deck-feature-pill">🕹️ Native Controller Navigation</span>
+            <span class="deck-feature-pill">🖼️ Auto-applied Steam Grid Artwork</span>
+            <span class="deck-feature-pill">⌨️ Steam OSK Virtual Keyboard Integration</span>
+            <span class="deck-feature-pill">📐 Gamescope 1280×800 Optimized</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AppImage Tab -->
+      <div id="tab-appimage" class="tab-panel">
+        <p>Universal standalone executable for virtually any 64-bit Linux distribution:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code># 1. Download latest .AppImage from GitHub Releases
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.2.0.AppImage
 
 # 2. Make it executable
-chmod +x Jagex-Launcher-1.1.0.AppImage
+chmod +x Jagex-Launcher-1.2.0.AppImage
 
 # 3. Launch!
-./Jagex-Launcher-1.1.0.AppImage
+./Jagex-Launcher-1.2.0.AppImage</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
       </div>
 
+      <!-- Debian / Ubuntu Tab -->
       <div id="tab-deb" class="tab-panel">
-        <p><strong>Option A (One-Line Automated Install):</strong> Downloads the latest package and resolves all dependencies via apt:</p>
-        <div class="code-block">
-curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
+        <p><strong>Option A (One-Line Automated Install):</strong> Downloads the latest release and resolves dependencies via apt:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code>curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
-        <p><strong>Option B (Manual .deb):</strong> Download the package and install with system package manager:</p>
-        <div class="code-block">
-# 1. Download the .deb package
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.1.0_amd64.deb
 
-# 2. Install with apt (automatically pulls required libraries)
-sudo apt install ./jagex-launcher_1.1.0_amd64.deb
+        <p style="margin-top: 1.2rem;"><strong>Option B (Manual .deb):</strong> Download the package and install with system package manager:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code># 1. Download the .deb package
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.2.0_amd64.deb
+
+# 2. Install with apt (automatically resolves runtime dependencies)
+sudo apt install ./jagex-launcher_1.2.0_amd64.deb</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
       </div>
 
+      <!-- Arch Linux Tab -->
       <div id="tab-arch" class="tab-panel">
-        <p><strong>Option A (Arch User Repository - AUR):</strong> Install via any AUR helper:</p>
-        <div class="code-block">
-# Using yay:
+        <p>Install via the Arch User Repository (AUR) helper of your choice:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code># Using yay:
 yay -S linux-jagex-launcher-bin
 
 # Using paru:
-paru -S linux-jagex-launcher-bin
-        </div>
-        <p><strong>Option B (AppImage / Steam Deck):</strong></p>
-        <div class="code-block">
-chmod +x Jagex-Launcher-1.1.0.AppImage
-./Jagex-Launcher-1.1.0.AppImage
-
-# Steam Deck tip: In Steam Desktop Mode, click "Add a Game" -> "Add a Non-Steam Game"
-# and select the AppImage to play directly from SteamOS Game Mode!
+paru -S linux-jagex-launcher-bin</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
       </div>
 
+      <!-- Fedora Tab -->
       <div id="tab-fedora" class="tab-panel">
-        <p>Compatible with Fedora Workstation 38+: install FUSE if using AppImage or run directly:</p>
-        <div class="code-block">
-sudo dnf install fuse-libs
-chmod +x Jagex-Launcher-1.1.0.AppImage
-./Jagex-Launcher-1.1.0.AppImage
+        <p>Compatible with Fedora Workstation 38+: install FUSE libraries if running AppImage directly:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code>sudo dnf install fuse-libs
+chmod +x Jagex-Launcher-1.2.0.AppImage
+./Jagex-Launcher-1.2.0.AppImage</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
       </div>
 
+      <!-- Build from Source Tab -->
       <div id="tab-source" class="tab-panel">
-        <p>Clone and build from scratch in under two minutes:</p>
-        <div class="code-block">
-git clone https://github.com/cook0001/Linux-Jagex-Launcher.git
+        <p>Clone, test, and build from source using Node 22+:</p>
+        <div class="code-wrapper">
+          <pre class="code-block"><code>git clone https://github.com/cook0001/Linux-Jagex-Launcher.git
 cd Linux-Jagex-Launcher
 npm install
-npm run build
-npm run preview
+npm run qc
+npm run preview</code></pre>
+          <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copy</span>
+          </button>
         </div>
       </div>
     </div>
@@ -587,9 +645,16 @@ npm run preview
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
       
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
       const panel = document.getElementById('tab-' + targetId);
       if (panel) panel.classList.add('active');
+    }
+
+    function selectDeckTab() {
+      const deckBtn = document.getElementById('tab-btn-deck');
+      if (deckBtn) {
+        switchTab('deck', deckBtn);
+      }
     }
 
     function switchGallery(game, btn) {
@@ -603,6 +668,26 @@ npm run preview
           img.style.opacity = '1';
         }, 120);
       }
+    }
+
+    function copyCode(btn) {
+      const wrapper = btn.closest('.code-wrapper');
+      if (!wrapper) return;
+      const codeEl = wrapper.querySelector('code, .code-block');
+      if (!codeEl) return;
+      
+      const textToCopy = codeEl.innerText.trim();
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> <span style="color: #34d399;">Copied!</span>`;
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = originalHtml;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
     }
   </script>
 </body>

@@ -184,6 +184,14 @@ export class OsrsManager {
       for (const ai of appImageCandidates) {
         if (fs.existsSync(ai)) return ai;
       }
+
+      // Check Flatpak runtime
+      if (commandExists('flatpak')) {
+        try {
+          const res = spawnSync('flatpak', ['info', 'net.runelite.RuneLite'], { stdio: 'ignore' });
+          if (res.status === 0) return 'flatpak:net.runelite.RuneLite';
+        } catch {}
+      }
     } else if (clientType === 'hdos') {
       const hdosBin = resolveExecutable('hdos');
       if (hdosBin) return hdosBin;
@@ -197,9 +205,10 @@ export class OsrsManager {
     const systemClient = this.findSystemClient(clientType);
 
     if (systemClient) {
+      const isFlatpak = systemClient.startsWith('flatpak:');
       return {
-        hasJava: javaPath !== null,
-        javaPath,
+        hasJava: isFlatpak ? true : javaPath !== null,
+        javaPath: isFlatpak ? 'Flatpak Bundled JRE' : javaPath,
         hasClient: true,
         clientPath: systemClient,
         clientType,
@@ -380,7 +389,10 @@ export class OsrsManager {
     let jarPath = clientType === 'hdos' ? this.getHdosJarPath() : this.getRuneliteJarPath();
 
     if (systemClient) {
-      if (systemClient.endsWith('.jar')) {
+      if (systemClient.startsWith('flatpak:')) {
+        targetExecutable = 'flatpak';
+        isJar = false;
+      } else if (systemClient.endsWith('.jar')) {
         jarPath = systemClient;
         isJar = true;
       } else {
@@ -415,7 +427,11 @@ export class OsrsManager {
     let baseCmd = targetExecutable;
     let baseArgs: string[] = [];
 
-    if (isJar) {
+    if (systemClient?.startsWith('flatpak:')) {
+      const flatpakAppId = systemClient.replace('flatpak:', '');
+      baseCmd = 'flatpak';
+      baseArgs = ['run', flatpakAppId, ...customClientArgs];
+    } else if (isJar) {
       baseArgs = [
         ...customJvmArgs,
         '-jar',

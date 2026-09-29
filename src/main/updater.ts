@@ -100,9 +100,9 @@ export class AutoUpdater {
 
   public getCurrentVersion(): string {
     if (typeof app !== 'undefined' && app && typeof app.getVersion === 'function') {
-      return app.getVersion() || '1.1.0';
+      return app.getVersion() || '1.2.0';
     }
-    return '1.1.0';
+    return '1.2.0';
   }
 
   public getFormatDisplayLabel(format?: PackageFormat): string {
@@ -326,26 +326,38 @@ export class AutoUpdater {
         fs.copyFileSync(this.downloadedUpdatePath, currentAppImage);
         fs.chmodSync(currentAppImage, 0o755);
 
-        // Spawn updated AppImage and exit current process
+        if (app && typeof app.relaunch === 'function' && typeof app.exit === 'function') {
+          app.relaunch({ execPath: currentAppImage });
+          app.exit(0);
+          return true;
+        }
+
+        // Fallback: spawn and quit
         const child = spawn(currentAppImage, process.argv.slice(1), {
           detached: true,
           stdio: 'ignore'
         });
         child.unref();
-        app.quit();
+        if (app) app.quit();
         return true;
       } catch (e: any) {
         console.warn(`[Updater] Could not replace ${currentAppImage} in-place (${e.message}). Spawning new binary directly.`);
       }
     }
 
-    // Fallback: spawn the newly downloaded AppImage directly
+    // Fallback: relaunch using the newly downloaded AppImage directly
+    if (app && typeof app.relaunch === 'function' && typeof app.exit === 'function') {
+      app.relaunch({ execPath: this.downloadedUpdatePath });
+      app.exit(0);
+      return true;
+    }
+
     const child = spawn(this.downloadedUpdatePath, process.argv.slice(1), {
       detached: true,
       stdio: 'ignore'
     });
     child.unref();
-    app.quit();
+    if (app) app.quit();
     return true;
   }
 }

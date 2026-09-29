@@ -29,7 +29,7 @@ echo "🔍 Fetching latest release information..."
 LATEST_TAG=$(curl -sSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "$LATEST_TAG" ]; then
-  LATEST_TAG="v1.1.0"
+  LATEST_TAG="v1.2.0"
 fi
 
 VERSION="${LATEST_TAG#v}"

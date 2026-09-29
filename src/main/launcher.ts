@@ -110,6 +110,11 @@ export class GameLauncher {
       env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia';
     }
 
+    // Mesa Threaded OpenGL optimization (reduces CPU bottlenecks and shader hitching)
+    if (settings.rs3MesaGlThread !== false) {
+      env.mesa_glthread = 'true';
+    }
+
     const configUri = settings.configUri || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws';
     let baseCmd = binaryPath;
     let baseArgs = ['--configURI', configUri];

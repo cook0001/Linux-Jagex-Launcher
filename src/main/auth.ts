@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { BrowserWindow, session, shell } from 'electron';
-import { store, JagexAccountSession, JagexCharacter } from './store';
+import { store, JagexAccountSession, JagexCharacter, SessionData } from './store';
 import { checkMembershipStatus, CLEAN_USER_AGENT } from './membership';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -643,20 +643,12 @@ export class JagexAuthManager {
     return characters;
   }
 
-  public removeAccount(sub: string) {
-    const sessions = store.getSessions();
-    delete sessions.accounts[sub];
-    if (sessions.activeSub === sub) {
-      const remaining = Object.keys(sessions.accounts);
-      sessions.activeSub = remaining.length > 0 ? remaining[0] : null;
-    }
-    store.saveSessions(sessions);
+  public switchAccount(sub: string): JagexAccountSession | null {
+    return store.setActiveAccount(sub);
+  }
 
-    const activeAcc = store.getActiveAccount();
-    store.saveSettings({
-      activeAccountId: activeAcc ? activeAcc.sub : null,
-      selectedCharacterId: activeAcc && activeAcc.characters.length > 0 ? activeAcc.characters[0].id : null
-    });
+  public removeAccount(sub: string): SessionData {
+    return store.removeAccount(sub);
   }
 }
 

@@ -102,6 +102,31 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  mainWindow.on('show', () => {
+    const settings = store.getSettings();
+    if (Date.now() - (settings.lastUpdateCheck || 0) > 12 * 60 * 60 * 1000) {
+      checkUpdatesInBackground();
+    }
+  });
+}
+
+async function checkUpdatesInBackground() {
+  try {
+    const settings = store.getSettings();
+    if (settings.autoCheckUpdates !== false) {
+      const result = await updater.checkForUpdates();
+      if (result.updateAvailable && result.releaseInfo) {
+        if (settings.skippedVersion !== result.releaseInfo.version) {
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('updater:update-available', result);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('[Updater] Background check error:', err);
+  }
 }
 
 // App lifecycle
@@ -112,24 +137,11 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 
-  // Background auto-update check on startup after brief delay
-  setTimeout(async () => {
-    try {
-      const settings = store.getSettings();
-      if (settings.autoCheckUpdates !== false) {
-        const result = await updater.checkForUpdates();
-        if (result.updateAvailable && result.releaseInfo) {
-          if (settings.skippedVersion !== result.releaseInfo.version) {
-            if (mainWindow && !mainWindow.isDestroyed()) {
-              mainWindow.webContents.send('updater:update-available', result);
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('[Updater] Background check error:', err);
-    }
-  }, 4000);
+  // Initial update check 4s after launch
+  setTimeout(checkUpdatesInBackground, 4000);
+
+  // Gentle periodic update check every 12 hours
+  setInterval(checkUpdatesInBackground, 12 * 60 * 60 * 1000);
 });
 
 app.on('window-all-closed', () => {
@@ -196,6 +208,10 @@ ipcMain.handle('auth:logout', (_, sub?: string) => {
 
 ipcMain.handle('auth:refresh', async (_, sub: string) => {
   return await auth.refreshAccountSession(sub);
+});
+
+ipcMain.handle('auth:switchAccount', (_, sub: string) => {
+  return auth.switchAccount(sub);
 });
 
 ipcMain.handle('auth:getSessions', () => {
@@ -298,7 +314,7 @@ ipcMain.handle('feed:getPsa', async (_, game: string) => {
   const targetGame = game === 'osrs' ? 'osrs' : 'runescape';
   const url = `https://files.publishing.production.jxp.jagex.com/${targetGame}/${targetGame}.json?ts=${Date.now()}`;
   try {
-    const res = await fetch(url, { cache: 'no-store' });
+    const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(6000) });
     if (!res.ok) return null;
     return await res.json();
   } catch (e) {
@@ -310,7 +326,7 @@ ipcMain.handle('feed:getPsa', async (_, game: string) => {
 ipcMain.handle('feed:getNews', async (_, game?: string) => {
   if (game === 'dragonwilds') {
     try {
-      const res = await fetch('https://store.steampowered.com/feeds/news/app/1374490');
+      const res = await fetch('https://store.steampowered.com/feeds/news/app/1374490', { signal: AbortSignal.timeout(6000) });
       if (!res.ok) return [];
       const text = await res.text();
 
@@ -369,7 +385,7 @@ ipcMain.handle('feed:getNews', async (_, game?: string) => {
     ? 'https://secure.runescape.com/m=news/latest_news.rss?oldschool=true'
     : 'https://secure.runescape.com/m=news/latest_news.rss';
   try {
-    const res = await fetch(rssUrl);
+    const res = await fetch(rssUrl, { signal: AbortSignal.timeout(6000) });
     if (!res.ok) return [];
     const text = await res.text();
 

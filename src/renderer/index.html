@@ -385,7 +385,7 @@
 
               <div class="maintenance-row" style="margin-bottom: 12px;">
                 <div>
-                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.1.0</span>
+                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.2.0</span>
                   <span class="setting-desc" id="setting-updater-format-label">Detecting package format...</span>
                 </div>
                 <button id="btn-check-updates-now" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;">Check for Updates</button>
@@ -543,6 +543,15 @@
                 </div>
               </label>
 
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-rs3-mesa-glthread" checked>
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Mesa Threaded OpenGL (mesa_glthread=true)</span>
+                  <span class="setting-desc">Enables asynchronous OpenGL dispatch to eliminate stuttering and shader compiling hitches on AMD and Intel Mesa drivers.</span>
+                </div>
+              </label>
+
               <div class="setting-input-group" style="margin-top: 10px;">
                 <label for="setting-rs3-gpu-workaround" class="input-label">GPU Driver Compatibility Mode</label>
                 <select id="setting-rs3-gpu-workaround" class="setting-text-input">
@@ -624,6 +633,16 @@
                 <h4 id="modal-account-name" class="account-card-title">Jagex Account</h4>
                 <span id="modal-account-email" class="account-card-email">user@email.com</span>
               </div>
+            </div>
+          </div>
+
+          <div class="saved-accounts-section" style="margin-top: 14px; margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h4 style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">Saved Accounts</h4>
+              <span id="saved-accounts-count" style="font-size: 11px; color: #94a3b8;">1 account</span>
+            </div>
+            <div id="modal-saved-accounts-list" style="display: flex; flex-direction: column; gap: 8px;">
+              <!-- Populated dynamically -->
             </div>
           </div>
 
@@ -726,7 +745,7 @@
             </div>
             <div>
               <h3 class="modal-title" style="margin: 0; font-size: 16px;">Launcher Update Available</h3>
-              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.0.0 &rarr; v1.1.0</p>
+              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.1.0 &rarr; v1.2.0</p>
             </div>
           </div>
           <button id="btn-close-updater" class="modal-close">&times;</button>

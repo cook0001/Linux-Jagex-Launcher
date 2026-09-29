@@ -20,6 +20,7 @@ export interface AppSettings {
   rs3GpuWorkaround: 'none' | 'zink' | 'prime';
   rs3ForceX11: boolean;
   rs3AudioLatencyFix: boolean;
+  rs3MesaGlThread: boolean;
   autoCheckUpdates: boolean;
   lastUpdateCheck: number;
   skippedVersion: string | null;
@@ -68,6 +69,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   rs3GpuWorkaround: 'none',
   rs3ForceX11: true,
   rs3AudioLatencyFix: true,
+  rs3MesaGlThread: true,
   autoCheckUpdates: true,
   lastUpdateCheck: 0,
   skippedVersion: null,
@@ -151,6 +153,46 @@ export class StoreManager {
   public getActiveAccount(): JagexAccountSession | null {
     if (!this.sessions.activeSub) return null;
     return this.sessions.accounts[this.sessions.activeSub] || null;
+  }
+
+  public setActiveAccount(sub: string): JagexAccountSession | null {
+    if (!this.sessions.accounts[sub]) return null;
+    this.sessions.activeSub = sub;
+    this.saveSessions(this.sessions);
+
+    const targetAccount = this.sessions.accounts[sub];
+    const charExists = targetAccount.characters?.some(c => c.id === this.settings.selectedCharacterId);
+    if (!charExists && targetAccount.characters && targetAccount.characters.length > 0) {
+      this.saveSettings({
+        activeAccountId: sub,
+        selectedCharacterId: targetAccount.characters[0].id
+      });
+    } else {
+      this.saveSettings({ activeAccountId: sub });
+    }
+    return targetAccount;
+  }
+
+  public removeAccount(sub: string): SessionData {
+    delete this.sessions.accounts[sub];
+    if (this.sessions.activeSub === sub) {
+      const remainingSubs = Object.keys(this.sessions.accounts);
+      this.sessions.activeSub = remainingSubs.length > 0 ? remainingSubs[0] : null;
+      if (this.sessions.activeSub) {
+        const nextAccount = this.sessions.accounts[this.sessions.activeSub];
+        this.saveSettings({
+          activeAccountId: this.sessions.activeSub,
+          selectedCharacterId: nextAccount.characters && nextAccount.characters.length > 0 ? nextAccount.characters[0].id : null
+        });
+      } else {
+        this.saveSettings({
+          activeAccountId: null,
+          selectedCharacterId: null
+        });
+      }
+    }
+    this.saveSessions(this.sessions);
+    return this.sessions;
   }
 }
 

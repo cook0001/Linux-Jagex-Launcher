@@ -13,6 +13,7 @@ declare global {
       startBrowserLogin: () => Promise<string>;
       completeBrowserLogin: (codeOrUrl: string) => Promise<any>;
       logout: (sub?: string) => Promise<any>;
+      switchAccount: (sub: string) => Promise<any>;
       refreshAccount: (sub: string) => Promise<any>;
       getSessions: () => Promise<any>;
       getActiveAccount: () => Promise<any>;
@@ -356,6 +357,8 @@ class JagexLauncherApp {
       this.clearCharacterSelector();
     }
 
+    this.populateSavedAccountsList();
+
     if (this.activeGame === 'dragonwilds') {
       document.getElementById('character-selector-container')?.classList.add('hidden');
     }
@@ -368,10 +371,100 @@ class JagexLauncherApp {
     return this.currentSessions.accounts[this.currentSessions.activeSub] || null;
   }
 
+  private populateSavedAccountsList() {
+    const listEl = document.getElementById('modal-saved-accounts-list');
+    const countEl = document.getElementById('saved-accounts-count');
+    const modalAccountName = document.getElementById('modal-account-name');
+    const modalAccountEmail = document.getElementById('modal-account-email');
+    const modalAccountInitials = document.getElementById('modal-account-initials');
+
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    const accounts = this.currentSessions.accounts || {};
+    const subs = Object.keys(accounts);
+    if (countEl) countEl.textContent = `${subs.length} account${subs.length === 1 ? '' : 's'}`;
+
+    const activeSub = this.currentSessions.activeSub;
+    const activeAcc = activeSub ? accounts[activeSub] : null;
+
+    if (activeAcc) {
+      if (modalAccountName) modalAccountName.textContent = activeAcc.displayName || 'Jagex Account';
+      if (modalAccountEmail) modalAccountEmail.textContent = activeAcc.email || `${activeAcc.characters?.length || 0} Linked Character(s)`;
+      if (modalAccountInitials) modalAccountInitials.textContent = (activeAcc.displayName || 'J').charAt(0).toUpperCase();
+    } else {
+      if (modalAccountName) modalAccountName.textContent = 'No Account Signed In';
+      if (modalAccountEmail) modalAccountEmail.textContent = 'Please log in to manage accounts.';
+      if (modalAccountInitials) modalAccountInitials.textContent = '?';
+    }
+
+    if (subs.length === 0) {
+      listEl.innerHTML = '<div style="font-size: 11px; color: #94a3b8; font-style: italic;">No saved accounts found. Click "Add Another Account" to sign in.</div>';
+      return;
+    }
+
+    subs.forEach(sub => {
+      const acc = accounts[sub];
+      const isActive = sub === activeSub;
+      const row = document.createElement('div');
+      row.className = 'saved-account-row';
+      row.style.cssText = `
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        background: ${isActive ? 'rgba(229, 179, 82, 0.08)' : 'rgba(15, 23, 42, 0.6)'};
+        border: 1px solid ${isActive ? 'rgba(229, 179, 82, 0.3)' : 'rgba(255, 255, 255, 0.08)'};
+        border-radius: 6px;
+      `;
+
+      row.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 50%; background: ${isActive ? '#e5b352' : '#334155'}; color: ${isActive ? '#0f172a' : '#f8fafc'}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px;">
+            ${(acc.displayName || 'J').charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <div style="font-size: 12px; font-weight: 600; color: #f1f5f9;">${acc.displayName || 'Jagex Account'}</div>
+            <div style="font-size: 10px; color: #94a3b8;">${acc.characters?.length || 0} character(s)</div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          ${isActive 
+            ? '<span style="font-size: 10px; font-weight: 700; color: #e5b352; background: rgba(229, 179, 82, 0.15); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(229, 179, 82, 0.3);">ACTIVE</span>' 
+            : `<button class="btn-secondary btn-switch-sub" data-sub="${sub}" style="font-size: 10px; padding: 4px 10px;">Switch</button>`}
+          <button class="btn-icon-danger btn-remove-sub" data-sub="${sub}" title="Remove this account" style="background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; display: flex; align-items: center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+      `;
+
+      const switchBtn = row.querySelector('.btn-switch-sub');
+      switchBtn?.addEventListener('click', async () => {
+        await window.jagexApi.switchAccount(sub);
+        this.currentSessions = await window.jagexApi.getSessions();
+        const settings = await window.jagexApi.getSettings();
+        this.selectedCharacterId = settings.selectedCharacterId;
+        this.updateAccountUI();
+      });
+
+      const removeBtn = row.querySelector('.btn-remove-sub');
+      removeBtn?.addEventListener('click', async () => {
+        await window.jagexApi.logout(sub);
+        this.currentSessions = await window.jagexApi.getSessions();
+        const settings = await window.jagexApi.getSettings();
+        this.selectedCharacterId = settings.selectedCharacterId;
+        this.updateAccountUI();
+      });
+
+      listEl.appendChild(row);
+    });
+  }
+
   private populateCharacterList(account: any) {
     const menuList = document.getElementById('character-list-menu');
     const charName = document.getElementById('selected-character-name');
     const charType = document.getElementById('selected-character-type');
+    const modalCharList = document.getElementById('modal-character-list');
 
     if (!menuList) return;
     menuList.innerHTML = '';
@@ -380,6 +473,7 @@ class JagexLauncherApp {
     if (characters.length === 0) {
       if (charName) charName.textContent = 'No characters found';
       if (charType) charType.textContent = 'Add character on Jagex.com';
+      if (modalCharList) modalCharList.innerHTML = '<div style="font-size: 12px; color: #94a3b8; padding: 8px;">No characters linked. Click "Manage On Jagex.com" to link characters.</div>';
       return;
     }
 
@@ -420,16 +514,55 @@ class JagexLauncherApp {
 
       menuList.appendChild(item);
     });
+
+    // Also populate characters in Account Management modal
+    if (modalCharList) {
+      modalCharList.innerHTML = '';
+      characters.forEach((char: any) => {
+        const isSelected = char.id === this.selectedCharacterId;
+        const charRow = document.createElement('div');
+        charRow.className = 'modal-character-row';
+        charRow.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 8px 12px;
+          background: ${isSelected ? 'rgba(229, 179, 82, 0.08)' : 'rgba(15, 23, 42, 0.6)'};
+          border: 1px solid ${isSelected ? 'rgba(229, 179, 82, 0.3)' : 'rgba(255, 255, 255, 0.08)'};
+          border-radius: 6px;
+          margin-bottom: 6px;
+        `;
+        charRow.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background: ${char.isMember ? '#e5b352' : '#94a3b8'};"></span>
+            <span style="font-weight: 600; font-size: 13px; color: #f1f5f9;">${char.displayName}</span>
+            ${char.isMember ? '<span class="badge-member" style="font-size: 9px; padding: 1px 6px;">MEMBER</span>' : '<span class="badge-f2p" style="font-size: 9px; padding: 1px 6px;">F2P</span>'}
+          </div>
+          ${isSelected ? '<span style="font-size: 11px; color: #e5b352; font-weight: 600;">Active</span>' : `<button class="btn-secondary btn-select-char" style="font-size: 10px; padding: 3px 8px;">Select</button>`}
+        `;
+
+        const selectBtn = charRow.querySelector('.btn-select-char');
+        selectBtn?.addEventListener('click', async () => {
+          this.selectedCharacterId = char.id;
+          await window.jagexApi.saveSettings({ selectedCharacterId: char.id });
+          this.populateCharacterList(account);
+        });
+
+        modalCharList.appendChild(charRow);
+      });
+    }
   }
 
   private clearCharacterSelector() {
     const charName = document.getElementById('selected-character-name');
     const charType = document.getElementById('selected-character-type');
     const menuList = document.getElementById('character-list-menu');
+    const modalCharList = document.getElementById('modal-character-list');
 
     if (charName) charName.textContent = 'Select an account';
     if (charType) charType.textContent = 'Sign in required';
     if (menuList) menuList.innerHTML = '';
+    if (modalCharList) modalCharList.innerHTML = '';
   }
 
   private setupCharacterDropdown() {
@@ -739,7 +872,7 @@ class JagexLauncherApp {
 
     if (versionTag) versionTag.textContent = `v${res.currentVersion} → v${res.latestVersion}`;
     if (formatDesc) formatDesc.textContent = `Package Format: ${res.packageFormat.toUpperCase()}`;
-    if (notesBox) notesBox.textContent = res.releaseInfo?.releaseNotes || 'No release notes provided.';
+    if (notesBox) notesBox.innerHTML = this.formatReleaseNotesForHumans(res.releaseInfo?.releaseNotes, res.latestVersion);
 
     if (progressSection) progressSection.classList.add('hidden');
 
@@ -767,6 +900,106 @@ class JagexLauncherApp {
     }
 
     modal?.classList.remove('hidden');
+  }
+
+  private formatReleaseNotesForHumans(rawNotes?: string, version?: string): string {
+    if (!rawNotes || !rawNotes.trim()) {
+      return `
+        <div style="padding: 10px 12px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 6px;">
+          <p style="font-weight: 600; color: #34d399; margin-bottom: 4px; font-size: 13px;">🎉 Version ${this.escapeHtml(version || '')} is ready to install!</p>
+          <p style="font-size: 12px; color: #94a3b8; margin: 0;">This release brings reliability improvements, Linux gaming optimizations, and client stability updates.</p>
+        </div>
+      `;
+    }
+
+    const lines = rawNotes.split('\n');
+    const formattedHtml: string[] = [];
+    let inList = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) {
+        if (inList) {
+          formattedHtml.push('</ul>');
+          inList = false;
+        }
+        continue;
+      }
+
+      // Check for headings: #, ##, ###
+      const headingMatch = line.match(/^#{1,3}\s+(.*)$/);
+      if (headingMatch) {
+        if (inList) {
+          formattedHtml.push('</ul>');
+          inList = false;
+        }
+        let headingText = headingMatch[1].trim();
+        // Translate technical headings into everyday, human-friendly headings
+        if (/feat|new|added/i.test(headingText)) headingText = '✨ What’s New';
+        else if (/fix|bug/i.test(headingText)) headingText = '🛠️ Fixes & Improvements';
+        else if (/perf|speed|opt/i.test(headingText)) headingText = '⚡ Performance Updates';
+        else if (/break|deprecat/i.test(headingText)) headingText = '⚠️ Important Changes';
+        formattedHtml.push(`<h4 style="color: #34d399; font-weight: 600; font-size: 13px; margin: 12px 0 6px 0;">${this.escapeHtml(headingText)}</h4>`);
+        continue;
+      }
+
+      // Check for bullet items
+      const bulletMatch = line.match(/^[-*•]\s+(.*)$/);
+      if (bulletMatch) {
+        if (!inList) {
+          formattedHtml.push('<ul style="list-style-type: disc; padding-left: 20px; margin: 6px 0; font-size: 12px; color: #cbd5e1; line-height: 1.5;">');
+          inList = true;
+        }
+        const itemText = bulletMatch[1].trim();
+        formattedHtml.push(`<li style="margin-bottom: 4px;">${this.formatInlineMarkdown(itemText)}</li>`);
+        continue;
+      }
+
+      // Normal paragraph line
+      if (inList) {
+        formattedHtml.push('</ul>');
+        inList = false;
+      }
+      formattedHtml.push(`<p style="font-size: 12px; color: #cbd5e1; margin-bottom: 6px; line-height: 1.4;">${this.formatInlineMarkdown(line)}</p>`);
+    }
+
+    if (inList) {
+      formattedHtml.push('</ul>');
+    }
+
+    return formattedHtml.join('\n');
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  private formatInlineMarkdown(text: string): string {
+    let escaped = this.escapeHtml(text);
+
+    // Convert conventional commit prefixes to human-friendly phrases
+    escaped = escaped
+      .replace(/^feat(?:\([^)]+\))?:\s*/i, '<strong style="color: #34d399;">New:</strong> ')
+      .replace(/^fix(?:\([^)]+\))?:\s*/i, '<strong style="color: #fbbf24;">Fixed:</strong> ')
+      .replace(/^perf(?:\([^)]+\))?:\s*/i, '<strong style="color: #38bdf8;">Improved:</strong> ')
+      .replace(/^docs(?:\([^)]+\))?:\s*/i, '<strong style="color: #818cf8;">Guide:</strong> ')
+      .replace(/^(?:refactor|chore|build|ci)(?:\([^)]+\))?:\s*/i, '<strong style="color: #94a3b8;">Update:</strong> ');
+
+    // Clean trailing commit SHA e.g. (abc1234)
+    escaped = escaped.replace(/\s*\([0-9a-f]{7,}\)$/i, '');
+
+    // Format bold **word**
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #f1f5f9;">$1</strong>');
+
+    // Format inline code `code`
+    escaped = escaped.replace(/`([^`]+)`/g, '<code style="background: rgba(30, 41, 59, 0.8); color: #6ee7b7; padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 11px;">$1</code>');
+
+    return escaped;
   }
 
   private setupGamepad() {
@@ -1059,12 +1292,14 @@ class JagexLauncherApp {
       const customCmdInput = document.getElementById('setting-custom-cmd') as HTMLInputElement;
       const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
       const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
+      const rs3MesaGlThreadInput = document.getElementById('setting-rs3-mesa-glthread') as HTMLInputElement;
       const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
       if (configUriInput) configUriInput.value = s.configUri || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws';
       if (customCmdInput) customCmdInput.value = s.customLaunchCommand || '';
       if (rs3ForceX11Input) rs3ForceX11Input.checked = s.rs3ForceX11 !== false;
       if (rs3AudioLatencyInput) rs3AudioLatencyInput.checked = s.rs3AudioLatencyFix !== false;
+      if (rs3MesaGlThreadInput) rs3MesaGlThreadInput.checked = s.rs3MesaGlThread !== false;
       if (rs3GpuWorkaroundSelect) rs3GpuWorkaroundSelect.value = s.rs3GpuWorkaround || 'none';
 
       settingsModal?.classList.remove('hidden');
@@ -1093,6 +1328,7 @@ class JagexLauncherApp {
       const customCmdInput = document.getElementById('setting-custom-cmd') as HTMLInputElement;
       const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
       const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
+      const rs3MesaGlThreadInput = document.getElementById('setting-rs3-mesa-glthread') as HTMLInputElement;
       const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
       const newSettings = {
@@ -1110,6 +1346,7 @@ class JagexLauncherApp {
         customLaunchCommand: customCmdInput?.value || '',
         rs3ForceX11: rs3ForceX11Input?.checked ?? true,
         rs3AudioLatencyFix: rs3AudioLatencyInput?.checked ?? true,
+        rs3MesaGlThread: rs3MesaGlThreadInput?.checked ?? true,
         rs3GpuWorkaround: rs3GpuWorkaroundSelect?.value || 'none'
       };
 
@@ -1496,7 +1733,9 @@ class JagexLauncherApp {
       try {
         const res = await window.jagexApi.addToSteam();
         if (deckStatusMsg) {
-          deckStatusMsg.textContent = res.message;
+          deckStatusMsg.textContent = res.success
+            ? `${res.message} (Restart Steam or switch to Gaming Mode for changes to appear in your Library).`
+            : res.message;
           deckStatusMsg.style.color = res.success ? '#34d399' : '#f87171';
         }
       } catch (err: any) {
@@ -1507,13 +1746,36 @@ class JagexLauncherApp {
       }
     });
 
-    // Close modals on overlay backdrop click
+    // Close modals on overlay backdrop click (excluding progress overlay)
     document.querySelectorAll('.modal-overlay').forEach((modal) => {
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
+          if (modal.id === 'overlay-progress') return;
           modal.classList.add('hidden');
         }
       });
+    });
+
+    // Close open menus and modals on Escape key press
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        const clientMenu = document.getElementById('client-list-menu');
+        if (clientMenu && !clientMenu.classList.contains('hidden')) {
+          clientMenu.classList.add('hidden');
+          return;
+        }
+        const charMenu = document.getElementById('character-list-menu');
+        if (charMenu && !charMenu.classList.contains('hidden')) {
+          charMenu.classList.add('hidden');
+          return;
+        }
+        const openModal = Array.from(document.querySelectorAll('.modal-overlay:not(.hidden)'))
+          .filter(m => m.id !== 'overlay-progress')
+          .pop();
+        if (openModal) {
+          openModal.classList.add('hidden');
+        }
+      }
     });
   }
 }

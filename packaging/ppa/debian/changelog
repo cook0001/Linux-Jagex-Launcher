@@ -1,8 +1,20 @@
+linux-jagex-launcher (1.2.0-1ubuntu1~noble) noble; urgency=medium
+
+  * Steam Deck turnkey installer with direct Steam shortcuts.vdf registration.
+  * Multi-account management and fast account/character switching dock.
+  * Mesa Threaded OpenGL (mesa_glthread) performance boost for RS3.
+  * Formatted human-readable release notes in auto-updater.
+  * Universal keyboard shortcuts (Esc) and backdrop dismissal for modals.
+
+ -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 20:15:00 -0500
+
 linux-jagex-launcher (1.1.0-1ubuntu1~noble) noble; urgency=medium
 
   * Full Steam Deck & SteamOS handheld suite with gamepad navigation and OSK support.
+  * Multi-account management and fast account/character switching.
+  * Added Mesa Threaded OpenGL (mesa_glthread) performance optimization for RS3.
   * Added RS3 Doctor automated diagnostic and library repair tool.
-  * Integrated multi-format auto-updater and package update notifications.
+  * Integrated multi-format auto-updater with human-readable release notes.
   * Added RuneScape: Dragonwilds launch support via Steam protocol.
 
  -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 19:20:00 -0500

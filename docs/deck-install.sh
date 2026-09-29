@@ -47,7 +47,7 @@ mkdir -p "${LAUNCHER_DATA_DIR}/grid"
 echo "🔍 Checking latest release from GitHub..."
 LATEST_TAG=$(curl -sSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 if [ -z "$LATEST_TAG" ]; then
-  LATEST_TAG="v1.1.0"
+  LATEST_TAG="v1.2.0"
 fi
 VERSION="${LATEST_TAG#v}"
 
@@ -87,7 +87,7 @@ EOF
 chmod 0755 "${DESKTOP_FILE}"
 echo "✓ Created desktop application entry: ${DESKTOP_FILE}"
 
-# Add to Steam shortcuts if Steam directory is available
+# Add to Steam shortcuts and grid configuration if Steam directory is available
 if [ -n "$STEAM_DIR" ] && [ -d "${STEAM_DIR}/userdata" ]; then
   echo "🔗 Registering Non-Steam Game shortcut and artwork..."
 
@@ -103,17 +103,72 @@ if [ -n "$STEAM_DIR" ] && [ -d "${STEAM_DIR}/userdata" ]; then
     if [ -d "$USER_DIR" ] && [ "$(basename "$USER_DIR")" != "0" ] && [[ "$(basename "$USER_DIR")" =~ ^[0-9]+$ ]]; then
       CONFIG_DIR="${USER_DIR}/config"
       GRID_DIR="${CONFIG_DIR}/grid"
+      SHORTCUTS_FILE="${CONFIG_DIR}/shortcuts.vdf"
       mkdir -p "${GRID_DIR}"
 
+      # 1. Place Steam Grid high-res artwork
       if [ -n "$APPID" ]; then
         cp "${LAUNCHER_DATA_DIR}/icon.png" "${GRID_DIR}/${APPID}.png" 2>/dev/null || true
         cp "${LAUNCHER_DATA_DIR}/banner.png" "${GRID_DIR}/${APPID}p.png" 2>/dev/null || true
         cp "${LAUNCHER_DATA_DIR}/banner.png" "${GRID_DIR}/${APPID}_hero.png" 2>/dev/null || true
         cp "${LAUNCHER_DATA_DIR}/icon.png" "${GRID_DIR}/${APPID}_logo.png" 2>/dev/null || true
       fi
+
+      # 2. Automatically register shortcut in shortcuts.vdf via python3 if available
+      if command -v python3 >/dev/null 2>&1; then
+        python3 -c "
+import os, sys, struct, binascii
+
+app_name = sys.argv[1]
+exe = sys.argv[2]
+start_dir = sys.argv[3]
+icon = sys.argv[4]
+shortcuts_file = sys.argv[5]
+
+app_id = (binascii.crc32(f'\"{exe}\"{app_name}'.encode()) | 0x80000000) & 0xFFFFFFFF
+
+chunk = b'\x000\x00'
+chunk += b'\x02appid\x00' + struct.pack('<I', app_id)
+chunk += b'\x01AppName\x00' + app_name.encode() + b'\x00'
+chunk += b'\x01Exe\x00\"' + exe.encode() + b'\"\x00'
+chunk += b'\x01StartDir\x00\"' + start_dir.encode() + b'\"\x00'
+chunk += b'\x01icon\x00' + icon.encode() + b'\x00'
+chunk += b'\x01LaunchOptions\x00GDK_BACKEND=x11 SDL_VIDEODRIVER=x11 %command%\x00'
+chunk += b'\x02IsHidden\x00\x00\x00\x00\x00'
+chunk += b'\x02AllowDesktopConfig\x00\x01\x00\x00\x00'
+chunk += b'\x02AllowOverlay\x00\x01\x00\x00\x00'
+chunk += b'\x02OpenVR\x00\x00\x00\x00\x00'
+chunk += b'\x02Devkit\x00\x00\x00\x00\x00'
+chunk += b'\x01DevkitGameID\x00\x00'
+chunk += b'\x02DevkitOverrideAppID\x00\x00\x00\x00\x00'
+chunk += b'\x02LastPlayTime\x00\x00\x00\x00\x00'
+chunk += b'\x01FlatpakAppID\x00\x00'
+chunk += b'\x00tags\x00\x08'
+chunk += b'\x08'
+
+try:
+    if not os.path.exists(shortcuts_file) or os.path.getsize(shortcuts_file) < 10:
+        with open(shortcuts_file, 'wb') as f:
+            f.write(b'\x00shortcuts\x00' + chunk + b'\x08\x08')
+    else:
+        with open(shortcuts_file, 'rb') as f:
+            data = f.read()
+        if app_name.encode() not in data:
+            insert_pos = len(data) - 2
+            for i in range(len(data) - 1, 0, -1):
+                if data[i] == 0x08 and data[i-1] == 0x08:
+                    insert_pos = i - 1
+                    break
+            new_data = data[:insert_pos] + chunk + b'\x08\x08'
+            with open(shortcuts_file, 'wb') as f:
+                f.write(new_data)
+except Exception as err:
+    pass
+" "${APP_NAME}" "${TARGET_APPIMAGE}" "${APPLICATIONS_DIR}" "${LAUNCHER_DATA_DIR}/icon.png" "${SHORTCUTS_FILE}" 2>/dev/null || true
+      fi
     fi
   done
-  echo "✓ Artwork placed in Steam Grid configuration."
+  echo "✓ Added to Steam shortcuts.vdf and placed custom artwork in Steam Grid configuration."
 fi
 
 # Send desktop notification if available
