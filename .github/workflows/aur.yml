@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Publish linux-jagex-launcher-bin to AUR
+        if: env.AUR_KEY != ''
         uses: KSXGitHub/github-actions-deploy-aur@v4
         env:
           AUR_KEY: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
