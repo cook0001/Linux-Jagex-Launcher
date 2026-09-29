@@ -7,6 +7,7 @@ export interface AppSettings {
   minimizeToTray: boolean;
   useGameMode: boolean;
   useMangoHud: boolean;
+  lowSpecMode: boolean;
   customLaunchCommand: string;
   configUri: string;
   selectedCharacterId: string | null;
@@ -21,6 +22,8 @@ export interface AppSettings {
   rs3ForceX11: boolean;
   rs3AudioLatencyFix: boolean;
   rs3MesaGlThread: boolean;
+  rs3CompatProfileOverride: boolean;
+  rs3DisableDri3: boolean;
   autoCheckUpdates: boolean;
   lastUpdateCheck: number;
   skippedVersion: string | null;
@@ -51,11 +54,12 @@ export interface SessionData {
   activeSub: string | null;
 }
 
-const DEFAULT_SETTINGS: AppSettings = {
+export const DEFAULT_SETTINGS: AppSettings = {
   closeOnLaunch: false,
   minimizeToTray: false,
   useGameMode: false,
   useMangoHud: false,
+  lowSpecMode: false,
   customLaunchCommand: '',
   configUri: 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws',
   selectedCharacterId: null,
@@ -70,6 +74,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   rs3ForceX11: true,
   rs3AudioLatencyFix: true,
   rs3MesaGlThread: true,
+  rs3CompatProfileOverride: true,
+  rs3DisableDri3: false,
   autoCheckUpdates: true,
   lastUpdateCheck: 0,
   skippedVersion: null,

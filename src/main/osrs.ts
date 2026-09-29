@@ -421,8 +421,21 @@ export class OsrsManager {
       JX_DISPLAY_NAME: displayName,
     };
 
+    if (settings.lowSpecMode) {
+      env.mesa_glthread = 'true';
+      if (settings.rs3CompatProfileOverride !== false) {
+        env.MESA_GL_VERSION_OVERRIDE = '4.5COMPAT';
+      }
+    }
+
     const customJvmArgs = (settings.osrsJvmArgs || '').trim().split(/\s+/).filter(Boolean);
     const customClientArgs = (settings.osrsClientArgs || '').trim().split(/\s+/).filter(Boolean);
+
+    // If Low-Spec Mode is active and user has not specified custom JVM parameters,
+    // apply optimized flags: 768MB max heap (avoids OOM/swapping on 4GB-8GB systems), G1GC with low pause times
+    const effectiveJvmArgs = customJvmArgs.length > 0
+      ? customJvmArgs
+      : (settings.lowSpecMode ? ['-Xmx768m', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=20'] : []);
 
     let baseCmd = targetExecutable;
     let baseArgs: string[] = [];
@@ -433,7 +446,7 @@ export class OsrsManager {
       baseArgs = ['run', flatpakAppId, ...customClientArgs];
     } else if (isJar) {
       baseArgs = [
-        ...customJvmArgs,
+        ...effectiveJvmArgs,
         '-jar',
         jarPath,
         ...customClientArgs,

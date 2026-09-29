@@ -227,6 +227,8 @@
   justify-content: space-between;
   background: rgba(12, 16, 23, 0.6);
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0);
   border-bottom: 1px solid var(--border-subtle);
   z-index: 10;
 }
@@ -280,6 +282,8 @@
   justify-content: space-between;
   background: rgba(10, 13, 20, 0.92);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transform: translateZ(0);
   border-top: 1px solid var(--border-subtle);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
   z-index: 30;

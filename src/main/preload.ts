@@ -75,6 +75,10 @@ export const api = {
   // Steam Deck & SteamOS
   getDeckInfo: () => ipcRenderer.invoke('deck:getInfo'),
   addToSteam: () => ipcRenderer.invoke('steam:addToSteam'),
+
+  // World Latency & Ping
+  pingRs3Worlds: (worldIds?: number[]) => ipcRenderer.invoke('ping:rs3-worlds', worldIds),
+  pingOsrsWorlds: (subIds?: number[]) => ipcRenderer.invoke('ping:osrs-worlds', subIds),
 };
 
 contextBridge.exposeInMainWorld('jagexApi', api);

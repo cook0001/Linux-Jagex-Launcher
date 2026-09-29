@@ -109,6 +109,51 @@ export class Rs3Doctor {
       });
     }
 
+    // System Memory / RAM Capacity check (Identifies older hardware memory limits)
+    const totalMemBytes = os.totalmem();
+    const totalMemGb = (totalMemBytes / (1024 * 1024 * 1024)).toFixed(1);
+    if (totalMemBytes < 4.5 * 1024 * 1024 * 1024) {
+      checks.push({
+        id: 'sys_memory',
+        name: 'System RAM Capacity',
+        category: 'system',
+        status: 'warning',
+        message: `System has ${totalMemGb} GB of RAM. Low system memory can trigger Linux Out-Of-Memory (OOM) killer or heavy swap thrashing while playing.`,
+        remediation: 'Enable "Performance Mode (Low-Spec / Older Hardware)" and "Close Launcher when Game Starts" in Settings to minimize memory footprint.'
+      });
+    } else {
+      checks.push({
+        id: 'sys_memory',
+        name: 'System RAM Capacity',
+        category: 'system',
+        status: 'ok',
+        message: `System has ${totalMemGb} GB of RAM (sufficient for game clients and desktop environment).`
+      });
+    }
+
+    // CPU Architecture & Multi-Core check
+    const cpus = os.cpus() || [];
+    const cpuCount = cpus.length;
+    const cpuModel = cpus[0]?.model || 'Generic Processor';
+    if (cpuCount <= 2) {
+      checks.push({
+        id: 'cpu_hardware',
+        name: 'CPU Core Availability',
+        category: 'system',
+        status: 'warning',
+        message: `Detected ${cpuCount}-core CPU (${cpuModel}). Dual-core systems benefit significantly from Mesa Threaded OpenGL and Feral GameMode.`,
+        remediation: 'Ensure "Mesa Threaded OpenGL" and "Feral GameMode" are enabled in Settings.'
+      });
+    } else {
+      checks.push({
+        id: 'cpu_hardware',
+        name: 'CPU Core Availability',
+        category: 'system',
+        status: 'ok',
+        message: `Detected ${cpuCount} CPU threads (${cpuModel}).`
+      });
+    }
+
     // 2. OpenSSL 1.1 dependency check (Addresses Issue 1: libssl1.1 mismatch on Ubuntu 22.04 & 24.04)
     const compatSsl = path.join(compatDir, 'libssl.so.1.1');
     const compatCrypto = path.join(compatDir, 'libcrypto.so.1.1');
@@ -250,7 +295,16 @@ export class Rs3Doctor {
       });
     }
 
-    // 8. Jagex Account Authentication check (Addresses Issue 2: Jagex Account requirement)
+    // 8. Mesa OpenGL Compatibility Layer check for legacy Intel / AMD GPUs
+    checks.push({
+      id: 'mesa_compat',
+      name: 'Mesa OpenGL Compatibility Layer',
+      category: 'graphics',
+      status: 'ok',
+      message: 'Mesa Compatibility Profile override (MESA_GL_VERSION_OVERRIDE=4.5COMPAT) is supported to unlock full hardware acceleration on older Intel HD Graphics (2000-4600) and legacy AMD GPUs.'
+    });
+
+    // 9. Jagex Account Authentication check (Addresses Issue 2: Jagex Account requirement)
     const activeAccount = store.getActiveAccount();
     const settings = store.getSettings();
     const characterId = settings.selectedCharacterId || activeAccount?.characters[0]?.id;

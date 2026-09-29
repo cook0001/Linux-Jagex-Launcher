@@ -1,7 +1,7 @@
 # Maintainer: Daniel Cook <danielcook2016@outlook.com>
 pkgname=linux-jagex-launcher-bin
 _pkgname=jagex-launcher
-pkgver=1.2.0
+pkgver=1.3.0
 pkgrel=1
 pkgdesc="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape"
 arch=('x86_64')

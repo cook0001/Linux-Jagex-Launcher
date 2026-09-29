@@ -11,6 +11,7 @@ import { doctor } from './diagnostics';
 import { updater } from './updater';
 import { deck } from './deck';
 import { steamShortcuts } from './steam-shortcuts';
+import { worldPing } from './ping';
 
 if (process.platform === 'linux' && typeof process.getuid === 'function' && process.getuid() === 0) {
   console.warn('[Security] WARNING: Running with sudo/root privileges causes permission corruption on user game data and cache directories!');
@@ -42,9 +43,15 @@ function getAppIcon(): Electron.NativeImage | string {
   return path.join(__dirname, '../../resources/icon.png');
 }
 
-// Disable Blink automation features so Chromium behaves like a standard browser
+// Performance & Chromium switches
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
 app.commandLine.appendSwitch('force-webrtc-ip-handling-policy', 'default');
+if (process.platform === 'linux') {
+  // Prevent Chromium from falling back to software SwiftShader rendering on older Intel/AMD/NVIDIA GPUs
+  app.commandLine.appendSwitch('ignore-gpu-blocklist');
+  app.commandLine.appendSwitch('enable-gpu-rasterization');
+  app.commandLine.appendSwitch('enable-zero-copy');
+}
 
 // Register custom protocol for Jagex launcher redirects
 if (process.defaultApp) {
@@ -75,6 +82,7 @@ function createWindow() {
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: -100, y: -100 },
     backgroundColor: '#0a0d14',
+    show: false,
     icon: appIcon,
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
@@ -82,6 +90,10 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     }
+  });
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow?.show();
   });
 
   if (isGameMode) {
@@ -309,25 +321,43 @@ ipcMain.handle('diagnostics:clearRs3Cache', () => {
   return installer.clearClientCache();
 });
 
-// IPC: Feed & News
+// IPC: Feed & News with TTL In-Memory Caching (3min for PSA, 5min for News)
+const psaCache = new Map<string, { timestamp: number; data: any }>();
+const newsCache = new Map<string, { timestamp: number; data: any[] }>();
+
 ipcMain.handle('feed:getPsa', async (_, game: string) => {
   const targetGame = game === 'osrs' ? 'osrs' : 'runescape';
-  const url = `https://files.publishing.production.jxp.jagex.com/${targetGame}/${targetGame}.json?ts=${Date.now()}`;
+  const now = Date.now();
+  const cached = psaCache.get(targetGame);
+  if (cached && now - cached.timestamp < 3 * 60 * 1000) {
+    return cached.data;
+  }
+
+  const url = `https://files.publishing.production.jxp.jagex.com/${targetGame}/${targetGame}.json?ts=${now}`;
   try {
     const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(6000) });
-    if (!res.ok) return null;
-    return await res.json();
+    if (!res.ok) return cached?.data || null;
+    const data = await res.json();
+    psaCache.set(targetGame, { timestamp: now, data });
+    return data;
   } catch (e) {
     console.error('[Feed] Failed to fetch PSA:', e);
-    return null;
+    return cached?.data || null;
   }
 });
 
 ipcMain.handle('feed:getNews', async (_, game?: string) => {
+  const cacheKey = game || 'rs3';
+  const now = Date.now();
+  const cached = newsCache.get(cacheKey);
+  if (cached && now - cached.timestamp < 5 * 60 * 1000) {
+    return cached.data;
+  }
+
   if (game === 'dragonwilds') {
     try {
       const res = await fetch('https://store.steampowered.com/feeds/news/app/1374490', { signal: AbortSignal.timeout(6000) });
-      if (!res.ok) return [];
+      if (!res.ok) return cached?.data || [];
       const text = await res.text();
 
       const items: Array<{
@@ -373,10 +403,11 @@ ipcMain.handle('feed:getNews', async (_, game?: string) => {
         items.push({ title, link, description, category, pubDate, imageUrl });
       }
 
+      newsCache.set(cacheKey, { timestamp: now, data: items });
       return items;
     } catch (e) {
       console.error('[Feed] Failed to fetch Dragonwilds Steam news:', e);
-      return [];
+      return cached?.data || [];
     }
   }
 
@@ -386,7 +417,7 @@ ipcMain.handle('feed:getNews', async (_, game?: string) => {
     : 'https://secure.runescape.com/m=news/latest_news.rss';
   try {
     const res = await fetch(rssUrl, { signal: AbortSignal.timeout(6000) });
-    if (!res.ok) return [];
+    if (!res.ok) return cached?.data || [];
     const text = await res.text();
 
     // Parse RSS XML items cleanly
@@ -420,10 +451,11 @@ ipcMain.handle('feed:getNews', async (_, game?: string) => {
       items.push({ title, link, description, category, pubDate, imageUrl });
     }
 
+    newsCache.set(cacheKey, { timestamp: now, data: items });
     return items;
   } catch (e) {
     console.error('[Feed] Failed to fetch RSS news:', e);
-    return [];
+    return cached?.data || [];
   }
 });
 
@@ -464,5 +496,15 @@ ipcMain.handle('deck:getInfo', () => {
 ipcMain.handle('steam:addToSteam', () => {
   return steamShortcuts.addToSteam();
 });
+
+// IPC: World Latency & Ping
+ipcMain.handle('ping:rs3-worlds', async (_, worldIds?: number[]) => {
+  return await worldPing.pingRs3Worlds(worldIds);
+});
+
+ipcMain.handle('ping:osrs-worlds', async (_, subIds?: number[]) => {
+  return await worldPing.pingOsrsWorlds(subIds);
+});
+
 
 

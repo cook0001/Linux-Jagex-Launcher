@@ -50,6 +50,15 @@ export class GamepadNavigator {
         break;
       }
     }
+
+    // Pause polling loop when app is hidden or in background to save CPU and battery
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.stopPolling();
+      } else if (this.isConnected) {
+        this.startPolling();
+      }
+    });
   }
 
   private startPolling() {

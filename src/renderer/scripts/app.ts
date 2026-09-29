@@ -1,4 +1,5 @@
 import { GamepadNavigator } from './gamepad.ts';
+import { COMMUNITY_RESOURCES } from './resources.ts';
 
 // Declare the injected IPC API from preload.ts
 declare global {
@@ -64,6 +65,8 @@ declare global {
         artworkCopied: number;
         error?: string;
       }>;
+      pingRs3Worlds: (worldIds?: number[]) => Promise<any[]>;
+      pingOsrsWorlds: (subIds?: number[]) => Promise<any[]>;
     };
   }
 }
@@ -81,6 +84,11 @@ class JagexLauncherApp {
   private isUpdateDownloaded: boolean = false;
   private deckInfo: any = null;
   private gamepadNav: GamepadNavigator | null = null;
+  private currentPingGame: 'rs3' | 'osrs' = 'rs3';
+  private currentPingResults: any[] = [];
+  private currentPingFilter: 'all' | 'us' | 'uk' | 'aus' = 'all';
+  private currentResourceGame: 'rs3' | 'osrs' | 'dragonwilds' = 'rs3';
+  private resourceSearchQuery: string = '';
 
   public async init() {
     this.setupWindowControls();
@@ -90,6 +98,8 @@ class JagexLauncherApp {
     this.setupCharacterDropdown();
     this.setupPlayButton();
     this.setupGamepad();
+    this.setupWorldPing();
+    this.setupResourcesModal();
     this.listenToIPC();
 
     await this.applyDeckAdaptations();
@@ -251,6 +261,7 @@ class JagexLauncherApp {
     const clientSelector = document.getElementById('client-selector-container');
     const characterSelector = document.getElementById('character-selector-container');
     const viewAllLink = document.getElementById('view-all-news-link') as HTMLAnchorElement | null;
+    const worldPingBtn = document.getElementById('btn-world-ping');
 
     rs3Btn?.classList.remove('active');
     osrsBtn?.classList.remove('active');
@@ -260,6 +271,7 @@ class JagexLauncherApp {
       rs3Btn?.classList.add('active');
       clientSelector?.classList.add('hidden');
       characterSelector?.classList.remove('hidden');
+      worldPingBtn?.classList.remove('hidden');
       if (stageTitle) stageTitle.textContent = 'RuneScape';
       if (stageSubtitle) stageSubtitle.textContent = 'The Classic Adventure';
       if (viewAllLink) {
@@ -270,6 +282,7 @@ class JagexLauncherApp {
       osrsBtn?.classList.add('active');
       clientSelector?.classList.remove('hidden');
       characterSelector?.classList.remove('hidden');
+      worldPingBtn?.classList.remove('hidden');
       if (stageTitle) stageTitle.textContent = 'Old School RuneScape';
       if (stageSubtitle) stageSubtitle.textContent = 'The Iconic MMORPG';
       if (viewAllLink) {
@@ -281,6 +294,8 @@ class JagexLauncherApp {
       dragonwildsBtn?.classList.add('active');
       clientSelector?.classList.add('hidden');
       characterSelector?.classList.add('hidden');
+      worldPingBtn?.classList.add('hidden');
+      document.getElementById('modal-world-ping')?.classList.add('hidden');
       if (stageTitle) stageTitle.textContent = 'RuneScape: Dragonwilds';
       if (stageSubtitle) stageSubtitle.textContent = 'Open-World Survival Action RPG';
       if (viewAllLink) {
@@ -290,19 +305,28 @@ class JagexLauncherApp {
     }
 
     this.updatePlaySubtext();
-    await this.checkGameClientStatus();
-    this.fetchPsaAndBanner();
-    this.fetchNewsFeed();
+    // Non-blocking concurrent execution of client inspection, PSA banner, and news feed
+    Promise.allSettled([
+      this.checkGameClientStatus(),
+      this.fetchPsaAndBanner(),
+      this.fetchNewsFeed()
+    ]);
   }
 
   private async loadInitialData() {
     try {
       if (window.jagexApi) {
-        this.currentSettings = await window.jagexApi.getSettings();
-        this.currentSessions = await window.jagexApi.getSessions();
+        const [settings, sessions] = await Promise.all([
+          window.jagexApi.getSettings(),
+          window.jagexApi.getSessions()
+        ]);
+        this.currentSettings = settings;
+        this.currentSessions = sessions;
+        this.applyLowSpecMode(this.currentSettings?.lowSpecMode);
       } else {
         this.currentSettings = { selectedGame: 'rs3', selectedOsrsClient: 'runelite' };
         this.currentSessions = { accounts: {}, activeSub: null };
+        this.applyLowSpecMode(false);
       }
       this.selectedCharacterId = this.currentSettings?.selectedCharacterId || null;
       const urlParams = new URLSearchParams(window.location.search);
@@ -331,6 +355,13 @@ class JagexLauncherApp {
       }
     } catch (e) {
       console.error('[App] Error during initialization:', e);
+    }
+  }
+
+  private applyLowSpecMode(enabled?: boolean): void {
+    const appEl = document.getElementById('app');
+    if (appEl) {
+      appEl.classList.toggle('low-spec-mode', !!enabled);
     }
   }
 
@@ -1200,34 +1231,53 @@ class JagexLauncherApp {
 
     // Tab navigation in Settings
     const tabBtns = document.querySelectorAll('.settings-tab-btn');
+    const switchSettingsTab = (targetId: string) => {
+      tabBtns.forEach(btn => {
+        if (btn.getAttribute('data-tab') === targetId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      document.querySelectorAll('.settings-tab-content').forEach(tc => {
+        if (tc.id === targetId) {
+          tc.classList.remove('hidden');
+        } else {
+          tc.classList.add('hidden');
+        }
+      });
+    };
+
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        tabBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         const targetId = btn.getAttribute('data-tab');
-        document.querySelectorAll('.settings-tab-content').forEach(tc => {
-          if (tc.id === targetId) {
-            tc.classList.remove('hidden');
-          } else {
-            tc.classList.add('hidden');
-          }
-        });
+        if (targetId) switchSettingsTab(targetId);
       });
     });
 
-    const openSettings = () => {
+    const openSettings = (targetTabId = 'tab-general') => {
       const s = this.currentSettings;
+
+      // Ensure the designated tab is active on open
+      switchSettingsTab(targetTabId);
 
       // General settings
       const closeOnLaunchInput = document.getElementById('setting-close-on-launch') as HTMLInputElement;
       const minimizeInput = document.getElementById('setting-minimize-to-tray') as HTMLInputElement;
       const gameModeInput = document.getElementById('setting-use-gamemode') as HTMLInputElement;
       const mangoHudInput = document.getElementById('setting-use-mangohud') as HTMLInputElement;
+      const lowSpecModeInput = document.getElementById('setting-low-spec-mode') as HTMLInputElement;
 
       if (closeOnLaunchInput) closeOnLaunchInput.checked = s.closeOnLaunch ?? false;
       if (minimizeInput) minimizeInput.checked = s.minimizeToTray ?? false;
       if (gameModeInput) gameModeInput.checked = s.useGameMode ?? false;
       if (mangoHudInput) mangoHudInput.checked = s.useMangoHud ?? false;
+      if (lowSpecModeInput) {
+        lowSpecModeInput.checked = s.lowSpecMode ?? false;
+        lowSpecModeInput.onchange = () => {
+          this.applyLowSpecMode(lowSpecModeInput.checked);
+        };
+      }
 
       // Software updates in General tab
       const autoCheckUpdatesInput = document.getElementById('setting-auto-check-updates') as HTMLInputElement;
@@ -1293,6 +1343,8 @@ class JagexLauncherApp {
       const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
       const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
       const rs3MesaGlThreadInput = document.getElementById('setting-rs3-mesa-glthread') as HTMLInputElement;
+      const rs3CompatOverrideInput = document.getElementById('setting-rs3-compat-override') as HTMLInputElement;
+      const rs3DisableDri3Input = document.getElementById('setting-rs3-disable-dri3') as HTMLInputElement;
       const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
       if (configUriInput) configUriInput.value = s.configUri || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws';
@@ -1300,22 +1352,45 @@ class JagexLauncherApp {
       if (rs3ForceX11Input) rs3ForceX11Input.checked = s.rs3ForceX11 !== false;
       if (rs3AudioLatencyInput) rs3AudioLatencyInput.checked = s.rs3AudioLatencyFix !== false;
       if (rs3MesaGlThreadInput) rs3MesaGlThreadInput.checked = s.rs3MesaGlThread !== false;
+      if (rs3CompatOverrideInput) rs3CompatOverrideInput.checked = s.rs3CompatProfileOverride !== false;
+      if (rs3DisableDri3Input) rs3DisableDri3Input.checked = s.rs3DisableDri3 ?? false;
       if (rs3GpuWorkaroundSelect) rs3GpuWorkaroundSelect.value = s.rs3GpuWorkaround || 'none';
 
       settingsModal?.classList.remove('hidden');
     };
 
-    openSettingsBtn?.addEventListener('click', openSettings);
-    quickSettingsBtn?.addEventListener('click', openSettings);
+    // Sidebar settings button: Always opens to the general settings tab
+    openSettingsBtn?.addEventListener('click', () => {
+      openSettings('tab-general');
+    });
+
+    // Quick settings button next to the Play button:
+    // If on RS3 -> opens RuneScape 3 settings tab (tab-rs3)
+    // If on OSRS -> opens Old School RuneScape settings tab (tab-osrs)
+    // Otherwise -> opens General settings tab (tab-general)
+    quickSettingsBtn?.addEventListener('click', () => {
+      if (this.activeGame === 'rs3') {
+        openSettings('tab-rs3');
+      } else if (this.activeGame === 'osrs') {
+        openSettings('tab-osrs');
+      } else {
+        openSettings('tab-general');
+      }
+    });
     const cancelSettingsBtn = document.getElementById('btn-cancel-settings');
-    closeSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
-    cancelSettingsBtn?.addEventListener('click', () => settingsModal?.classList.add('hidden'));
+    const revertAndCloseSettings = () => {
+      this.applyLowSpecMode(this.currentSettings?.lowSpecMode);
+      settingsModal?.classList.add('hidden');
+    };
+    closeSettingsBtn?.addEventListener('click', revertAndCloseSettings);
+    cancelSettingsBtn?.addEventListener('click', revertAndCloseSettings);
 
     saveSettingsBtn?.addEventListener('click', async () => {
       const closeOnLaunchInput = document.getElementById('setting-close-on-launch') as HTMLInputElement;
       const minimizeInput = document.getElementById('setting-minimize-to-tray') as HTMLInputElement;
       const gameModeInput = document.getElementById('setting-use-gamemode') as HTMLInputElement;
       const mangoHudInput = document.getElementById('setting-use-mangohud') as HTMLInputElement;
+      const lowSpecModeInput = document.getElementById('setting-low-spec-mode') as HTMLInputElement;
       const autoCheckUpdatesInput = document.getElementById('setting-auto-check-updates') as HTMLInputElement;
 
       const osrsDefaultClientSelect = document.getElementById('setting-osrs-default-client') as HTMLSelectElement;
@@ -1329,6 +1404,8 @@ class JagexLauncherApp {
       const rs3ForceX11Input = document.getElementById('setting-rs3-force-x11') as HTMLInputElement;
       const rs3AudioLatencyInput = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement;
       const rs3MesaGlThreadInput = document.getElementById('setting-rs3-mesa-glthread') as HTMLInputElement;
+      const rs3CompatOverrideInput = document.getElementById('setting-rs3-compat-override') as HTMLInputElement;
+      const rs3DisableDri3Input = document.getElementById('setting-rs3-disable-dri3') as HTMLInputElement;
       const rs3GpuWorkaroundSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement;
 
       const newSettings = {
@@ -1336,6 +1413,7 @@ class JagexLauncherApp {
         minimizeToTray: minimizeInput?.checked ?? false,
         useGameMode: gameModeInput?.checked ?? false,
         useMangoHud: mangoHudInput?.checked ?? false,
+        lowSpecMode: lowSpecModeInput?.checked ?? false,
         autoCheckUpdates: autoCheckUpdatesInput?.checked ?? true,
         selectedOsrsClient: osrsDefaultClientSelect?.value || this.selectedOsrsClient,
         customJavaPath: osrsJavaPathInput?.value.trim() || '',
@@ -1347,11 +1425,14 @@ class JagexLauncherApp {
         rs3ForceX11: rs3ForceX11Input?.checked ?? true,
         rs3AudioLatencyFix: rs3AudioLatencyInput?.checked ?? true,
         rs3MesaGlThread: rs3MesaGlThreadInput?.checked ?? true,
+        rs3CompatProfileOverride: rs3CompatOverrideInput?.checked ?? true,
+        rs3DisableDri3: rs3DisableDri3Input?.checked ?? false,
         rs3GpuWorkaround: rs3GpuWorkaroundSelect?.value || 'none'
       };
 
       this.currentSettings = await window.jagexApi.saveSettings(newSettings);
       this.selectedOsrsClient = this.currentSettings.selectedOsrsClient;
+      this.applyLowSpecMode(this.currentSettings.lowSpecMode);
       this.updateClientSelectorUI();
       this.updatePlaySubtext();
       await this.checkGameClientStatus();
@@ -1776,6 +1857,357 @@ class JagexLauncherApp {
           openModal.classList.add('hidden');
         }
       }
+    });
+  }
+
+  private setupWorldPing() {
+    const pingModal = document.getElementById('modal-world-ping');
+    const openPingBtn = document.getElementById('btn-world-ping');
+    const closePingBtn = document.getElementById('btn-close-world-ping');
+    const donePingBtn = document.getElementById('btn-done-world-ping');
+    const tabRs3Btn = document.getElementById('tab-btn-ping-rs3');
+    const tabOsrsBtn = document.getElementById('tab-btn-ping-osrs');
+    const runPingBtn = document.getElementById('btn-run-world-ping');
+    const filterBtns = document.querySelectorAll('#ping-filter-group .btn-filter-region');
+
+    // Settings tab buttons
+    const settingsPingRs3Btn = document.getElementById('btn-settings-ping-rs3');
+    const settingsPingOsrsBtn = document.getElementById('btn-settings-ping-osrs');
+
+    const switchPingGameTab = (game: 'rs3' | 'osrs') => {
+      this.currentPingGame = game;
+      if (game === 'rs3') {
+        tabRs3Btn?.classList.add('active');
+        tabOsrsBtn?.classList.remove('active');
+      } else {
+        tabRs3Btn?.classList.remove('active');
+        tabOsrsBtn?.classList.add('active');
+      }
+      this.renderWorldPingList();
+    };
+
+    tabRs3Btn?.addEventListener('click', () => switchPingGameTab('rs3'));
+    tabOsrsBtn?.addEventListener('click', () => switchPingGameTab('osrs'));
+
+    openPingBtn?.addEventListener('click', () => {
+      if (this.activeGame === 'dragonwilds') return;
+      const targetGame = this.activeGame === 'osrs' ? 'osrs' : 'rs3';
+      switchPingGameTab(targetGame);
+      pingModal?.classList.remove('hidden');
+      if (this.currentPingResults.length === 0) {
+        this.executeWorldPing(targetGame);
+      }
+    });
+
+    closePingBtn?.addEventListener('click', () => {
+      pingModal?.classList.add('hidden');
+    });
+
+    donePingBtn?.addEventListener('click', () => {
+      pingModal?.classList.add('hidden');
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.currentPingFilter = (btn.getAttribute('data-region') as any) || 'all';
+        this.renderWorldPingList();
+      });
+    });
+
+    runPingBtn?.addEventListener('click', () => {
+      this.executeWorldPing(this.currentPingGame);
+    });
+
+    // Settings tab triggers
+    settingsPingRs3Btn?.addEventListener('click', async () => {
+      settingsPingRs3Btn.setAttribute('disabled', 'true');
+      settingsPingRs3Btn.innerHTML = '<span>Pinging RS3...</span>';
+      try {
+        const results = await window.jagexApi.pingRs3Worlds();
+        this.renderSettingsPingResults('settings-rs3-ping-results', results);
+      } catch (err: any) {
+        const container = document.getElementById('settings-rs3-ping-results');
+        if (container) container.innerHTML = `<span style="color: #f87171; font-size: 11px;">Ping error: ${err.message}</span>`;
+      } finally {
+        settingsPingRs3Btn.removeAttribute('disabled');
+        settingsPingRs3Btn.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Test RS3 Worlds</span>
+        `;
+      }
+    });
+
+    settingsPingOsrsBtn?.addEventListener('click', async () => {
+      settingsPingOsrsBtn.setAttribute('disabled', 'true');
+      settingsPingOsrsBtn.innerHTML = '<span>Pinging OSRS...</span>';
+      try {
+        const results = await window.jagexApi.pingOsrsWorlds();
+        this.renderSettingsPingResults('settings-osrs-ping-results', results);
+      } catch (err: any) {
+        const container = document.getElementById('settings-osrs-ping-results');
+        if (container) container.innerHTML = `<span style="color: #f87171; font-size: 11px;">Ping error: ${err.message}</span>`;
+      } finally {
+        settingsPingOsrsBtn.removeAttribute('disabled');
+        settingsPingOsrsBtn.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Test OSRS Worlds</span>
+        `;
+      }
+    });
+  }
+
+  private async executeWorldPing(game: 'rs3' | 'osrs') {
+    const runBtn = document.getElementById('btn-run-world-ping');
+    const runBtnText = document.getElementById('btn-run-world-ping-text');
+    const statusText = document.getElementById('ping-status-indicator');
+    const progressBar = document.getElementById('ping-progress-bar-container');
+    const listEl = document.getElementById('world-ping-results-list');
+
+    if (runBtn) runBtn.setAttribute('disabled', 'true');
+    if (runBtnText) runBtnText.textContent = 'Pinging Worlds...';
+    if (statusText) statusText.textContent = `Probing ${game === 'rs3' ? 'RuneScape 3' : 'Old School'} servers in parallel...`;
+    if (progressBar) progressBar.classList.remove('hidden');
+
+    try {
+      const results = game === 'rs3'
+        ? await window.jagexApi.pingRs3Worlds()
+        : await window.jagexApi.pingOsrsWorlds();
+
+      this.currentPingResults = results;
+      this.renderWorldPingList();
+
+      if (results.length > 0) {
+        const best = results[0];
+        if (statusText) statusText.textContent = `Completed: ${results.length} reachable worlds. Best: World ${best.world} (${best.ping}ms)`;
+        const headerLabel = document.getElementById('label-world-ping-text');
+        const headerBtn = document.getElementById('btn-world-ping');
+        if (headerLabel) headerLabel.textContent = `Best: ${best.ping}ms`;
+        if (headerBtn) headerBtn.classList.add('ping-optimal');
+      } else {
+        if (statusText) statusText.textContent = 'No world responses received. Check your internet connection.';
+      }
+    } catch (err: any) {
+      if (statusText) statusText.textContent = `Ping failed: ${err.message}`;
+      if (listEl) listEl.innerHTML = `<div style="text-align: center; color: #f87171; padding: 20px; font-size: 12px;">Failed to ping servers: ${err.message}</div>`;
+    } finally {
+      if (runBtn) runBtn.removeAttribute('disabled');
+      if (runBtnText) runBtnText.textContent = '⚡ Ping All Worlds';
+      if (progressBar) progressBar.classList.add('hidden');
+    }
+  }
+
+  private renderWorldPingList() {
+    const listEl = document.getElementById('world-ping-results-list');
+    if (!listEl) return;
+
+    const filtered = this.currentPingResults.filter(r => {
+      if (r.game !== this.currentPingGame) return false;
+      if (this.currentPingFilter === 'all') return true;
+      const reg = (r.region || '').toLowerCase();
+      if (this.currentPingFilter === 'us') return reg.includes('us');
+      if (this.currentPingFilter === 'uk') return reg.includes('united kingdom') || reg.includes('germany') || reg.includes('eu');
+      if (this.currentPingFilter === 'aus') return reg.includes('australia');
+      return true;
+    });
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 30px 10px; color: #94a3b8; font-size: 12px;">
+          ${this.currentPingResults.length === 0 ? 'Click "⚡ Ping All Worlds" to test live latency across all game servers.' : 'No worlds match the selected region filter.'}
+        </div>
+      `;
+      return;
+    }
+
+    listEl.innerHTML = '';
+    filtered.forEach((r, idx) => {
+      const card = document.createElement('div');
+      card.className = 'world-ping-card';
+
+      let pingBadgeClass = 'ping-badge-optimal';
+      if (r.ping > 150) pingBadgeClass = 'ping-badge-high';
+      else if (r.ping > 90) pingBadgeClass = 'ping-badge-moderate';
+      else if (r.ping > 50) pingBadgeClass = 'ping-badge-good';
+
+      card.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 11px; font-weight: 700; color: #64748b; width: 22px;">#${idx + 1}</span>
+          <div style="font-size: 15px;">${r.flag || '🌐'}</div>
+          <div>
+            <div style="font-weight: 600; font-size: 13px; color: #f1f5f9; display: flex; align-items: center; gap: 6px;">
+              <span>World ${r.world}</span>
+              ${r.serverSubId ? `<span style="font-size: 10px; color: #64748b;">(Server ${r.serverSubId})</span>` : ''}
+              ${idx === 0 ? '<span class="badge-member" style="font-size: 8px; padding: 1px 5px; background: #059669; color: #fff;">LOWEST PING</span>' : ''}
+            </div>
+            <div style="font-size: 10px; color: #94a3b8; margin-top: 1px;">${r.region} • <span style="font-family: monospace;">${r.hostname}</span></div>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="${pingBadgeClass}">${r.ping.toFixed(1)} ms</span>
+        </div>
+      `;
+
+      listEl.appendChild(card);
+    });
+  }
+
+  private renderSettingsPingResults(containerId: string, results: any[]) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!results || results.length === 0) {
+      container.innerHTML = '<span style="font-size: 11px; color: #f87171;">No reachable servers found.</span>';
+      return;
+    }
+
+    const top = results.slice(0, 6);
+    container.innerHTML = '';
+    top.forEach((r, idx) => {
+      let pingBadgeClass = 'ping-badge-optimal';
+      if (r.ping > 150) pingBadgeClass = 'ping-badge-high';
+      else if (r.ping > 90) pingBadgeClass = 'ping-badge-moderate';
+      else if (r.ping > 50) pingBadgeClass = 'ping-badge-good';
+
+      const pill = document.createElement('div');
+      pill.style.cssText = `
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid ${idx === 0 ? 'rgba(52, 211, 153, 0.4)' : 'rgba(255, 255, 255, 0.08)'};
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-size: 11px;
+      `;
+      pill.innerHTML = `
+        <span>${r.flag || '🌐'}</span>
+        <strong style="color: #f1f5f9;">W${r.world}</strong>
+        <span class="${pingBadgeClass}" style="font-size: 10px; padding: 1px 5px;">${r.ping.toFixed(1)}ms</span>
+      `;
+      container.appendChild(pill);
+    });
+  }
+
+  private setupResourcesModal() {
+    const resModal = document.getElementById('modal-resources');
+    const openResBtn = document.getElementById('btn-open-resources');
+    const closeResBtn = document.getElementById('btn-close-resources');
+    const doneResBtn = document.getElementById('btn-done-resources');
+    const tabBtns = document.querySelectorAll('.res-tab-btn');
+    const searchInput = document.getElementById('res-search-input') as HTMLInputElement | null;
+
+    const switchResourceTab = (game: 'rs3' | 'osrs' | 'dragonwilds') => {
+      this.currentResourceGame = game;
+      tabBtns.forEach(b => {
+        if (b.getAttribute('data-res-game') === game) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+      this.renderResourceCards();
+    };
+
+    openResBtn?.addEventListener('click', () => {
+      this.currentResourceGame = this.activeGame;
+      if (searchInput) {
+        searchInput.value = '';
+        this.resourceSearchQuery = '';
+      }
+      switchResourceTab(this.currentResourceGame);
+      resModal?.classList.remove('hidden');
+    });
+
+    closeResBtn?.addEventListener('click', () => {
+      resModal?.classList.add('hidden');
+    });
+
+    doneResBtn?.addEventListener('click', () => {
+      resModal?.classList.add('hidden');
+    });
+
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const game = (btn.getAttribute('data-res-game') as 'rs3' | 'osrs' | 'dragonwilds') || 'rs3';
+        switchResourceTab(game);
+      });
+    });
+
+    searchInput?.addEventListener('input', () => {
+      this.resourceSearchQuery = searchInput.value.trim().toLowerCase();
+      this.renderResourceCards();
+    });
+  }
+
+  private renderResourceCards() {
+    const grid = document.getElementById('res-card-grid');
+    if (!grid) return;
+
+    const query = this.resourceSearchQuery.toLowerCase();
+    const items = COMMUNITY_RESOURCES.filter(r => {
+      if (r.game !== this.currentResourceGame) return false;
+      if (!query) return true;
+      return (
+        r.title.toLowerCase().includes(query) ||
+        r.category.toLowerCase().includes(query) ||
+        r.description.toLowerCase().includes(query)
+      );
+    });
+
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 10px; color: #94a3b8; font-size: 13px;">
+          ${this.resourceSearchQuery ? `No resources found matching "${this.resourceSearchQuery}".` : 'No resources available for this game.'}
+        </div>
+      `;
+      return;
+    }
+
+    grid.innerHTML = '';
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'resource-card';
+      card.setAttribute('data-url', item.url);
+      card.title = `Open ${item.title} in default browser`;
+
+      card.innerHTML = `
+        <div>
+          <div class="resource-card-top">
+            <div class="resource-card-header">
+              <span class="resource-icon">${item.icon}</span>
+              <span class="resource-title">${item.title}</span>
+            </div>
+            <span class="resource-badge">${item.category}</span>
+          </div>
+          <p class="resource-desc">${item.description}</p>
+        </div>
+        <div class="resource-footer">
+          <span style="font-family: monospace; color: #64748b; font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px;">
+            ${item.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+          </span>
+          <span class="resource-link-label">
+            <span>Open</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </span>
+        </div>
+      `;
+
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.jagexApi) {
+          window.jagexApi.openExternal(item.url);
+        } else {
+          window.open(item.url, '_blank');
+        }
+      });
+
+      grid.appendChild(card);
     });
   }
 }

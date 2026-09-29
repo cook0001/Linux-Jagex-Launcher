@@ -152,10 +152,33 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 
 ---
 
-### 🚀 Gaming Enhancements
-- **Zero RAM Mode ("Close on Launch")**: Automatically closes the launcher 1.5 seconds after your game launches, freeing 100% of the launcher's memory.
+### 🚀 Gaming Enhancements & Older Linux Hardware Support
+- **Performance Mode (Low-Spec / Older Hardware)**: Disables GPU-heavy CSS `backdrop-filter` blurs, suppresses continuous animation loops, applies lightweight memory management, and optimizes GPU fill-rate for older Intel HD Graphics (2000–5500), legacy AMD GPUs, and non-composited window managers (XFCE, MATE, Openbox).
+- **Mesa OpenGL Compatibility Profile Override (`MESA_GL_VERSION_OVERRIDE=4.5COMPAT`)**: Forces Mesa to expose OpenGL 4.5 in compatibility mode. Resolves OpenGL initialization crashes on older Intel (Ivy Bridge, Haswell) and legacy AMD TeraScale GPUs when launching RuneScape 3.
+- **Legacy DRI3/DRI2 Fallback (`LIBGL_DRI3_DISABLE=1`)**: Eliminates window stuttering, flickering, and startup lockups on classic Intel SNA X11 drivers.
+- **Lightweight OSRS Heap Tuning**: When Low-Spec Mode is active, automatically limits RuneLite/HDOS heap to 768MB (`-Xmx768m -XX:+UseG1GC`) to prevent swap thrashing and Linux Out-Of-Memory (OOM) killer terminations on 4GB–8GB RAM systems.
+- **Zero RAM Mode ("Close on Launch")**: Automatically closes the launcher 1.5 seconds after your game launches, freeing 100% of the launcher's memory (150–250MB RAM).
+- **Chromium GPU Blocklist Bypass**: Automatically passes `ignore-gpu-blocklist` and `enable-gpu-rasterization` on Linux to force hardware-accelerated rendering on legacy GPUs rather than burning CPU cycles on SwiftShader software rasterization.
 - **System Tray Mode**: Minimize cleanly to the system tray to keep characters ready without cluttering your taskbar.
 - **Official Linux Window Controls**: Minimize, resize, and close buttons on the top-left matching standard Ubuntu and GNOME conventions.
+
+---
+
+### 🌐 World Latency & Ping Prober (RS3 & OSRS)
+- **High-Performance Parallel Prober**: Concurrently benchmarks ping latencies across all active RuneScape 3 (Worlds 1–141) and Old School RuneScape (Worlds 301–599) servers in ~1.2 seconds using parallel worker pools.
+- **Header Quick Access & Dedicated Settings Cards**: Launch the prober directly via the Globe icon next to the Account Manager in the top header, or inspect game-specific world lists within **Settings > RuneScape 3** and **Settings > Old School RuneScape**.
+- **Accurate In-Game World Mapping**: OSRS server subdomains (`oldschoolX`) automatically map to true in-game world numbers (`300 + X`, e.g., World 301, 302, 386) matching your in-game world select screen.
+- **Regional Filtering & Visual Badges**: Filter worlds dynamically by US East/West, Europe/UK, Germany, or Australia with color-coded response times (Green `<50ms`, Amber `50–100ms`, Red `>100ms`).
+- **Standalone Terminal Scripts**: Includes production-grade parallel CLI tools ([`docs/rs3-ping.sh`](docs/rs3-ping.sh) and [`docs/osrs-ping.sh`](docs/osrs-ping.sh)) executable directly from terminal or shell shortcuts without opening the GUI.
+
+---
+
+### 📚 Community Resources & Tools Hub
+- **Dedicated Sidebar Access**: Launch the Hub via the **Resources** tab positioned right above Settings in the launcher navigation bar.
+- **Smart Game Auto-Focus**: Automatically opens directly to whichever game is currently active (**RuneScape 3**, **Old School**, or **Dragonwilds**).
+- **Curated Player-Centric Directory**: Includes one-click access to the official wikis, Alt1 Toolkit, PvM Encyclopedia (PvME), OSRS Wiki DPS Calculator, GE Tracker, Quest Helper, Wise Old Man, TempleOSRS, MapGenie Ashenfall Interactive Map, and Reddit/Discord community hubs.
+- **Instant Live Search**: Real-time filtering by tool name, purpose, or category (e.g., search "dps", "map", "clue", or "prices").
+- **Secure Native Browser Launch**: Safely opens all links in your default Linux browser through the launcher's sandboxed IPC bridge.
 
 ---
 
@@ -190,10 +213,10 @@ curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.2.0_amd64.deb
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.3.0_amd64.deb
 
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.2.0_amd64.deb
+sudo apt install ./jagex-launcher_1.3.0_amd64.deb
 ```
 
 ---
@@ -204,9 +227,9 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases, make it executable, and run:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.2.0.AppImage
-chmod +x Jagex-Launcher-1.2.0.AppImage
-./Jagex-Launcher-1.2.0.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.3.0.AppImage
+chmod +x Jagex-Launcher-1.3.0.AppImage
+./Jagex-Launcher-1.3.0.AppImage
 ```
 
 ### Option 3: Steam Deck & SteamOS (Automated Fast-Installer)
@@ -239,8 +262,8 @@ paru -S linux-jagex-launcher-bin
 
 ```bash
 sudo dnf install fuse-libs
-chmod +x Jagex-Launcher-1.2.0.AppImage
-./Jagex-Launcher-1.2.0.AppImage
+chmod +x Jagex-Launcher-1.3.0.AppImage
+./Jagex-Launcher-1.3.0.AppImage
 ```
 
 ---
@@ -274,8 +297,8 @@ Click the **Gear icon** in the bottom dock to access the unified Settings Modal:
 | Tab | Options |
 |---|---|
 | **General** | Close on Launch (0 MB RAM mode), Minimize to System Tray, Feral GameMode (`gamemoderun`), MangoHud overlay. |
-| **Old School RuneScape** | Default client selection (RuneLite / HDOS / Official), Custom Java binary path, Custom executable/JAR override, Custom JVM arguments (`-Xmx`), Custom client flags, Flatpak client auto-detection, One-click client verify/reinstall. |
-| **RuneScape 3** | Custom client binary override, Extra launch parameters, Mesa Threaded OpenGL (`mesa_glthread=true`) performance boost, Force X11/XWayland, PulseAudio/PipeWire latency mitigation, Client cache verification. |
+| **Old School RuneScape** | Default client selection (RuneLite / HDOS / Official), Custom Java binary path, Custom executable/JAR override, Custom JVM arguments (`-Xmx`), Custom client flags, Flatpak client auto-detection, One-click client verify/reinstall, Built-in OSRS World Latency & Ping prober. |
+| **RuneScape 3** | Custom client binary override, Extra launch parameters, Mesa Threaded OpenGL (`mesa_glthread=true`) performance boost, Force X11/XWayland, PulseAudio/PipeWire latency mitigation, Client cache verification, Built-in RS3 World Latency & Ping prober. |
 | **Account Management** | Multi-account login and fast switching, individual character selection with active membership badges. |
 
 ---

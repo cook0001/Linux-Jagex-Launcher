@@ -46,6 +46,9 @@ test('RuneScape 3 Compatibility & Diagnostics Suite', async (t) => {
     assert.ok(checkIds.includes('vulkan'), 'Should contain Vulkan driver check');
     assert.ok(checkIds.includes('wayland'), 'Should contain Wayland compatibility check');
     assert.ok(checkIds.includes('jagex_auth'), 'Should contain Jagex Account session check');
+    assert.ok(checkIds.includes('sys_memory'), 'Should contain system RAM capacity check');
+    assert.ok(checkIds.includes('cpu_hardware'), 'Should contain CPU core availability check');
+    assert.ok(checkIds.includes('mesa_compat'), 'Should contain Mesa compatibility profile check');
 
     // Verify each check has required fields
     for (const check of report.checks) {
@@ -60,19 +63,25 @@ test('RuneScape 3 Compatibility & Diagnostics Suite', async (t) => {
     store.saveSettings({
       rs3GpuWorkaround: 'zink',
       rs3ForceX11: true,
-      rs3AudioLatencyFix: true
+      rs3AudioLatencyFix: true,
+      rs3CompatProfileOverride: true,
+      rs3DisableDri3: true
     });
 
     const updated = store.getSettings();
     assert.strictEqual(updated.rs3GpuWorkaround, 'zink');
     assert.strictEqual(updated.rs3ForceX11, true);
     assert.strictEqual(updated.rs3AudioLatencyFix, true);
+    assert.strictEqual(updated.rs3CompatProfileOverride, true);
+    assert.strictEqual(updated.rs3DisableDri3, true);
 
     // Restore
     store.saveSettings({
       rs3GpuWorkaround: original.rs3GpuWorkaround,
       rs3ForceX11: original.rs3ForceX11,
-      rs3AudioLatencyFix: original.rs3AudioLatencyFix
+      rs3AudioLatencyFix: original.rs3AudioLatencyFix,
+      rs3CompatProfileOverride: original.rs3CompatProfileOverride,
+      rs3DisableDri3: original.rs3DisableDri3
     });
   });
 });

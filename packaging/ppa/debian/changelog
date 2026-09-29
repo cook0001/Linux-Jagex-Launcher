@@ -1,3 +1,14 @@
+linux-jagex-launcher (1.3.0-1ubuntu1~noble) noble; urgency=medium
+
+  * World ping and latency benchmarking tool for RS3 (1-141) and OSRS (301-595).
+  * Community Resources and Tools Hub with official vector icons and Linux Alt1 links.
+  * Older Linux Hardware Support with Low-Spec Performance Mode.
+  * Mesa OpenGL 4.5 Compatibility Profile override and DRI3 fallback toggle.
+  * Lightweight JVM memory management (768MB heap limit) for low-RAM Linux machines.
+  * Re-arranged settings tabs (General, RuneScape 3, Old School) with contextual routing.
+
+ -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 21:25:00 -0500
+
 linux-jagex-launcher (1.2.0-1ubuntu1~noble) noble; urgency=medium
 
   * Steam Deck turnkey installer with direct Steam shortcuts.vdf registration.

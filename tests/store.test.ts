@@ -1,16 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import { store } from '../src/main/store.ts';
+import { store, DEFAULT_SETTINGS } from '../src/main/store.ts';
 
 test('StoreManager configuration and settings', async (t) => {
   await t.test('provides valid default app settings', () => {
     const settings = store.getSettings();
     assert.strictEqual(typeof settings, 'object');
     assert.ok(['rs3', 'osrs', 'dragonwilds'].includes(settings.selectedGame));
-    assert.strictEqual(settings.selectedOsrsClient, 'runelite');
     assert.strictEqual(typeof settings.closeOnLaunch, 'boolean');
     assert.strictEqual(typeof settings.useGameMode, 'boolean');
-    assert.strictEqual(settings.rs3MesaGlThread, true);
+    assert.strictEqual(typeof settings.rs3MesaGlThread, 'boolean');
+    assert.strictEqual(typeof settings.lowSpecMode, 'boolean');
+    assert.strictEqual(typeof settings.rs3CompatProfileOverride, 'boolean');
+    assert.strictEqual(typeof settings.rs3DisableDri3, 'boolean');
+
+    // Canonical default values contract
+    assert.strictEqual(DEFAULT_SETTINGS.lowSpecMode, false);
+    assert.strictEqual(DEFAULT_SETTINGS.rs3CompatProfileOverride, true);
+    assert.strictEqual(DEFAULT_SETTINGS.rs3DisableDri3, false);
+    assert.strictEqual(DEFAULT_SETTINGS.rs3MesaGlThread, true);
+    assert.strictEqual(DEFAULT_SETTINGS.selectedOsrsClient, 'runelite');
   });
 
   await t.test('sessions store maintains data integrity and multi-account switching', () => {

@@ -111,8 +111,31 @@ export class GameLauncher {
     }
 
     // Mesa Threaded OpenGL optimization (reduces CPU bottlenecks and shader hitching)
-    if (settings.rs3MesaGlThread !== false) {
+    if (settings.rs3MesaGlThread !== false || settings.lowSpecMode) {
       env.mesa_glthread = 'true';
+    }
+
+    // Mesa OpenGL Compatibility Profile Override (forces Mesa to expose 4.5 in compatibility mode for older Intel/AMD GPUs)
+    if (settings.rs3CompatProfileOverride !== false) {
+      env.MESA_GL_VERSION_OVERRIDE = '4.5COMPAT';
+      env.MESA_GLSL_VERSION_OVERRIDE = '450';
+    }
+
+    // DRI3 disable / DRI2 fallback (prevents window lockups on older Intel Sandy Bridge/Ivy Bridge X11 drivers)
+    if (settings.rs3DisableDri3) {
+      env.LIBGL_DRI3_DISABLE = '1';
+    }
+
+    // Mesa disk shader cache to prevent runtime shader compilation hitches on slower CPUs
+    const shaderCacheDir = path.join(gameHome, '.cache', 'mesa_shader_cache');
+    try {
+      if (!fs.existsSync(shaderCacheDir)) {
+        fs.mkdirSync(shaderCacheDir, { recursive: true });
+      }
+      env.MESA_SHADER_CACHE_DIR = shaderCacheDir;
+      env.MESA_SHADER_CACHE_MAX_SIZE = '512M';
+    } catch {
+      // Non-fatal if cache dir cannot be created
     }
 
     const configUri = settings.configUri || 'https://rs.config.runescape.com/k=5/l=0/jav_config.ws';
