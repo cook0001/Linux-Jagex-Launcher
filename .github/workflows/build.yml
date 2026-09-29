@@ -6,9 +6,17 @@ on:
       - main
     tags:
       - 'v*'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'packaging/ppa/README.md'
+      - 'packaging/flatpak/README.md'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
   release:
     types: [published]
   workflow_dispatch:
