@@ -1,3 +1,12 @@
+linux-jagex-launcher (1.1.0-1ubuntu1~noble) noble; urgency=medium
+
+  * Full Steam Deck & SteamOS handheld suite with gamepad navigation and OSK support.
+  * Added RS3 Doctor automated diagnostic and library repair tool.
+  * Integrated multi-format auto-updater and package update notifications.
+  * Added RuneScape: Dragonwilds launch support via Steam protocol.
+
+ -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 19:20:00 -0500
+
 linux-jagex-launcher (1.0.0-1ubuntu1~noble) noble; urgency=medium
 
   * Initial stable release of Linux Jagex Launcher for Ubuntu 24.04 (Noble).

@@ -100,9 +100,9 @@ export class AutoUpdater {
 
   public getCurrentVersion(): string {
     if (typeof app !== 'undefined' && app && typeof app.getVersion === 'function') {
-      return app.getVersion() || '1.0.0';
+      return app.getVersion() || '1.1.0';
     }
-    return '1.0.0';
+    return '1.1.0';
   }
 
   public getFormatDisplayLabel(format?: PackageFormat): string {

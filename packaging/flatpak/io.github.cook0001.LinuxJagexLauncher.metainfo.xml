@@ -61,6 +61,12 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.1.0" date="2026-09-28" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.1.0</url>
+      <description>
+        <p>Steam Deck &amp; SteamOS handheld enhancements with full gamepad navigation, automated RS3 Doctor diagnostic suite, and integrated multi-format auto-updater.</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-09-28" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.0.0</url>
       <description>
