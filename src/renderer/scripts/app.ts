@@ -35,6 +35,19 @@ declare global {
       runRs3Doctor: () => Promise<any>;
       installRs3CompatLibs: () => Promise<string>;
       clearRs3Cache: () => Promise<{ cleared: string[]; errors: string[] }>;
+      getLastCrash: () => Promise<any>;
+      clearLastCrash: () => Promise<boolean>;
+      killZombieProcesses: () => Promise<number>;
+      generateDoctorReportMarkdown: (report?: any) => Promise<string>;
+      saveDoctorReportToFile: (content: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+      launchGameInSafeMode: (options?: any) => Promise<void>;
+      runOsrsDoctor: () => Promise<any>;
+      getOsrsLastCrash: () => Promise<any>;
+      clearOsrsLastCrash: () => Promise<boolean>;
+      repairOsrsPermissions: (targetDir: string) => Promise<{ repaired: boolean; error?: string }>;
+      generateOsrsDoctorMarkdown: (report?: any) => Promise<string>;
+      saveOsrsDoctorReportToFile: (content: string) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+      killOsrsZombieProcesses: () => Promise<number>;
       checkForUpdates: () => Promise<{
         updateAvailable: boolean;
         currentVersion: string;
@@ -1477,21 +1490,36 @@ class JagexLauncherApp {
       }
     });
 
-    // Pre-flight Doctor Runner
+    // Pre-flight Doctor Runner & Diagnostic Suite
     const runDoctorBtn = document.getElementById('btn-run-doctor');
     const doctorItemsList = document.getElementById('doctor-items-list');
     const doctorStatusText = document.getElementById('doctor-status-text');
     const doctorBadge = document.getElementById('doctor-badge');
     const doctorAptSuggestion = document.getElementById('doctor-apt-suggestion');
     const doctorAptCode = document.getElementById('doctor-apt-code');
+    const doctorPkgTitle = document.getElementById('doctor-pkg-title');
+    const copyPkgCmdBtn = document.getElementById('btn-copy-pkg-cmd');
+    const copyReportBtn = document.getElementById('btn-copy-doctor-report');
+    const exportReportBtn = document.getElementById('btn-export-doctor-report');
+    const crashBanner = document.getElementById('doctor-crash-banner');
+    const crashTitle = document.getElementById('doctor-crash-title');
+    const crashSummary = document.getElementById('doctor-crash-summary');
+    const crashQuickFixBtn = document.getElementById('btn-crash-quick-fix');
+    const reportGithubBtn = document.getElementById('btn-report-github');
+    const launchSafeModeBtn = document.getElementById('btn-launch-safe-mode');
+    const killZombiesBtn = document.getElementById('btn-kill-zombies');
+
+    let currentDoctorReport: any = null;
 
     const executeDoctor = async () => {
       if (!window.jagexApi?.runRs3Doctor) return;
-      if (doctorStatusText) doctorStatusText.textContent = 'Running diagnostics...';
+      if (doctorStatusText) doctorStatusText.textContent = 'Running full diagnostics & pre-flight probes...';
       try {
         const report = await window.jagexApi.runRs3Doctor();
+        currentDoctorReport = report;
+
         if (doctorStatusText) {
-          doctorStatusText.textContent = `${report.osName} (${report.arch}) - Display: ${report.displayServer.toUpperCase()}`;
+          doctorStatusText.textContent = `${report.osName} (${report.arch}) - Distro: ${report.distroFamily.toUpperCase()} | Display: ${report.displayServer.toUpperCase()}`;
         }
         if (doctorBadge) {
           doctorBadge.classList.remove('hidden');
@@ -1508,27 +1536,85 @@ class JagexLauncherApp {
           }
         }
 
+        // Render Crash Banner if recent crash detected
+        try {
+          const lastCrash = await window.jagexApi.getLastCrash();
+          if (lastCrash && Date.now() - lastCrash.timestamp < 48 * 60 * 60 * 1000 && crashBanner && crashTitle && crashSummary) {
+            crashBanner.classList.remove('hidden');
+            crashTitle.textContent = `${lastCrash.title} (${lastCrash.category})`;
+            crashSummary.textContent = `${lastCrash.summary} — Exit code: ${lastCrash.exitCode ?? 'N/A'}, Signal: ${lastCrash.signal ?? 'None'}`;
+
+            if (crashQuickFixBtn) {
+              if (lastCrash.actionId && lastCrash.actionLabel) {
+                crashQuickFixBtn.textContent = lastCrash.actionLabel;
+                crashQuickFixBtn.classList.remove('hidden');
+                crashQuickFixBtn.onclick = async () => {
+                  await handleDoctorAction(lastCrash.actionId);
+                };
+              } else {
+                crashQuickFixBtn.classList.add('hidden');
+              }
+            }
+
+            if (reportGithubBtn) {
+              reportGithubBtn.onclick = async () => {
+                const md = await window.jagexApi.generateDoctorReportMarkdown(report);
+                const issueTitle = encodeURIComponent(`[Crash] ${lastCrash.title} (${lastCrash.signal || lastCrash.exitCode})`);
+                const issueBody = encodeURIComponent(`### Crash Description\n\n### Doctor Diagnostic Report\n\n${md}`);
+                const url = `https://github.com/cook0001/Linux-Jagex-Launcher/issues/new?title=${issueTitle}&body=${issueBody}`;
+                await window.jagexApi.openExternal(url);
+              };
+            }
+          } else if (crashBanner) {
+            crashBanner.classList.add('hidden');
+          }
+        } catch {}
+
         if (doctorItemsList) {
           doctorItemsList.innerHTML = report.checks.map((c: any) => {
             const icon = c.status === 'ok' ? '✓' : (c.status === 'warning' ? '⚠' : '✗');
             const color = c.status === 'ok' ? '#34d399' : (c.status === 'warning' ? '#fde047' : '#f87171');
+            const catBadge = `<span style="font-size: 9px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); color: #94a3b8; text-transform: uppercase;">${c.category}</span>`;
+            const actionBtn = c.actionId && c.actionLabel
+              ? `<button class="btn-secondary doctor-quick-action" data-action="${c.actionId}" style="font-size: 10px; padding: 2px 7px; margin-top: 4px; border-color: rgba(96, 165, 250, 0.4); color: #93c5fd; cursor: pointer;">💡 ${c.actionLabel}</button>`
+              : '';
+
             return `
-              <div style="display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
-                <span style="font-weight: 700; color: ${color}; width: 14px; text-align: center;">${icon}</span>
+              <div style="display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-weight: 700; color: ${color}; width: 14px; text-align: center; margin-top: 2px;">${icon}</span>
                 <div style="flex: 1;">
-                  <div style="font-weight: 600; color: #e2e8f0;">${c.name}</div>
-                  <div style="color: #94a3b8; font-size: 10.5px; margin-top: 1px;">${c.message}</div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 600; color: #e2e8f0;">${c.name}</span>
+                    ${catBadge}
+                  </div>
+                  <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${c.message}</div>
                   ${c.remediation ? `<div style="color: #60a5fa; font-size: 10.5px; margin-top: 2px;">💡 <em>${c.remediation}</em></div>` : ''}
+                  ${actionBtn}
                 </div>
               </div>
             `;
           }).join('');
+
+          // Wire click handlers for dynamic quick action buttons
+          doctorItemsList.querySelectorAll('.doctor-quick-action').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+              const actionId = (e.currentTarget as HTMLElement).getAttribute('data-action');
+              if (actionId) {
+                await handleDoctorAction(actionId);
+              }
+            });
+          });
         }
 
+        // Package suggestions display
+        const pkgCmd = report.suggestedPackageCommand?.command || report.suggestedAptCommand;
         if (doctorAptSuggestion && doctorAptCode) {
-          if (report.suggestedAptCommand) {
+          if (pkgCmd) {
             doctorAptSuggestion.classList.remove('hidden');
-            doctorAptCode.textContent = report.suggestedAptCommand;
+            if (doctorPkgTitle && report.suggestedPackageCommand) {
+              doctorPkgTitle.textContent = `Recommended Package Installation (${report.suggestedPackageCommand.packageManager}):`;
+            }
+            doctorAptCode.textContent = pkgCmd;
           } else {
             doctorAptSuggestion.classList.add('hidden');
           }
@@ -1538,7 +1624,372 @@ class JagexLauncherApp {
       }
     };
 
+    const handleDoctorAction = async (actionId: string) => {
+      try {
+        if (actionId === 'install_ssl') {
+          if (doctorStatusText) doctorStatusText.textContent = 'Installing OpenSSL 1.1 compat libraries...';
+          await window.jagexApi.installRs3CompatLibs();
+          alert('OpenSSL 1.1 compatibility libraries installed successfully.');
+        } else if (actionId === 'clear_cache') {
+          const res = await window.jagexApi.clearRs3Cache();
+          alert(`Cleared ${res.cleared.length} cache folders.`);
+        } else if (actionId === 'enable_lowspec') {
+          await window.jagexApi.saveSettings({ lowSpecMode: true });
+          const lowSpecToggle = document.getElementById('setting-low-spec-mode') as HTMLInputElement | null;
+          if (lowSpecToggle) lowSpecToggle.checked = true;
+          document.body.classList.add('low-spec-active');
+        } else if (actionId === 'enable_audio_fix') {
+          await window.jagexApi.saveSettings({ rs3AudioLatencyFix: true });
+          const audioToggle = document.getElementById('setting-rs3-audio-latency') as HTMLInputElement | null;
+          if (audioToggle) audioToggle.checked = true;
+        } else if (actionId === 'enable_zink') {
+          await window.jagexApi.saveSettings({ rs3GpuWorkaround: 'zink' });
+          const gpuSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement | null;
+          if (gpuSelect) gpuSelect.value = 'zink';
+        } else if (actionId === 'enable_prime') {
+          await window.jagexApi.saveSettings({ rs3GpuWorkaround: 'prime' });
+          const gpuSelect = document.getElementById('setting-rs3-gpu-workaround') as HTMLSelectElement | null;
+          if (gpuSelect) gpuSelect.value = 'prime';
+        } else if (actionId === 'enable_x11') {
+          await window.jagexApi.saveSettings({ rs3ForceX11: true });
+          const x11Toggle = document.getElementById('setting-rs3-force-x11') as HTMLInputElement | null;
+          if (x11Toggle) x11Toggle.checked = true;
+        } else if (actionId === 'kill_zombies') {
+          const count = await window.jagexApi.killZombieProcesses();
+          alert(`Terminated ${count} orphan game process(es).`);
+        }
+        await executeDoctor();
+      } catch (err: any) {
+        alert(`Action failed: ${err.message}`);
+      }
+    };
+
     runDoctorBtn?.addEventListener('click', executeDoctor);
+
+    // Copy diagnostic report to clipboard
+    copyReportBtn?.addEventListener('click', async () => {
+      try {
+        const md = await window.jagexApi.generateDoctorReportMarkdown(currentDoctorReport);
+        await navigator.clipboard.writeText(md);
+        const originalText = copyReportBtn.querySelector('span')?.textContent || 'Copy Report';
+        if (copyReportBtn.querySelector('span')) {
+          copyReportBtn.querySelector('span')!.textContent = 'Copied!';
+        }
+        setTimeout(() => {
+          if (copyReportBtn.querySelector('span')) {
+            copyReportBtn.querySelector('span')!.textContent = originalText;
+          }
+        }, 2000);
+      } catch (err: any) {
+        alert(`Failed to copy report: ${err.message}`);
+      }
+    });
+
+    // Save diagnostic report to file
+    exportReportBtn?.addEventListener('click', async () => {
+      try {
+        const md = await window.jagexApi.generateDoctorReportMarkdown(currentDoctorReport);
+        const res = await window.jagexApi.saveDoctorReportToFile(md);
+        if (res.success) {
+          alert(`Diagnostic report saved successfully:\n${res.filePath}`);
+        } else {
+          alert(`Failed to save report: ${res.error}`);
+        }
+      } catch (err: any) {
+        alert(`Failed to export report: ${err.message}`);
+      }
+    });
+
+    // Copy package install command
+    copyPkgCmdBtn?.addEventListener('click', async () => {
+      const code = doctorAptCode?.textContent;
+      if (code) {
+        await navigator.clipboard.writeText(code);
+        copyPkgCmdBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyPkgCmdBtn.textContent = 'Copy Command';
+        }, 2000);
+      }
+    });
+
+    // Launch in Safe Compatibility Mode
+    launchSafeModeBtn?.addEventListener('click', async () => {
+      if (confirm('Launch RuneScape 3 in Safe Compatibility Mode?\n\nThis enforces X11/XWayland, Mesa Zink over Vulkan, Audio Latency Fix, and DRI2 fallback to bypass driver or compositor crashes.')) {
+        try {
+          if (window.jagexApi?.launchGameInSafeMode) {
+            await window.jagexApi.launchGameInSafeMode();
+          }
+        } catch (err: any) {
+          alert(`Failed to launch safe mode: ${err.message}`);
+        }
+      }
+    });
+
+    // Kill Zombie Processes
+    killZombiesBtn?.addEventListener('click', async () => {
+      try {
+        const killed = await window.jagexApi.killZombieProcesses();
+        alert(`Terminated ${killed} orphan game process(es).`);
+        await executeDoctor();
+      } catch (err: any) {
+        alert(`Error killing processes: ${err.message}`);
+      }
+    });
+
+    // ==========================================
+    // OSRS Doctor Diagnostic Suite & Crash Reporter
+    // ==========================================
+    const runOsrsDoctorBtn = document.getElementById('btn-run-osrs-doctor');
+    const osrsDoctorItemsList = document.getElementById('osrs-doctor-items-list');
+    const osrsDoctorStatusText = document.getElementById('osrs-doctor-status-text');
+    const osrsDoctorBadge = document.getElementById('osrs-doctor-badge');
+    const osrsDoctorAptSuggestion = document.getElementById('osrs-doctor-apt-suggestion');
+    const osrsDoctorAptCode = document.getElementById('osrs-doctor-apt-code');
+    const osrsDoctorPkgTitle = document.getElementById('osrs-doctor-pkg-title');
+    const copyOsrsPkgCmdBtn = document.getElementById('btn-copy-osrs-pkg-cmd');
+    const copyOsrsReportBtn = document.getElementById('btn-copy-osrs-doctor-report');
+    const exportOsrsReportBtn = document.getElementById('btn-export-osrs-doctor-report');
+    const osrsCrashBanner = document.getElementById('osrs-crash-banner');
+    const osrsCrashTitle = document.getElementById('osrs-crash-title');
+    const osrsCrashSummary = document.getElementById('osrs-crash-summary');
+    const osrsCrashQuickFixBtn = document.getElementById('btn-osrs-crash-quick-fix');
+    const osrsReportGithubBtn = document.getElementById('btn-osrs-report-github');
+
+    let currentOsrsDoctorReport: any = null;
+
+    const executeOsrsDoctor = async () => {
+      if (!window.jagexApi?.runOsrsDoctor) return;
+      if (osrsDoctorStatusText) osrsDoctorStatusText.textContent = 'Running OSRS pre-flight diagnostics...';
+      try {
+        const report = await window.jagexApi.runOsrsDoctor();
+        currentOsrsDoctorReport = report;
+
+        if (osrsDoctorStatusText) {
+          osrsDoctorStatusText.textContent = `${report.osName} (${report.arch}) - Client: ${report.selectedClient.toUpperCase()} | Java: ${report.javaVersion || 'Not Found'}`;
+        }
+        if (osrsDoctorBadge) {
+          osrsDoctorBadge.classList.remove('hidden');
+          if (report.allOk) {
+            osrsDoctorBadge.textContent = 'ALL CHECKS PASSED';
+            osrsDoctorBadge.style.background = 'rgba(16, 185, 129, 0.2)';
+            osrsDoctorBadge.style.color = '#34d399';
+            osrsDoctorBadge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+          } else {
+            osrsDoctorBadge.textContent = 'ACTION REQUIRED';
+            osrsDoctorBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+            osrsDoctorBadge.style.color = '#f87171';
+            osrsDoctorBadge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+          }
+        }
+
+        // Render Crash Banner if recent crash detected
+        try {
+          const lastCrash = await window.jagexApi.getOsrsLastCrash();
+          if (lastCrash && Date.now() - lastCrash.timestamp < 48 * 60 * 60 * 1000 && osrsCrashBanner && osrsCrashTitle && osrsCrashSummary) {
+            osrsCrashBanner.classList.remove('hidden');
+            osrsCrashTitle.textContent = `${lastCrash.title} (${lastCrash.category})`;
+            osrsCrashSummary.textContent = `${lastCrash.summary} — Client: ${lastCrash.clientType.toUpperCase()}, Exit code: ${lastCrash.exitCode ?? 'N/A'}, Signal: ${lastCrash.signal ?? 'None'}`;
+
+            if (osrsCrashQuickFixBtn) {
+              if (lastCrash.actionId && lastCrash.actionLabel) {
+                osrsCrashQuickFixBtn.textContent = lastCrash.actionLabel;
+                osrsCrashQuickFixBtn.classList.remove('hidden');
+                osrsCrashQuickFixBtn.onclick = async () => {
+                  await handleOsrsDoctorAction(lastCrash.actionId);
+                };
+              } else {
+                osrsCrashQuickFixBtn.classList.add('hidden');
+              }
+            }
+
+            if (osrsReportGithubBtn) {
+              osrsReportGithubBtn.onclick = async () => {
+                const md = await window.jagexApi.generateOsrsDoctorMarkdown(report);
+                const issueTitle = encodeURIComponent(`[OSRS Crash] ${lastCrash.title} (${lastCrash.clientType})`);
+                const issueBody = encodeURIComponent(`### Crash Description\n\n### OSRS Doctor Diagnostic Report\n\n${md}`);
+                const url = `https://github.com/cook0001/Linux-Jagex-Launcher/issues/new?title=${issueTitle}&body=${issueBody}`;
+                await window.jagexApi.openExternal(url);
+              };
+            }
+          } else if (osrsCrashBanner) {
+            osrsCrashBanner.classList.add('hidden');
+          }
+        } catch {}
+
+        if (osrsDoctorItemsList) {
+          osrsDoctorItemsList.innerHTML = report.checks.map((c: any) => {
+            const icon = c.status === 'ok' ? '✓' : (c.status === 'warning' ? '⚠' : '✗');
+            const color = c.status === 'ok' ? '#34d399' : (c.status === 'warning' ? '#fde047' : '#f87171');
+            const catBadge = `<span style="font-size: 9px; padding: 1px 4px; border-radius: 3px; background: rgba(255,255,255,0.06); color: #94a3b8; text-transform: uppercase;">${c.category}</span>`;
+            const actionBtn = c.actionId && c.actionLabel
+              ? `<button class="btn-secondary osrs-doctor-quick-action" data-action="${c.actionId}" style="font-size: 10px; padding: 2px 7px; margin-top: 4px; border-color: rgba(96, 165, 250, 0.4); color: #93c5fd; cursor: pointer;">💡 ${c.actionLabel}</button>`
+              : '';
+
+            return `
+              <div style="display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04);">
+                <span style="font-weight: 700; color: ${color}; width: 14px; text-align: center; margin-top: 2px;">${icon}</span>
+                <div style="flex: 1;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 600; color: #e2e8f0;">${c.name}</span>
+                    ${catBadge}
+                  </div>
+                  <div style="color: #94a3b8; font-size: 10.5px; margin-top: 2px;">${c.message}</div>
+                  ${c.remediation ? `<div style="color: #60a5fa; font-size: 10.5px; margin-top: 2px;">💡 <em>${c.remediation}</em></div>` : ''}
+                  ${actionBtn}
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          // Wire click handlers for dynamic quick action buttons
+          osrsDoctorItemsList.querySelectorAll('.osrs-doctor-quick-action').forEach((btn) => {
+            btn.addEventListener('click', async (e) => {
+              const actionId = (e.currentTarget as HTMLElement).getAttribute('data-action');
+              if (actionId) {
+                await handleOsrsDoctorAction(actionId);
+              }
+            });
+          });
+        }
+
+        // Package suggestions display
+        const pkgCmd = report.suggestedPackageCommand?.command;
+        if (osrsDoctorAptSuggestion && osrsDoctorAptCode) {
+          if (pkgCmd) {
+            osrsDoctorAptSuggestion.classList.remove('hidden');
+            if (osrsDoctorPkgTitle && report.suggestedPackageCommand) {
+              osrsDoctorPkgTitle.textContent = `Recommended Headful Java Package (${report.suggestedPackageCommand.packageManager}):`;
+            }
+            osrsDoctorAptCode.textContent = pkgCmd;
+          } else {
+            osrsDoctorAptSuggestion.classList.add('hidden');
+          }
+        }
+      } catch (err: any) {
+        if (osrsDoctorStatusText) osrsDoctorStatusText.textContent = `Diagnostics error: ${err.message}`;
+      }
+    };
+
+    const handleOsrsDoctorAction = async (actionId: string) => {
+      try {
+        if (actionId === 'install_headful_java') {
+          const pkgCmd = currentOsrsDoctorReport?.suggestedPackageCommand?.command;
+          if (pkgCmd) {
+            await navigator.clipboard.writeText(pkgCmd);
+            alert(`Package installation command copied to clipboard:\n\n${pkgCmd}\n\nRun this command in your terminal to install headful Java with graphical display support.`);
+          } else {
+            alert('Please install a headful JRE (e.g. default-jre or openjdk-17-jre) using your package manager.');
+          }
+        } else if (actionId === 'install_runelite_jar') {
+          if (osrsDoctorStatusText) osrsDoctorStatusText.textContent = 'Installing RuneLite JAR...';
+          await window.jagexApi.installOsrsClient('runelite');
+          alert('RuneLite launcher JAR installed successfully.');
+        } else if (actionId === 'install_hdos_jar') {
+          if (osrsDoctorStatusText) osrsDoctorStatusText.textContent = 'Installing HDOS JAR...';
+          await window.jagexApi.installOsrsClient('hdos');
+          alert('HDOS launcher JAR installed successfully.');
+        } else if (actionId === 'fix_runelite_perms') {
+          const runeliteDir = '~/.runelite';
+          const res = await window.jagexApi.repairOsrsPermissions(runeliteDir);
+          if (res.repaired) {
+            alert('Repaired file permissions for ~/.runelite directory.');
+          } else {
+            alert(`Failed to repair permissions: ${res.error || 'Unknown error'}`);
+          }
+        } else if (actionId === 'enable_lowspec') {
+          await window.jagexApi.saveSettings({ lowSpecMode: true });
+          const lowSpecToggle = document.getElementById('setting-low-spec-mode') as HTMLInputElement | null;
+          if (lowSpecToggle) lowSpecToggle.checked = true;
+          document.body.classList.add('low-spec-active');
+          alert('Low-Spec / Performance mode enabled.');
+        } else if (actionId === 'kill_osrs_zombies') {
+          const count = await window.jagexApi.killOsrsZombieProcesses();
+          alert(`Terminated ${count} orphan OSRS process(es).`);
+        } else if (actionId === 'enable_font_smoothing') {
+          const currentSettings = await window.jagexApi.getSettings();
+          let jvmArgs = (currentSettings.osrsJvmArgs || '').trim();
+          if (!jvmArgs.includes('awt.useSystemAAFontSettings')) {
+            jvmArgs = `${jvmArgs} -Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true`.trim();
+            await window.jagexApi.saveSettings({ osrsJvmArgs: jvmArgs });
+            const jvmInput = document.getElementById('setting-osrs-jvm-args') as HTMLInputElement | null;
+            if (jvmInput) jvmInput.value = jvmArgs;
+            alert('Enabled subpixel font antialiasing (-Dawt.useSystemAAFontSettings=lcd).');
+          }
+        } else if (actionId === 'enable_zgc') {
+          const currentSettings = await window.jagexApi.getSettings();
+          let jvmArgs = (currentSettings.osrsJvmArgs || '').trim();
+          if (!jvmArgs.includes('+UseZGC')) {
+            jvmArgs = `${jvmArgs} -XX:+UseZGC -XX:+ZGenerational`.trim();
+            await window.jagexApi.saveSettings({ osrsJvmArgs: jvmArgs });
+            const jvmInput = document.getElementById('setting-osrs-jvm-args') as HTMLInputElement | null;
+            if (jvmInput) jvmInput.value = jvmArgs;
+            alert('Enabled ultra-low-latency Generational ZGC (-XX:+UseZGC -XX:+ZGenerational).');
+          }
+        }
+        await executeOsrsDoctor();
+      } catch (err: any) {
+        alert(`Action failed: ${err.message}`);
+      }
+    };
+
+    runOsrsDoctorBtn?.addEventListener('click', executeOsrsDoctor);
+
+    const killOsrsZombiesBtn = document.getElementById('btn-kill-osrs-zombies');
+    killOsrsZombiesBtn?.addEventListener('click', async () => {
+      try {
+        const killed = await window.jagexApi.killOsrsZombieProcesses();
+        alert(`Terminated ${killed} orphan OSRS process(es).`);
+        await executeOsrsDoctor();
+      } catch (err: any) {
+        alert(`Error killing processes: ${err.message}`);
+      }
+    });
+
+    // Copy OSRS diagnostic report to clipboard
+    copyOsrsReportBtn?.addEventListener('click', async () => {
+      try {
+        const md = await window.jagexApi.generateOsrsDoctorMarkdown(currentOsrsDoctorReport);
+        await navigator.clipboard.writeText(md);
+        const originalText = copyOsrsReportBtn.querySelector('span')?.textContent || 'Copy Report';
+        if (copyOsrsReportBtn.querySelector('span')) {
+          copyOsrsReportBtn.querySelector('span')!.textContent = 'Copied!';
+        }
+        setTimeout(() => {
+          if (copyOsrsReportBtn.querySelector('span')) {
+            copyOsrsReportBtn.querySelector('span')!.textContent = originalText;
+          }
+        }, 2000);
+      } catch (err: any) {
+        alert(`Failed to copy report: ${err.message}`);
+      }
+    });
+
+    // Save OSRS diagnostic report to file
+    exportOsrsReportBtn?.addEventListener('click', async () => {
+      try {
+        const md = await window.jagexApi.generateOsrsDoctorMarkdown(currentOsrsDoctorReport);
+        const res = await window.jagexApi.saveOsrsDoctorReportToFile(md);
+        if (res.success) {
+          alert(`OSRS diagnostic report saved successfully:\n${res.filePath}`);
+        } else {
+          alert(`Failed to save report: ${res.error}`);
+        }
+      } catch (err: any) {
+        alert(`Failed to export report: ${err.message}`);
+      }
+    });
+
+    // Copy OSRS package install command
+    copyOsrsPkgCmdBtn?.addEventListener('click', async () => {
+      const code = osrsDoctorAptCode?.textContent;
+      if (code) {
+        await navigator.clipboard.writeText(code);
+        copyOsrsPkgCmdBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyOsrsPkgCmdBtn.textContent = 'Copy Command';
+        }, 2000);
+      }
+    });
 
     // Browser login modal
     const browserLoginModal = document.getElementById('modal-browser-login');

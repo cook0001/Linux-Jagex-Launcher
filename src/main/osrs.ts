@@ -3,8 +3,11 @@ import path from 'path';
 import os from 'os';
 import https from 'https';
 import { spawn, spawnSync, ChildProcess } from 'child_process';
-import { app, BrowserWindow } from 'electron';
-import { store } from './store';
+import type { BrowserWindow } from 'electron';
+import * as electron from 'electron';
+const app = (electron as any)?.app || ((electron as any)?.default?.app) || undefined;
+import { store } from './store.ts';
+import { sanitizeReportText } from './launcher.ts';
 
 const RUNELITE_DOWNLOAD_URL = 'https://github.com/runelite/launcher/releases/latest/download/RuneLite.jar';
 const HDOS_DOWNLOAD_URL = 'https://cdn.hdos.dev/launcher/latest/hdos-launcher.jar';
@@ -16,6 +19,117 @@ export interface OsrsClientStatus {
   clientPath: string;
   clientType: 'runelite' | 'hdos' | 'official';
   isSystemClient?: boolean;
+}
+
+export interface OsrsCrashReport {
+  timestamp: number;
+  clientType: 'runelite' | 'hdos' | 'official';
+  exitCode: number | null;
+  signal: string | null;
+  category: 'headless_jre' | 'jvm_oom' | 'unsatisfied_link' | 'bad_java_version' | 'permission_denied' | 'jvm_fatal' | 'unknown';
+  title: string;
+  summary: string;
+  remediation: string;
+  actionId?: string;
+  actionLabel?: string;
+  stderrSnippet: string;
+  stdoutSnippet: string;
+  systemInfo: {
+    javaPath: string | null;
+    displayServer: string;
+    ramGb: string;
+  };
+}
+
+export function classifyOsrsCrash(
+  code: number | null,
+  signal: string | null,
+  stderr: string,
+  stdout: string
+): {
+  category: OsrsCrashReport['category'];
+  title: string;
+  summary: string;
+  remediation: string;
+  actionId?: string;
+  actionLabel?: string;
+} {
+  const combined = (stderr + '\n' + stdout).toLowerCase();
+
+  // 1. Headless JRE Exception
+  if (combined.includes('headless') || combined.includes('no x11 display') || combined.includes('libawt_xawt') || combined.includes('headlessexception')) {
+    return {
+      category: 'headless_jre',
+      title: 'Headless JRE Detected (AWT / Swing Missing)',
+      summary: 'The active Java runtime is a headless package lacking GUI/AWT display libraries.',
+      remediation: 'Install a headful OpenJDK JRE package (e.g. "sudo apt install default-jre" or "sudo pacman -S jre-openjdk").',
+      actionId: 'install_headful_java',
+      actionLabel: 'Install Headful JRE'
+    };
+  }
+
+  // 2. Out of Memory Error
+  if (combined.includes('outofmemoryerror') || combined.includes('could not reserve enough space') || signal === 'SIGKILL' || code === 137) {
+    return {
+      category: 'jvm_oom',
+      title: 'Java Heap Out-Of-Memory (OOM) Exhaustion',
+      summary: 'The JVM ran out of memory or exceeded the physical RAM limit.',
+      remediation: 'Enable Low-Spec Mode or adjust Custom JVM Parameters (e.g. -Xmx768m) in Settings.',
+      actionId: 'enable_lowspec',
+      actionLabel: 'Enable Low-Spec Heap'
+    };
+  }
+
+  // 3. Unsupported Class Version Error (Java too old)
+  if (combined.includes('unsupportedclassversionerror') || combined.includes('has been compiled by a more recent version of the java')) {
+    return {
+      category: 'bad_java_version',
+      title: 'Incompatible / Outdated Java Version',
+      summary: 'The active Java version is too old to execute this client (Java 11+ is required).',
+      remediation: 'Install OpenJDK 17 or 21 and configure it in Settings > Old School RuneScape.'
+    };
+  }
+
+  // 4. Unsatisfied Link Error (Native libraries)
+  if (combined.includes('unsatisfiedlinkerror') || combined.includes('cannot open shared object file')) {
+    const match = stderr.match(/cannot open shared object file:\s*([^\s:]+)/i);
+    const lib = match ? match[1] : 'native library';
+    return {
+      category: 'unsatisfied_link',
+      title: `Missing Native Library: ${lib}`,
+      summary: `The client could not load the native library ${lib}.`,
+      remediation: 'Run OSRS Doctor in Settings to identify and install missing system packages.'
+    };
+  }
+
+  // 5. Permission Denied
+  if (combined.includes('permission denied') || combined.includes('eacces')) {
+    return {
+      category: 'permission_denied',
+      title: 'Filesystem Permission Denied (~/.runelite or ~/.hdos)',
+      summary: 'Client directories contain root-owned files from prior sudo usage.',
+      remediation: 'Run "Fix Permissions" in Settings > Old School RuneScape.',
+      actionId: 'fix_runelite_perms',
+      actionLabel: 'Fix Permissions'
+    };
+  }
+
+  // 6. JVM Fatal Crash Dump (hs_err_pid)
+  if (combined.includes('fatal error has been detected by the java runtime') || combined.includes('hs_err_pid') || signal === 'SIGSEGV' || code === 139) {
+    return {
+      category: 'jvm_fatal',
+      title: 'JVM Core Crash / Fatal Signal',
+      summary: 'The Java runtime crashed fatally in native code or graphics dispatch.',
+      remediation: 'Enable Mesa Compatibility Profile override in Settings > RS3 / Low-Spec Mode, or update graphics drivers.'
+    };
+  }
+
+  return {
+    category: 'unknown',
+    title: `Unexpected OSRS Exit (${signal ? `Signal ${signal}` : `Code ${code}`})`,
+    summary: `Client terminated unexpectedly with exit code ${code ?? 'N/A'}.`,
+    remediation: 'Run OSRS Diagnostics in Settings or click "Report Issue" to copy sanitized logs.'
+  };
 }
 
 function commandExists(cmd: string): boolean {
@@ -46,14 +160,42 @@ export class OsrsManager {
   private hdosDir: string;
   private activeProcess: ChildProcess | null = null;
   private isRunning: boolean = false;
+  private wasKilledByUser: boolean = false;
+  private crashFile: string;
 
   constructor() {
     this.baseDir = path.join(os.homedir(), '.local', 'share', 'linux-jagex-launcher');
     this.runeliteDir = path.join(this.baseDir, 'runelite');
     this.hdosDir = path.join(this.baseDir, 'hdos');
+    const configDir = path.join(os.homedir(), '.config', 'linux-jagex-launcher');
+    if (!fs.existsSync(configDir)) {
+      try {
+        fs.mkdirSync(configDir, { recursive: true });
+      } catch {}
+    }
+    this.crashFile = path.join(configDir, 'last_crash_osrs.json');
 
     if (!fs.existsSync(this.runeliteDir)) fs.mkdirSync(this.runeliteDir, { recursive: true });
     if (!fs.existsSync(this.hdosDir)) fs.mkdirSync(this.hdosDir, { recursive: true });
+  }
+
+  public getLastCrash(): OsrsCrashReport | null {
+    try {
+      if (fs.existsSync(this.crashFile)) {
+        return JSON.parse(fs.readFileSync(this.crashFile, 'utf8'));
+      }
+    } catch {
+      return null;
+    }
+    return null;
+  }
+
+  public clearLastCrash(): void {
+    try {
+      if (fs.existsSync(this.crashFile)) {
+        fs.unlinkSync(this.crashFile);
+      }
+    } catch {}
   }
 
   public getRuneliteJarPath(): string {
@@ -471,17 +613,45 @@ export class OsrsManager {
     console.log(`[OSRS] Authenticated Character: ${displayName} (${characterId})`);
 
     let quitTimeout: NodeJS.Timeout | null = null;
+    let stderrBuffer = '';
+    const stdoutRing: string[] = [];
+    const stderrRing: string[] = [];
+    const maxRingLines = 150;
 
     try {
+      this.wasKilledByUser = false;
       const child = spawn(baseCmd, baseArgs, {
         env,
         cwd: os.homedir(),
         detached: true,
-        stdio: 'ignore'
+        stdio: ['ignore', 'pipe', 'pipe']
       });
 
       this.activeProcess = child;
       this.isRunning = true;
+
+      child.stderr?.on('data', (chunk) => {
+        const str = chunk.toString();
+        stderrBuffer += str;
+        for (const line of str.split('\n')) {
+          if (line.trim()) {
+            stderrRing.push(line.trim());
+            if (stderrRing.length > maxRingLines) stderrRing.shift();
+          }
+        }
+        console.error(`[OSRS stderr] ${str.trim()}`);
+      });
+
+      child.stdout?.on('data', (chunk) => {
+        const str = chunk.toString();
+        for (const line of str.split('\n')) {
+          if (line.trim()) {
+            stdoutRing.push(line.trim());
+            if (stdoutRing.length > maxRingLines) stdoutRing.shift();
+          }
+        }
+        console.log(`[OSRS stdout] ${chunk.toString().trim()}`);
+      });
 
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('game-state-changed', { isRunning: true, game: 'osrs', client: clientType });
@@ -505,7 +675,54 @@ export class OsrsManager {
         console.log(`[OSRS] Process terminated with code: ${code}, signal: ${signal}`);
         this.isRunning = false;
         this.activeProcess = null;
-        if (mainWindow && !mainWindow.isDestroyed()) {
+
+        if (code !== 0 && code !== null && !this.wasKilledByUser) {
+          const classification = classifyOsrsCrash(code, signal, stderrBuffer, stdoutRing.join('\n'));
+          const displayServer = process.env.XDG_SESSION_TYPE || (process.env.WAYLAND_DISPLAY ? 'wayland' : 'x11');
+          const totalRamGb = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(1);
+
+          const crashReport: OsrsCrashReport = {
+            timestamp: Date.now(),
+            clientType,
+            exitCode: code,
+            signal,
+            category: classification.category,
+            title: classification.title,
+            summary: classification.summary,
+            remediation: classification.remediation,
+            actionId: classification.actionId,
+            actionLabel: classification.actionLabel,
+            stderrSnippet: sanitizeReportText(stderrRing.slice(-40).join('\n')),
+            stdoutSnippet: sanitizeReportText(stdoutRing.slice(-20).join('\n')),
+            systemInfo: {
+              javaPath: javaBin,
+              displayServer,
+              ramGb: totalRamGb
+            }
+          };
+
+          try {
+            fs.writeFileSync(this.crashFile, JSON.stringify(crashReport, null, 2), 'utf8');
+          } catch (writeErr) {
+            console.error('[OSRS] Failed to write crash log:', writeErr);
+          }
+
+          let helpfulMsg = `${classification.title}: ${classification.summary}`;
+          if (classification.remediation) {
+            helpfulMsg += ` (${classification.remediation})`;
+          }
+
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.show();
+            mainWindow.webContents.send('game-state-changed', {
+              isRunning: false,
+              game: 'osrs',
+              client: clientType,
+              error: helpfulMsg,
+              crashReport
+            });
+          }
+        } else if (mainWindow && !mainWindow.isDestroyed()) {
           mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'osrs' });
           if (settings.minimizeToTray && !settings.closeOnLaunch) {
             mainWindow.show();
@@ -516,7 +733,7 @@ export class OsrsManager {
       if (settings.closeOnLaunch) {
         console.log('[OSRS] Close on launch enabled. Minimizing/exiting launcher to free RAM in 3s...');
         quitTimeout = setTimeout(() => {
-          app.quit();
+          app?.quit();
         }, 3000);
       } else if (settings.minimizeToTray && mainWindow && !mainWindow.isDestroyed()) {
         console.log('[OSRS] Minimizing launcher to tray...');
@@ -535,6 +752,7 @@ export class OsrsManager {
 
   public killGame(): void {
     if (this.activeProcess && !this.activeProcess.killed) {
+      this.wasKilledByUser = true;
       this.activeProcess.kill('SIGTERM');
       this.isRunning = false;
       this.activeProcess = null;

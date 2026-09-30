@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell, clipboard, nativeImage } from 'electron';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 import { store } from './store';
 import { auth } from './auth';
@@ -8,6 +9,7 @@ import { installer } from './installer';
 import { launcher } from './launcher';
 import { osrs } from './osrs';
 import { doctor } from './diagnostics';
+import { osrsDoctor } from './osrs-diagnostics';
 import { updater } from './updater';
 import { deck } from './deck';
 import { steamShortcuts } from './steam-shortcuts';
@@ -300,6 +302,10 @@ ipcMain.handle('launcher:launch', async (_, options?: any) => {
   return await launcher.launchRs3(mainWindow || undefined, options);
 });
 
+ipcMain.handle('launcher:launchSafeMode', async (_, options?: any) => {
+  return await launcher.launchRs3(mainWindow || undefined, { ...options, safeMode: true });
+});
+
 ipcMain.handle('launcher:isRunning', () => {
   return launcher.isGameRunning() || osrs.isGameRunning();
 });
@@ -323,8 +329,40 @@ ipcMain.handle('osrs:install', async (_, clientType?: 'runelite' | 'hdos') => {
 });
 
 // IPC: Diagnostics & Compatibility
-ipcMain.handle('diagnostics:runRs3Doctor', () => {
-  return doctor.runDoctor();
+ipcMain.handle('diagnostics:runRs3Doctor', async () => {
+  return await doctor.runDoctorWithProbes();
+});
+
+ipcMain.handle('diagnostics:getLastCrash', () => {
+  return launcher.getLastCrash();
+});
+
+ipcMain.handle('diagnostics:clearLastCrash', () => {
+  launcher.clearLastCrash();
+  return true;
+});
+
+ipcMain.handle('diagnostics:killZombies', () => {
+  return doctor.killZombies();
+});
+
+ipcMain.handle('diagnostics:generateMarkdown', (_, report) => {
+  return doctor.generateMarkdownReport(report || doctor.runDoctor());
+});
+
+ipcMain.handle('diagnostics:saveReportToFile', async (_, content: string) => {
+  const downloadsDir = path.join(os.homedir(), 'Downloads');
+  const filename = `rs3-doctor-report-${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
+  const filePath = path.join(downloadsDir, filename);
+  try {
+    if (!fs.existsSync(downloadsDir)) {
+      fs.mkdirSync(downloadsDir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, content, 'utf8');
+    return { success: true, filePath };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 });
 
 ipcMain.handle('diagnostics:installRs3CompatLibs', async () => {
@@ -337,6 +375,47 @@ ipcMain.handle('diagnostics:installRs3CompatLibs', async () => {
 
 ipcMain.handle('diagnostics:clearRs3Cache', () => {
   return installer.clearClientCache();
+});
+
+// IPC: OSRS Diagnostics
+ipcMain.handle('diagnostics:runOsrsDoctor', async () => {
+  return await osrsDoctor.runDoctorWithProbes();
+});
+
+ipcMain.handle('diagnostics:killOsrsZombies', () => {
+  return osrsDoctor.killZombies();
+});
+
+ipcMain.handle('diagnostics:getOsrsLastCrash', () => {
+  return osrs.getLastCrash();
+});
+
+ipcMain.handle('diagnostics:clearOsrsLastCrash', () => {
+  osrs.clearLastCrash();
+  return true;
+});
+
+ipcMain.handle('diagnostics:repairOsrsPermissions', (_, targetDir: string) => {
+  return osrsDoctor.repairPermissions(targetDir);
+});
+
+ipcMain.handle('diagnostics:generateOsrsDoctorMarkdown', (_, report) => {
+  return osrsDoctor.generateMarkdownReport(report || osrsDoctor.runDoctor());
+});
+
+ipcMain.handle('diagnostics:saveOsrsDoctorReportToFile', async (_, content: string) => {
+  const downloadsDir = path.join(os.homedir(), 'Downloads');
+  const filename = `osrs-doctor-report-${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
+  const filePath = path.join(downloadsDir, filename);
+  try {
+    if (!fs.existsSync(downloadsDir)) {
+      fs.mkdirSync(downloadsDir, { recursive: true });
+    }
+    fs.writeFileSync(filePath, content, 'utf8');
+    return { success: true, filePath };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
 });
 
 // IPC: Feed & News with TTL In-Memory Caching (3min for PSA, 5min for News)

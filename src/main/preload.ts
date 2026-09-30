@@ -50,6 +50,21 @@ export const api = {
   runRs3Doctor: () => ipcRenderer.invoke('diagnostics:runRs3Doctor'),
   installRs3CompatLibs: () => ipcRenderer.invoke('diagnostics:installRs3CompatLibs'),
   clearRs3Cache: () => ipcRenderer.invoke('diagnostics:clearRs3Cache'),
+  getLastCrash: () => ipcRenderer.invoke('diagnostics:getLastCrash'),
+  clearLastCrash: () => ipcRenderer.invoke('diagnostics:clearLastCrash'),
+  killZombieProcesses: () => ipcRenderer.invoke('diagnostics:killZombies'),
+  generateDoctorReportMarkdown: (report?: any) => ipcRenderer.invoke('diagnostics:generateMarkdown', report),
+  saveDoctorReportToFile: (content: string) => ipcRenderer.invoke('diagnostics:saveReportToFile', content),
+  launchGameInSafeMode: (options?: any) => ipcRenderer.invoke('launcher:launchSafeMode', options),
+
+  // OSRS Diagnostics
+  runOsrsDoctor: () => ipcRenderer.invoke('diagnostics:runOsrsDoctor'),
+  getOsrsLastCrash: () => ipcRenderer.invoke('diagnostics:getOsrsLastCrash'),
+  clearOsrsLastCrash: () => ipcRenderer.invoke('diagnostics:clearOsrsLastCrash'),
+  repairOsrsPermissions: (targetDir: string) => ipcRenderer.invoke('diagnostics:repairOsrsPermissions', targetDir),
+  generateOsrsDoctorMarkdown: (report?: any) => ipcRenderer.invoke('diagnostics:generateOsrsDoctorMarkdown', report),
+  saveOsrsDoctorReportToFile: (content: string) => ipcRenderer.invoke('diagnostics:saveOsrsDoctorReportToFile', content),
+  killOsrsZombieProcesses: () => ipcRenderer.invoke('diagnostics:killOsrsZombies'),
 
   // PSA & News proxy (to avoid CORS in renderer)
   fetchPsa: (game: string) => ipcRenderer.invoke('feed:getPsa', game),
