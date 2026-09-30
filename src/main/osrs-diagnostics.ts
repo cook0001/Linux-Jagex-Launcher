@@ -246,55 +246,66 @@ export class OsrsDoctor {
     await Promise.allSettled(
       endpoints.map(async (ep) => {
         const start = Date.now();
-        const res = await fetch(ep.url, { method: 'HEAD', signal: AbortSignal.timeout(3000) });
-        const latency = Date.now() - start;
+        try {
+          const res = await fetch(ep.url, { method: 'HEAD', signal: AbortSignal.timeout(3000) });
+          const latency = Date.now() - start;
 
-        // Check system clock drift against HTTP Date header
-        if (ep.id === 'net_osrs_config' || ep.id === 'net_jagex_auth') {
-          const dateHeader = res.headers.get('date');
-          if (dateHeader) {
-            const serverTime = Date.parse(dateHeader);
-            if (!isNaN(serverTime)) {
-              const skewSeconds = Math.abs(Math.round((Date.now() - serverTime) / 1000));
-              if (skewSeconds > 300) {
-                checks.push({
-                  id: 'osrs_network_clock',
-                  name: 'System Clock / NTP Synchronization',
-                  category: 'network',
-                  status: 'error',
-                  message: `System clock is desynchronized by ~${skewSeconds}s. Jagex OAuth login tokens will fail signature verification.`,
-                  remediation: 'Synchronize system time: sudo timedatectl set-ntp true (or chronyd -q)'
-                });
-              } else if (skewSeconds > 90) {
-                checks.push({
-                  id: 'osrs_network_clock',
-                  name: 'System Clock / NTP Synchronization',
-                  category: 'network',
-                  status: 'warning',
-                  message: `System clock has mild drift (~${skewSeconds}s). We recommend enabling NTP synchronization.`,
-                  remediation: 'Synchronize system time: sudo timedatectl set-ntp true'
-                });
+          // Check system clock drift against HTTP Date header
+          if (ep.id === 'net_osrs_config' || ep.id === 'net_jagex_auth') {
+            const dateHeader = res.headers.get('date');
+            if (dateHeader) {
+              const serverTime = Date.parse(dateHeader);
+              if (!isNaN(serverTime)) {
+                const skewSeconds = Math.abs(Math.round((Date.now() - serverTime) / 1000));
+                if (skewSeconds > 300) {
+                  checks.push({
+                    id: 'osrs_network_clock',
+                    name: 'System Clock / NTP Synchronization',
+                    category: 'network',
+                    status: 'error',
+                    message: `System clock is desynchronized by ~${skewSeconds}s. Jagex OAuth login tokens will fail signature verification.`,
+                    remediation: 'Synchronize system time: sudo timedatectl set-ntp true (or chronyd -q)'
+                  });
+                } else if (skewSeconds > 90) {
+                  checks.push({
+                    id: 'osrs_network_clock',
+                    name: 'System Clock / NTP Synchronization',
+                    category: 'network',
+                    status: 'warning',
+                    message: `System clock has mild drift (~${skewSeconds}s). We recommend enabling NTP synchronization.`,
+                    remediation: 'Synchronize system time: sudo timedatectl set-ntp true'
+                  });
+                }
               }
             }
           }
-        }
 
-        if (res.ok || res.status < 500) {
-          checks.push({
-            id: ep.id,
-            name: ep.name,
-            category: 'network',
-            status: 'ok',
-            message: `Endpoint reachable (${latency}ms, HTTP ${res.status}).`
-          });
-        } else {
+          if (res.ok || res.status < 500) {
+            checks.push({
+              id: ep.id,
+              name: ep.name,
+              category: 'network',
+              status: 'ok',
+              message: `Endpoint reachable (${latency}ms, HTTP ${res.status}).`
+            });
+          } else {
+            checks.push({
+              id: ep.id,
+              name: ep.name,
+              category: 'network',
+              status: 'warning',
+              message: `Unexpected HTTP status ${res.status} (${latency}ms).`,
+              remediation: 'Check network connection or firewall settings.'
+            });
+          }
+        } catch (err: any) {
           checks.push({
             id: ep.id,
             name: ep.name,
             category: 'network',
             status: 'warning',
-            message: `Unexpected HTTP status ${res.status} (${latency}ms).`,
-            remediation: 'Check network connection or firewall settings.'
+            message: `Endpoint unreachable: ${err?.message || 'Network timeout or connection error'}.`,
+            remediation: 'Verify network connection or DNS resolution.'
           });
         }
       })

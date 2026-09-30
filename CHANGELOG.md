@@ -5,6 +5,19 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-09-30
+
+### Fixed
+- **Ubuntu 24.04 (noble) and 26.04 (resolute) t64 Dependency Resolution**: Updated package dependencies in `electron-builder.json` and `packaging/ppa/debian/control` with transitional alternatives (`libatspi2.0-0t64 | libatspi2.0-0 | libatspi-0`, `libgtk-3-0 | libgtk-3-0t64`, `libasound2 | libasound2t64`, and added `xz-utils`, `xdg-utils`, `libxtst6`, `libgbm1`, `libdrm2`) ensuring seamless apt installation without broken package errors.
+- **Debian Rules Shared Library Scanning**: Configured `override_dh_shlibdeps` in `packaging/ppa/debian/rules` to bypass scanning pre-compiled Electron binaries, resolving Launchpad builder failures.
+- **Asynchronous OSRS Network Diagnostics**: Wrapped background socket and ping diagnostic probes in `src/main/osrs-diagnostics.ts` to prevent unhandled timeout rejections during network drops.
+
+### Changed
+- **PPA Source Package Build Resiliency**: Added automatic 4-attempt retry loop (`RETRY_DELAY=30`) and a 30-second cooldown (`sleep 30`) between series uploads in `packaging/ppa/build-source-package.sh` and `.github/workflows/ppa.yml` to prevent Launchpad rate-limiting.
+- **Website Organization & Visual Polish**: Re-architected `docs/index.html` and `docs/style.css` with centered block containers, comfortable side padding, left-aligned typography, official game crests, and anonymous screenshots.
+
+---
+
 ## [1.4.0] - 2026-09-30
 
 ### Added

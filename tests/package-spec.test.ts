@@ -147,6 +147,13 @@ test('Repository and package configuration', async (t) => {
 
     const format = fs.readFileSync(path.join(debianDir, 'source/format'), 'utf8');
     assert.strictEqual(format.trim(), '3.0 (quilt)');
+
+    const builderScript = fs.readFileSync(path.join(ppaDir, 'build-source-package.sh'), 'utf8');
+    assert.ok(builderScript.includes('Cooling down 30s between series'), 'Must include 30-second cooldown between series');
+    assert.ok(builderScript.includes('sleep 30'), 'Must execute sleep 30 between series');
+    assert.ok(builderScript.includes('MAX_RETRIES='), 'Must define MAX_RETRIES for automatic retry loop');
+    assert.ok(builderScript.includes('RETRY_DELAY=30'), 'Must define RETRY_DELAY of 30s for automatic retry loop');
+    assert.ok(builderScript.includes('Initiating dput upload with automatic retry loop'), 'Must execute dput with retry loop');
   });
 });
 

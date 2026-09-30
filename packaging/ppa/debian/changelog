@@ -1,3 +1,12 @@
+linux-jagex-launcher (1.4.1-1ubuntu1~noble) noble; urgency=medium
+
+  * Hotfix for Ubuntu 24.04 (noble) and 26.04 (resolute) t64 transitional dependencies.
+  * Disable dh_shlibdeps scanning for pre-compiled Electron binaries in debian/rules.
+  * Add automatic retry loop and 30-second series cooldown in PPA deployment.
+  * Website layout refinements with centered containers, side padding, and official icons.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Wed, 30 Sep 2026 06:25:00 -0500
+
 linux-jagex-launcher (1.4.0-1ubuntu1~noble) noble; urgency=medium
 
   * Native Linux system tray integration with instant character launch menu.

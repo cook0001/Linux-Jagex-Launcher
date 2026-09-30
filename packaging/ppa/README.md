@@ -33,10 +33,10 @@ sudo apt install linux-jagex-launcher
 Unlike standard software releases where you upload pre-compiled `.deb` binary files, **Launchpad builds `.deb` packages in Canonical's cloud builders from Debian Source Packages**.
 
 A Debian Source Package consists of four files:
-- `linux-jagex-launcher_1.4.0.orig.tar.gz`: The pristine upstream application bundle.
-- `linux-jagex-launcher_1.4.0-1ubuntu1~noble.debian.tar.xz`: The `debian/` packaging instructions.
-- `linux-jagex-launcher_1.4.0-1ubuntu1~noble.dsc`: The cryptographic descriptor file.
-- `linux-jagex-launcher_1.4.0-1ubuntu1~noble_source.changes`: The GPG-signed upload manifest.
+- `linux-jagex-launcher_1.4.1.orig.tar.gz`: The pristine upstream application bundle.
+- `linux-jagex-launcher_1.4.1-1ubuntu1~noble.debian.tar.xz`: The `debian/` packaging instructions.
+- `linux-jagex-launcher_1.4.1-1ubuntu1~noble.dsc`: The cryptographic descriptor file.
+- `linux-jagex-launcher_1.4.1-1ubuntu1~noble_source.changes`: The GPG-signed upload manifest.
 
 Launchpad strictly verifies your **GPG signature** against your Launchpad profile before accepting any upload.
 
@@ -148,7 +148,7 @@ This script automatically:
 Once signed, upload the generated `.changes` file:
 
 ```bash
-dput ppa:danielcook2016/linux-jagex-launcher /tmp/ppa-build-XXXXXX/linux-jagex-launcher_1.4.0-1ubuntu1~noble_source.changes
+dput ppa:danielcook2016/linux-jagex-launcher /tmp/ppa-build-XXXXXX/linux-jagex-launcher_1.4.1-1ubuntu1~noble_source.changes
 ```
 
 Launchpad verifies:
@@ -188,5 +188,5 @@ Go to your GitHub repository &rarr; **Settings** &rarr; **Secrets and variables*
   - Secret: Your GPG key passphrase.
 
 ### 3. Trigger the Workflow
-- **Automatic:** Whenever a new GitHub Release is published (`v1.4.0`).
+- **Automatic:** Whenever a new GitHub Release is published (`v1.4.1`).
 - **Manual (Workflow Dispatch):** Go to GitHub Actions &rarr; select **"Publish to Launchpad PPA"** &rarr; click **"Run workflow"** (choose `all`, `resolute`, `noble`, or `jammy`).

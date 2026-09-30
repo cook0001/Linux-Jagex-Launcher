@@ -1,6 +1,6 @@
 {
   "name": "linux-jagex-launcher",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape (RuneLite, HDOS, Official Client).",
   "desktopName": "linux-jagex-launcher",
   "main": "dist/main/index.js",

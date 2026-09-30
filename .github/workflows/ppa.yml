@@ -112,7 +112,12 @@ jobs:
             TARGET_SERIES=("${SERIES}")
           fi
 
-          for s in "${TARGET_SERIES[@]}"; do
+          for i in "${!TARGET_SERIES[@]}"; do
+            s="${TARGET_SERIES[$i]}"
+            if [ "$i" -gt 0 ]; then
+              echo "==> Cooling down 30s between series to prevent Launchpad FTP rate-limiting..."
+              sleep 30
+            fi
             echo "=========================================================="
             echo " Building & Uploading for Ubuntu Series: ${s}"
             echo "=========================================================="
