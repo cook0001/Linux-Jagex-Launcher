@@ -219,13 +219,27 @@ export class Rs3Doctor {
         const pids = fs.readdirSync('/proc').filter(p => /^\d+$/.test(p));
         for (const pid of pids) {
           try {
-            const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
-            if (cmdline.includes('runescape-launcher') || cmdline.endsWith('runescape\0') || cmdline.includes('/games/runescape-launcher/runescape')) {
-              const numPid = parseInt(pid, 10);
-              if (numPid !== process.pid) {
-                process.kill(numPid, 'SIGKILL');
-                killed++;
+            const numPid = parseInt(pid, 10);
+            if (numPid === process.pid) continue;
+
+            let isGame = false;
+            try {
+              const comm = fs.readFileSync(`/proc/${pid}/comm`, 'utf8').trim();
+              if (comm === 'runescape' || comm === 'rs2client') {
+                isGame = true;
               }
+            } catch {}
+
+            if (!isGame) {
+              const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
+              if (cmdline.includes('runescape-launcher') || cmdline.includes('rs2client') || cmdline.endsWith('runescape\0') || cmdline.includes('/games/runescape-launcher/runescape')) {
+                isGame = true;
+              }
+            }
+
+            if (isGame) {
+              process.kill(numPid, 'SIGKILL');
+              killed++;
             }
           } catch {}
         }
@@ -451,13 +465,27 @@ export class Rs3Doctor {
           let zombiePid: number | null = null;
           for (const pid of pids) {
             try {
-              const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
-              if (cmdline.includes('runescape-launcher') || cmdline.endsWith('runescape\0') || cmdline.includes('/games/runescape-launcher/runescape')) {
-                const numPid = parseInt(pid, 10);
-                if (numPid !== process.pid) {
-                  zombiePid = numPid;
-                  break;
+              const numPid = parseInt(pid, 10);
+              if (numPid === process.pid) continue;
+
+              let isGame = false;
+              try {
+                const comm = fs.readFileSync(`/proc/${pid}/comm`, 'utf8').trim();
+                if (comm === 'runescape' || comm === 'rs2client') {
+                  isGame = true;
                 }
+              } catch {}
+
+              if (!isGame) {
+                const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
+                if (cmdline.includes('runescape-launcher') || cmdline.includes('rs2client') || cmdline.endsWith('runescape\0') || cmdline.includes('/games/runescape-launcher/runescape')) {
+                  isGame = true;
+                }
+              }
+
+              if (isGame) {
+                zombiePid = numPid;
+                break;
               }
             } catch {}
           }
@@ -513,12 +541,12 @@ export class Rs3Doctor {
       });
     }
 
-    // 3. OpenGL / libglvnd check (Addresses Issue 2 & 3: Missing libOpenGL.so.0 / Graphics hang)
-    const openglLib = findLibraryInPaths('libOpenGL.so.0') || findLibraryInPaths('libGL.so.1');
+    // 3. OpenGL / libglvnd check (Specifically requires libOpenGL.so.0 for rs2client)
+    const openglLib = findLibraryInPaths('libOpenGL.so.0');
     if (openglLib) {
       checks.push({
         id: 'opengl',
-        name: 'OpenGL Driver Libraries (libOpenGL.so.0)',
+        name: 'OpenGL Dispatch Library (libOpenGL.so.0)',
         category: 'graphics',
         status: 'ok',
         message: `Found OpenGL dispatch library at ${openglLib}.`
@@ -527,11 +555,13 @@ export class Rs3Doctor {
       missingCategories.push('opengl');
       checks.push({
         id: 'opengl',
-        name: 'OpenGL Driver Libraries (libOpenGL.so.0)',
+        name: 'OpenGL Dispatch Library (libOpenGL.so.0)',
         category: 'graphics',
         status: 'error',
-        message: 'Missing libOpenGL.so.0 / libGL.so.1. Minimal installs and non-standard desktops require libglvnd.',
-        remediation: 'Install libglvnd / libopengl via your package manager.'
+        message: 'Missing libOpenGL.so.0. The official rs2client ELF binary strictly requires libOpenGL.so.0 to initialize graphics.',
+        remediation: distroFamily === 'debian'
+          ? 'Install libopengl0: sudo apt install -y libopengl0'
+          : (distroFamily === 'arch' ? 'Install libglvnd: sudo pacman -S --needed libglvnd' : 'Install libglvnd / libopengl via your package manager.')
       });
     }
 
@@ -744,7 +774,7 @@ export class Rs3Doctor {
         name: 'Wayland Compositor Compatibility',
         category: 'graphics',
         status: 'ok',
-        message: 'Wayland session detected. The launcher automatically injects GDK_BACKEND=x11 and SDL_VIDEODRIVER=x11 to run via XWayland and prevent "Loading application resources" startup freezes.'
+        message: 'Wayland session detected. The launcher automatically isolates the display environment (stripping Wayland EGL platform overrides, forcing GDK_BACKEND=x11 and SDL_VIDEODRIVER=x11) to run via XWayland and prevent startup freezes.'
       });
     } else {
       checks.push({

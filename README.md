@@ -176,7 +176,7 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 ### 📚 Community Resources & Tools Hub
 - **Dedicated Sidebar Access**: Launch the Hub via the **Resources** tab positioned right above Settings in the launcher navigation bar.
 - **Smart Game Auto-Focus**: Automatically opens directly to whichever game is currently active (**RuneScape 3**, **Old School**, or **Dragonwilds**).
-- **Curated Player-Centric Directory**: Includes one-click access to the official wikis, Alt1 Toolkit, PvM Encyclopedia (PvME), OSRS Wiki DPS Calculator, GE Tracker, Quest Helper, Wise Old Man, TempleOSRS, MapGenie Ashenfall Interactive Map, and Reddit/Discord community hubs.
+- **Curated Player-Centric Directory**: Includes one-click access to the official wikis, Alt1 Toolkit, PvM Encyclopedia (PvME), OSRS Wiki DPS Calculator, GE Tracker, Quest Helper, Wise Old Man, TempleOSRS, MapGenie Ashenfall Interactive Map, and community hubs.
 - **Instant Live Search**: Real-time filtering by tool name, purpose, or category (e.g., search "dps", "map", "clue", or "prices").
 - **Secure Native Browser Launch**: Safely opens all links in your default Linux browser through the launcher's sandboxed IPC bridge.
 
@@ -199,11 +199,50 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 
 ---
 
+### 📌 Native System Tray & Quick Folders Hub
+- **System Tray Mode**: Minimize cleanly to the system tray to keep characters ready without taskbar clutter. Right-click the tray icon to quickly launch active characters or restore the window.
+- **Quick Shortcuts & Client Folders Hub**: One-click folder access in Settings for screenshots, logs, and game caches across **RuneLite** (`~/.runelite`), **RuneScape 3** (`~/.local/share/Jagex`), and **HDOS** (`~/.hdos`).
+- **Desktop Shortcuts & Icon Re-Registration**: Built-in repair tool in Settings to re-generate standard FreeDesktop `.desktop` launchers and install multi-resolution system icons (`16x16` up to `1024x1024`) for the Launcher, RuneLite, HDOS, and the Official OSRS client.
+
+---
+
 ## 📥 Installation
 
 Download the latest release package from the **[GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases)**.
 
-### Option 1: Debian / Ubuntu / Linux Mint (`.deb`)
+### Option 1: Ubuntu / Linux Mint / Pop!_OS (Official Launchpad PPA)
+
+The official Canonical Launchpad PPA provides native `.deb` packages built directly in Canonical's cloud infrastructure for **Ubuntu 26.04 LTS (`resolute`)**, **Ubuntu 24.04 LTS (`noble`)**, and **Ubuntu 22.04 LTS (`jammy`)** (as well as Linux Mint and Pop!_OS derivatives). System dependencies are resolved automatically, and updates are delivered seamlessly through standard `apt upgrade`:
+
+**1. Add the PPA repository:**
+```bash
+sudo add-apt-repository ppa:danielcook2016/linux-jagex-launcher
+```
+
+**2. Update package list and install:**
+```bash
+sudo apt update
+```
+```bash
+sudo apt install -y linux-jagex-launcher
+```
+
+**3. Launch:**
+```bash
+linux-jagex-launcher
+```
+
+**To uninstall or remove the PPA:**
+```bash
+sudo apt remove linux-jagex-launcher
+```
+```bash
+sudo add-apt-repository --remove ppa:danielcook2016/linux-jagex-launcher
+```
+
+---
+
+### Option 2: Debian / Ubuntu / Linux Mint (Standalone `.deb`)
 
 **One-Line Fast Install:**
 ```bash
@@ -213,26 +252,35 @@ curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.3.0_amd64.deb
-
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.0_amd64.deb
+```
+```bash
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.3.0_amd64.deb
+sudo apt install ./jagex-launcher_1.4.0_amd64.deb
 ```
 
 ---
 
-### Option 2: Universal AppImage
+### Option 3: Universal AppImage
 
 Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, SteamOS, Debian, Mint):
 
 ```bash
-# Download AppImage from Releases, make it executable, and run:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.3.0.AppImage
-chmod +x Jagex-Launcher-1.3.0.AppImage
-./Jagex-Launcher-1.3.0.AppImage
+# Download AppImage from Releases:
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.0.AppImage
+```
+```bash
+# Make executable:
+chmod +x Jagex-Launcher-1.4.0.AppImage
+```
+```bash
+# Run:
+./Jagex-Launcher-1.4.0.AppImage
 ```
 
-### Option 3: Steam Deck & SteamOS (Automated Fast-Installer)
+---
+
+### Option 4: Steam Deck & SteamOS (Automated Fast-Installer)
 
 Installs 100% rootless in userspace without modifying read-only system partitions. Automatically registers as a Non-Steam Game with official high-res Steam Grid artwork:
 
@@ -245,46 +293,62 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 ---
 
-### Option 4: Arch Linux / Manjaro (AUR)
+### Option 5: Arch Linux / Manjaro (AUR)
 
 Install via any AUR helper:
+
 ```bash
 # Using yay:
 yay -S linux-jagex-launcher-bin
-
+```
+```bash
 # Using paru:
 paru -S linux-jagex-launcher-bin
 ```
 
 ---
 
-### Option 4: Fedora / RHEL
+### Option 6: Fedora / RHEL
 
 ```bash
-sudo dnf install fuse-libs
-chmod +x Jagex-Launcher-1.3.0.AppImage
-./Jagex-Launcher-1.3.0.AppImage
+sudo dnf install -y fuse-libs
+```
+```bash
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.0.AppImage
+```
+```bash
+chmod +x Jagex-Launcher-1.4.0.AppImage
+```
+```bash
+./Jagex-Launcher-1.4.0.AppImage
 ```
 
 ---
 
-### Option 5: Build from Source
+### Option 7: Build from Source
 
+**Clone & Enter Repository:**
 ```bash
-# Clone the repository
-git clone https://github.com/cook0001/Linux-Jagex-Launcher.git
-cd Linux-Jagex-Launcher
+git clone https://github.com/cook0001/Linux-Jagex-Launcher.git && cd Linux-Jagex-Launcher
+```
 
-# Install dependencies
+**Install Dependencies:**
+```bash
 npm install
+```
 
-# Run comprehensive QC (Oxlint, TypeScript typecheck, unit tests, Vite build)
+**Run Quality Control Suite (Linter, Typecheck, Unit Tests, Vite Production Build):**
+```bash
 npm run qc
+```
 
-# Run in development mode
+**Run in Development Mode:**
+```bash
 npm run dev
+```
 
-# Or package native Linux binaries (AppImage, deb, tar.gz)
+**Package Native Linux Binaries (AppImage, deb, tar.gz):**
+```bash
 npm run dist
 ```
 

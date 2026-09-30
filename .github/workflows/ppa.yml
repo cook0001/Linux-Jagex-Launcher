@@ -1,0 +1,120 @@
+name: Publish to Launchpad PPA
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      series:
+        description: 'Target Ubuntu Distribution Series (resolute, noble, jammy, or all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - resolute
+          - noble
+          - jammy
+      ppa_target:
+        description: 'Launchpad PPA Target'
+        required: true
+        default: 'ppa:danielcook2016/linux-jagex-launcher'
+
+concurrency:
+  group: ppa-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ppa-upload:
+    name: Build & Upload Debian Source Package to Launchpad
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile Application Bundle
+        run: npm run build
+
+      - name: Install Debian Packaging Tools
+        run: |
+          sudo apt update
+          sudo apt install -y devscripts debhelper build-essential dput rsync
+
+      - name: Import Launchpad GPG Key
+        id: import_gpg
+        env:
+          LAUNCHPAD_GPG_KEY: ${{ secrets.LAUNCHPAD_GPG_KEY }}
+          LAUNCHPAD_GPG_PASSPHRASE: ${{ secrets.LAUNCHPAD_GPG_PASSPHRASE }}
+        run: |
+          if [ -n "${LAUNCHPAD_GPG_KEY}" ]; then
+            # Configure non-interactive GPG loopback pinentry and caching
+            mkdir -p -m 700 ~/.gnupg
+            echo "use-agent" >> ~/.gnupg/gpg.conf
+            echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+            echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+            echo "default-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+            echo "max-cache-ttl 86400" >> ~/.gnupg/gpg-agent.conf
+            gpgconf --kill gpg-agent 2>/dev/null || true
+
+            # Import private key
+            if [ -n "${LAUNCHPAD_GPG_PASSPHRASE}" ]; then
+              echo "${LAUNCHPAD_GPG_KEY}" | gpg --batch --yes --pinentry-mode loopback --passphrase "${LAUNCHPAD_GPG_PASSPHRASE}" --import
+            else
+              echo "${LAUNCHPAD_GPG_KEY}" | gpg --batch --yes --import
+            fi
+
+            KEY_ID=$(gpg --list-secret-keys --keyid-format=long | grep -E '^sec' | awk '{print $2}' | cut -d'/' -f2 | head -n1)
+            echo "key_id=${KEY_ID}" >> $GITHUB_OUTPUT
+            echo "Imported GPG key ID: ${KEY_ID}"
+
+            # Pre-cache passphrase in gpg-agent to ensure headless signing succeeds
+            if [ -n "${LAUNCHPAD_GPG_PASSPHRASE}" ]; then
+              echo "test" | gpg --batch --yes --pinentry-mode loopback --passphrase "${LAUNCHPAD_GPG_PASSPHRASE}" --default-key "${KEY_ID}" --clearsign >/dev/null 2>&1 || true
+            fi
+          else
+            echo "⚠️ LAUNCHPAD_GPG_KEY secret not found. Set this repository secret to sign and upload to Launchpad."
+            echo "key_id=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Source Package and Upload
+        env:
+          GPG_KEY_ID: ${{ steps.import_gpg.outputs.key_id }}
+          GPG_PASSPHRASE: ${{ secrets.LAUNCHPAD_GPG_PASSPHRASE }}
+          SERIES: ${{ inputs.series || 'all' }}
+          PPA_TARGET: ${{ inputs.ppa_target || 'ppa:danielcook2016/linux-jagex-launcher' }}
+        run: |
+          chmod +x packaging/ppa/build-source-package.sh
+          if [ -z "${GPG_KEY_ID}" ]; then
+            echo "❌ Cannot upload to Launchpad without a signed source package. Please configure LAUNCHPAD_GPG_KEY in GitHub Repository Secrets."
+            exit 1
+          fi
+
+          TARGET_SERIES=("resolute" "noble" "jammy")
+          if [ "${SERIES}" = "resolute" ]; then
+            TARGET_SERIES=("resolute")
+          elif [ "${SERIES}" = "noble" ]; then
+            TARGET_SERIES=("noble")
+          elif [ "${SERIES}" = "jammy" ]; then
+            TARGET_SERIES=("jammy")
+          elif [ "${SERIES}" = "all" ]; then
+            TARGET_SERIES=("resolute" "noble" "jammy")
+          elif [ -n "${SERIES}" ]; then
+            TARGET_SERIES=("${SERIES}")
+          fi
+
+          for s in "${TARGET_SERIES[@]}"; do
+            echo "=========================================================="
+            echo " Building & Uploading for Ubuntu Series: ${s}"
+            echo "=========================================================="
+            ./packaging/ppa/build-source-package.sh "${PPA_TARGET}" "${s}" "${GPG_KEY_ID}" --non-interactive
+          done

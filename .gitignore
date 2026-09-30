@@ -1,4 +1,4 @@
-# Logs
+# Logs & Diagnostic Outputs
 logs
 *.log
 npm-debug.log*
@@ -6,32 +6,124 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+last_crash.json
+*.dmp
+crash-reports/
+core
+core.*
+vgcore.*
 
-# Node / Dependency directories
+# Node / Dependency & Build Output directories
 node_modules/
 dist/
 dist-electron/
 release/
 out/
+.cache/
+.vite/
+.turbo/
+.parcel-cache/
+.eslintcache
 
-# Local configuration & state
+# Package installers & binary distributions
+*.deb
+*.rpm
+*.AppImage
+*.snap
+*.flatpak
+*.flatpakref
+*.tar.gz
+*.tar.xz
+*.zip
+*.7z
+*.dmg
+*.exe
+*.pkg
+packaging/ppa/*.build
+packaging/ppa/*.buildinfo
+packaging/ppa/*.changes
+packaging/ppa/*.deb
+packaging/ppa/*.dsc
+packaging/ppa/*.tar.*
+
+# Secrets, Tokens, Keys & Credentials
+*.pem
+*.key
+*.keystore
+*.crt
+*.p12
+*.pfx
+id_rsa*
+*token*
+*credential*
+*secret*
+.npmrc
+
+# Local environment & config
 .env
-.env.local
-.env.*.local
+.env.*
+*.env
 *.local
 
-# Editor & OS files
+# Discord integrations, scripts, tokens, and bot artifacts
+*[Dd]iscord*
+*.discord
+.discord*
+discord/
+Discord/
+
+# Local planning, todos, scratch scripts, and notes
+Todo*
+todo*
+TODO*
+*.todo
+scratch/
+*.scratch
+notes/
+NOTES*
+notes.txt
+*.notes
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+ENV/
+
+# Editor, IDE, and OS metadata
 .DS_Store
 Thumbs.db
+desktop.ini
+.directory
 .idea/
 .vscode/
+.zed/
+.fleet/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*~
+.#*
+*.bak
+*.orig
+*.rej
+*.sublime-*
 
-# Temporary test / debug files
+# Temporary test, benchmark & debug files
 *.tmp
 tmp/
+temp/
+*.temp
 *.screenshots
+coverage/
+.nyc_output/
+*.lcov
+

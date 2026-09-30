@@ -4,9 +4,42 @@ export DH_VERBOSE = 1
 %:
 	dh $@
 
+override_dh_auto_build:
+	mkdir -p usr/lib/linux-jagex-launcher
+	dh_auto_build
+
+override_dh_install:
+	dh_install
+	# Install multi-resolution desktop icon suite under canonical identifiers
+	for size in 16x16 32x32 48x48 64x64 128x128 256x256 512x512 1024x1024; do \
+		target_dir="debian/linux-jagex-launcher/usr/share/icons/hicolor/$${size}/apps"; \
+		mkdir -p "$${target_dir}"; \
+		if [ -f "resources/icons/$${size}.png" ]; then \
+			cp "resources/icons/$${size}.png" "$${target_dir}/linux-jagex-launcher.png"; \
+			cp "resources/icons/$${size}.png" "$${target_dir}/io.github.cook0001.LinuxJagexLauncher.png"; \
+		fi; \
+	done
+	# Install desktop entry files
+	mkdir -p debian/linux-jagex-launcher/usr/share/applications
+	cp packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop debian/linux-jagex-launcher/usr/share/applications/io.github.cook0001.LinuxJagexLauncher.desktop
+	cp packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop debian/linux-jagex-launcher/usr/share/applications/linux-jagex-launcher.desktop
+	# Ensure compatibility symlink for legacy wrapper invocation
+	mkdir -p debian/linux-jagex-launcher/usr/bin
+	ln -sf linux-jagex-launcher debian/linux-jagex-launcher/usr/bin/linux-jagex-launcher.sh
+
+override_dh_dwz:
+	# Disable dwz multifile optimization on pre-compiled Electron binaries
+	:
+
 override_dh_strip:
 	# Prevent corrupting pre-compiled Electron or ELF binaries
-	dh_strip -Xlinux-jagex-launcher --no-automatic-dbgsym
+	dh_strip -Xlinux-jagex-launcher -Xchrome-sandbox -Xlibvulkan -Xlibffmpeg --no-automatic-dbgsym
 
 override_dh_shlibdeps:
 	dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod 0755 debian/linux-jagex-launcher/usr/bin/linux-jagex-launcher 2>/dev/null || true
+	chmod 0755 debian/linux-jagex-launcher/usr/lib/linux-jagex-launcher/linux-jagex-launcher 2>/dev/null || true
+	chmod 4755 debian/linux-jagex-launcher/usr/lib/linux-jagex-launcher/chrome-sandbox 2>/dev/null || true

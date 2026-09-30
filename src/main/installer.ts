@@ -3,6 +3,7 @@ import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
 import { spawn } from 'child_process';
+import { desktopIntegration } from './desktop.ts';
 
 const PACKAGES_URL = 'https://content.runescape.com/downloads/ubuntu/dists/trusty/non-free/binary-amd64/Packages';
 const BASE_CONTENT_URL = 'https://content.runescape.com/downloads/ubuntu/';
@@ -360,6 +361,8 @@ export class Rs3Installer {
     }
 
     this.setInstalledHash(meta.sha256, meta.version);
+    desktopIntegration.installRs3Integration();
+    desktopIntegration.updateCaches();
     notify('ready', 100, 'Installation complete!');
     return binaryPath;
   }

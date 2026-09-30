@@ -71,6 +71,11 @@ test('RuneScape 3 Compatibility & Diagnostics Suite', async (t) => {
     assert.strictEqual(missingSsl.category, 'missing_lib');
     assert.strictEqual(missingSsl.actionId, 'install_ssl');
 
+    const missingGl = classifyCrash(127, null, 'rs2client: error while loading shared libraries: libOpenGL.so.0: cannot open shared object file: No such file or directory', '');
+    assert.strictEqual(missingGl.category, 'missing_lib');
+    assert.ok(missingGl.title.includes('libOpenGL.so.0'));
+    assert.ok(missingGl.remediation.includes('libopengl0'));
+
     // 2. Kernel OOM Kill
     const oomCrash = classifyCrash(137, 'SIGKILL', '', '');
     assert.strictEqual(oomCrash.category, 'oom_kill');

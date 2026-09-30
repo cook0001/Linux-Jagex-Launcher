@@ -414,11 +414,108 @@
             </div>
 
             <div class="settings-section">
+              <h4 class="settings-section-title">Desktop & System Integration</h4>
+
+              <div class="maintenance-row" style="margin-bottom: 8px;">
+                <div>
+                  <span class="setting-name">Desktop Shortcuts & Dock Icons</span>
+                  <span class="setting-desc">Rebuilds .desktop shortcuts and system dock icon caches for the launcher, RuneScape 3, RuneLite, HDOS, and the Official OSRS client.</span>
+                </div>
+                <button id="btn-re-register-shortcuts" class="btn-secondary" style="font-size: 11px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  <span>Re-register Shortcuts & Icons</span>
+                </button>
+              </div>
+              <div id="setting-shortcuts-status-msg" style="font-size: 11px; color: #94a3b8; margin-bottom: 8px; display: none;"></div>
+            </div>
+
+            <div class="settings-section">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <h4 class="settings-section-title" style="margin: 0;">Quick Folders Hub</h4>
+                <button class="btn-quick-folder" id="btn-open-launcher-config" title="Open Launcher Config & Logs" style="padding: 4px 8px; font-size: 10px;">
+                  <span>Launcher Config</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </button>
+              </div>
+              <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.4;">
+                Instant one-click access to game screenshots, local asset caches, and client logs across all supported clients.
+              </p>
+
+              <div class="quick-folders-grid">
+                <!-- RuneLite -->
+                <div class="quick-folder-card">
+                  <div class="quick-folder-header">
+                    <span style="color: #f59e0b;">⚔️</span>
+                    <span>RuneLite</span>
+                  </div>
+                  <div class="quick-folder-buttons">
+                    <button class="btn-quick-folder" data-folder="rl-screenshots">
+                      <span>Screenshots</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="rl-cache">
+                      <span>Client Cache</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="rl-logs">
+                      <span>Logs</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- RuneScape 3 -->
+                <div class="quick-folder-card">
+                  <div class="quick-folder-header">
+                    <span style="color: #38bdf8;">🛡️</span>
+                    <span>RuneScape 3</span>
+                  </div>
+                  <div class="quick-folder-buttons">
+                    <button class="btn-quick-folder" data-folder="rs3-screenshots">
+                      <span>Screenshots</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="rs3-cache">
+                      <span>NXT Cache</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="rs3-logs">
+                      <span>Client Logs</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- HDOS -->
+                <div class="quick-folder-card">
+                  <div class="quick-folder-header">
+                    <span style="color: #a855f7;">✨</span>
+                    <span>HDOS</span>
+                  </div>
+                  <div class="quick-folder-buttons">
+                    <button class="btn-quick-folder" data-folder="hdos-screenshots">
+                      <span>Screenshots</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="hdos-cache">
+                      <span>Client Cache</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    <button class="btn-quick-folder" data-folder="hdos-logs">
+                      <span>Logs</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
               <h4 class="settings-section-title">Software Updates</h4>
 
               <div class="maintenance-row" style="margin-bottom: 12px;">
                 <div>
-                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.3.0</span>
+                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.4.0</span>
                   <span class="setting-desc" id="setting-updater-format-label">Detecting package format...</span>
                 </div>
                 <button id="btn-check-updates-now" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;">Check for Updates</button>
@@ -940,7 +1037,7 @@
             </div>
             <div>
               <h3 class="modal-title" style="margin: 0; font-size: 16px;">Launcher Update Available</h3>
-              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.2.0 &rarr; v1.3.0</p>
+              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.3.0 &rarr; v1.4.0</p>
             </div>
           </div>
           <button id="btn-close-updater" class="modal-close">&times;</button>
@@ -954,6 +1051,15 @@
               <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;" id="modal-updater-format-desc">Package Format: AppImage</div>
             </div>
             <span class="badge-member" id="modal-updater-new-badge" style="background: #059669; color: #fff; font-weight: 700;">NEW</span>
+          </div>
+
+          <!-- Format Choice Selector (Shown when multiple package assets are available) -->
+          <div id="modal-updater-format-row" class="hidden" style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
+            <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">Choose Format:</span>
+            <div style="display: flex; gap: 6px;" id="modal-updater-format-options">
+              <button type="button" class="updater-format-btn active" data-format="deb" id="btn-updater-fmt-deb" style="padding: 4px 10px; font-size: 11px;">Debian / Ubuntu (.deb)</button>
+              <button type="button" class="updater-format-btn" data-format="appimage" id="btn-updater-fmt-appimage" style="padding: 4px 10px; font-size: 11px;">AppImage (Portable)</button>
+            </div>
           </div>
 
           <!-- Release Notes Container -->
@@ -973,7 +1079,10 @@
             </div>
           </div>
 
-          <!-- Distribution Notice (for Flatpak / AUR) -->
+          <!-- Status Alert Message (Success or Error) -->
+          <div id="modal-updater-status-alert" class="hidden" style="padding: 10px 14px; border-radius: 6px; font-size: 11px; margin-bottom: 14px; line-height: 1.4;"></div>
+
+          <!-- Distribution Notice / Manual Fallback -->
           <div id="modal-updater-distro-notice" class="hidden" style="padding: 10px; background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; border-radius: 4px; font-size: 11px; color: #93c5fd; margin-bottom: 14px;">
             <span id="modal-updater-distro-text"></span>
           </div>
@@ -985,7 +1094,7 @@
           </div>
           <div style="display: flex; gap: 8px;">
             <button id="btn-cancel-updater" class="btn-secondary">Later</button>
-            <button id="btn-action-updater" class="btn-primary" style="min-width: 140px;">
+            <button id="btn-action-updater" class="btn-primary" style="min-width: 150px;">
               Download & Install
             </button>
           </div>

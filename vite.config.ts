@@ -13,7 +13,8 @@ export default defineConfig({
       {
         entry: path.resolve(__dirname, 'src/main/index.ts'),
         onstart(args) {
-          args.startup(['.'], { cwd: __dirname });
+          const startupArgs = process.platform === 'linux' ? ['.', '--no-sandbox'] : ['.'];
+          args.startup(startupArgs, { cwd: __dirname });
         },
         vite: {
           build: {

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -e
+# Forward all arguments directly to the native Linux Jagex Launcher executable
+exec /usr/lib/linux-jagex-launcher/linux-jagex-launcher "$@"

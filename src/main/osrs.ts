@@ -8,6 +8,7 @@ import * as electron from 'electron';
 const app = (electron as any)?.app || ((electron as any)?.default?.app) || undefined;
 import { store } from './store.ts';
 import { sanitizeReportText } from './launcher.ts';
+import { desktopIntegration } from './desktop.ts';
 
 const RUNELITE_DOWNLOAD_URL = 'https://github.com/runelite/launcher/releases/latest/download/RuneLite.jar';
 const HDOS_DOWNLOAD_URL = 'https://cdn.hdos.dev/launcher/latest/hdos-launcher.jar';
@@ -159,6 +160,8 @@ export class OsrsManager {
   private runeliteDir: string;
   private hdosDir: string;
   private activeProcess: ChildProcess | null = null;
+  private gamePid: number | null = null;
+  private monitorInterval: NodeJS.Timeout | null = null;
   private isRunning: boolean = false;
   private wasKilledByUser: boolean = false;
   private crashFile: string;
@@ -177,6 +180,76 @@ export class OsrsManager {
 
     if (!fs.existsSync(this.runeliteDir)) fs.mkdirSync(this.runeliteDir, { recursive: true });
     if (!fs.existsSync(this.hdosDir)) fs.mkdirSync(this.hdosDir, { recursive: true });
+  }
+
+  public getGamePid(): number | null {
+    return this.gamePid || this.findOsrsPid();
+  }
+
+  public findOsrsPid(): number | null {
+    if (process.platform !== 'linux') return null;
+    try {
+      const pids = fs.readdirSync('/proc').filter((p) => /^\d+$/.test(p));
+      for (const pid of pids) {
+        try {
+          const numPid = parseInt(pid, 10);
+          if (numPid === process.pid) continue;
+
+          const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
+          if (
+            (cmdline.includes('net.runelite.client.RuneLite') ||
+             cmdline.includes('RuneLite.jar') ||
+             cmdline.includes('hdos-launcher.jar') ||
+             cmdline.includes('com.hdos') ||
+             cmdline.includes('hdos.dev') ||
+             cmdline.includes('/hdos/') ||
+             cmdline.includes('jagexapp.osrs') ||
+             cmdline.includes('osrs-launcher')) &&
+            !cmdline.includes('linux-jagex-launcher') &&
+            !cmdline.includes('oxlint') &&
+            !cmdline.includes('tsx')
+          ) {
+            return numPid;
+          }
+        } catch {}
+      }
+    } catch {}
+    return null;
+  }
+
+  private startMonitoring(targetPid: number, mainWindow?: BrowserWindow): void {
+    if (this.monitorInterval) {
+      clearInterval(this.monitorInterval);
+    }
+    this.gamePid = targetPid;
+    this.isRunning = true;
+
+    this.monitorInterval = setInterval(() => {
+      try {
+        process.kill(targetPid, 0);
+      } catch (err: any) {
+        if (err.code === 'ESRCH') {
+          // Process no longer exists
+          this.stopMonitoring();
+          this.isRunning = false;
+          this.gamePid = null;
+          if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'osrs' });
+            const settings = store.getSettings();
+            if (settings.minimizeToTray && !settings.closeOnLaunch) {
+              mainWindow.show();
+            }
+          }
+        }
+      }
+    }, 1000);
+  }
+
+  private stopMonitoring(): void {
+    if (this.monitorInterval) {
+      clearInterval(this.monitorInterval);
+      this.monitorInterval = null;
+    }
   }
 
   public getLastCrash(): OsrsCrashReport | null {
@@ -416,6 +489,14 @@ export class OsrsManager {
       message: `${clientName} is ready to play!`
     });
 
+    if (clientType === 'runelite') {
+      desktopIntegration.installRuneliteIntegration();
+      desktopIntegration.updateCaches();
+    } else if (clientType === 'hdos') {
+      desktopIntegration.installHdosIntegration();
+      desktopIntegration.updateCaches();
+    }
+
     return targetPath;
   }
 
@@ -549,6 +630,13 @@ export class OsrsManager {
       await this.installClient(clientType === 'hdos' ? 'hdos' : 'runelite');
     }
 
+    // Ensure official desktop entry and icon are registered in GNOME/KDE
+    if (clientType === 'runelite') {
+      desktopIntegration.installRuneliteIntegration();
+    } else if (clientType === 'hdos') {
+      desktopIntegration.installHdosIntegration();
+    }
+
     // Environment variables passing Jagex Account session to RuneLite / HDOS
     // CRITICAL: Keep HOME pointing to user's real home folder so ~/.runelite is used
     // and default system browser links open in user's profile!
@@ -563,10 +651,22 @@ export class OsrsManager {
       JX_DISPLAY_NAME: displayName,
     };
 
+    // Strip Electron, Chromium, and Wayland runtime variables
+    delete env.OZONE_PLATFORM;
+    delete env.ELECTRON_RUN_AS_NODE;
+    delete env.ELECTRON_NO_ATTACH;
+    delete env.NODE_OPTIONS;
+    delete env.CHROME_DESKTOP;
+    delete env.ORIGINAL_XDG_CURRENT_DESKTOP;
+    delete env.EGL_PLATFORM;
+    delete env.NO_AT_BRIDGE;
+
     if (settings.lowSpecMode) {
       env.mesa_glthread = 'true';
+      env.LIBGL_ALWAYS_SOFTWARE = '0';
       if (settings.rs3CompatProfileOverride !== false) {
         env.MESA_GL_VERSION_OVERRIDE = '4.5COMPAT';
+        env.MESA_GLSL_VERSION_OVERRIDE = '450';
       }
     }
 
@@ -574,10 +674,11 @@ export class OsrsManager {
     const customClientArgs = (settings.osrsClientArgs || '').trim().split(/\s+/).filter(Boolean);
 
     // If Low-Spec Mode is active and user has not specified custom JVM parameters,
-    // apply optimized flags: 768MB max heap (avoids OOM/swapping on 4GB-8GB systems), G1GC with low pause times
+    // apply optimized flags: 768MB max heap (avoids OOM/swapping on 4GB-8GB systems), G1GC with low pause times,
+    // and force hardware OpenGL acceleration on older GPUs
     const effectiveJvmArgs = customJvmArgs.length > 0
       ? customJvmArgs
-      : (settings.lowSpecMode ? ['-Xmx768m', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=20'] : []);
+      : (settings.lowSpecMode ? ['-Xmx768m', '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=20', '-Dsun.java2d.opengl=true'] : []);
 
     let baseCmd = targetExecutable;
     let baseArgs: string[] = [];
@@ -657,11 +758,17 @@ export class OsrsManager {
         mainWindow.webContents.send('game-state-changed', { isRunning: true, game: 'osrs', client: clientType });
       }
 
+      let checkTimer: NodeJS.Timeout | null = null;
+
       child.on('error', (err) => {
         console.error('[OSRS] Process error:', err);
         if (quitTimeout) {
           clearTimeout(quitTimeout);
           quitTimeout = null;
+        }
+        if (checkTimer) {
+          clearTimeout(checkTimer);
+          checkTimer = null;
         }
         this.isRunning = false;
         this.activeProcess = null;
@@ -671,10 +778,59 @@ export class OsrsManager {
         }
       });
 
+      // Check for spawned OSRS game client if bootstrap wrapper exits quickly
+      checkTimer = setTimeout(() => {
+        const activePid = this.findOsrsPid();
+        if (activePid) {
+          console.log(`[OSRS] Active client confirmed running with PID ${activePid}. Monitoring process...`);
+          this.startMonitoring(activePid, mainWindow);
+        }
+      }, 2500);
+
       child.on('exit', (code, signal) => {
         console.log(`[OSRS] Process terminated with code: ${code}, signal: ${signal}`);
-        this.isRunning = false;
+        if (checkTimer) {
+          clearTimeout(checkTimer);
+          checkTimer = null;
+        }
         this.activeProcess = null;
+
+        // If the wrapper exited cleanly (code 0 or null), check if the actual client process
+        // was spawned and is still running. If so, do not reset running state or send exit event!
+        const activePid = this.findOsrsPid();
+        if ((code === 0 || code === null) && activePid) {
+          console.log(`[OSRS] Wrapper exited cleanly, but client is running (PID ${activePid}). Retaining active state.`);
+          this.startMonitoring(activePid, mainWindow);
+          return;
+        }
+
+        // Check if an active process appears within a 3-second grace period (JVM fork delay)
+        if (code === 0 || code === null) {
+          let attempts = 0;
+          const pollInterval = setInterval(() => {
+            attempts++;
+            const delayedPid = this.findOsrsPid();
+            if (delayedPid) {
+              clearInterval(pollInterval);
+              console.log(`[OSRS] Discovered spawned client PID ${delayedPid}. Monitoring process...`);
+              this.startMonitoring(delayedPid, mainWindow);
+              return;
+            }
+            if (attempts >= 6) {
+              clearInterval(pollInterval);
+              this.isRunning = false;
+              if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'osrs' });
+                if (settings.minimizeToTray && !settings.closeOnLaunch) {
+                  mainWindow.show();
+                }
+              }
+            }
+          }, 500);
+          return;
+        }
+
+        this.isRunning = false;
 
         if (code !== 0 && code !== null && !this.wasKilledByUser) {
           const classification = classifyOsrsCrash(code, signal, stderrBuffer, stdoutRing.join('\n'));
@@ -747,16 +903,45 @@ export class OsrsManager {
   }
 
   public isGameRunning(): boolean {
+    if (this.gamePid) {
+      try {
+        process.kill(this.gamePid, 0);
+        return true;
+      } catch {
+        this.stopMonitoring();
+        this.gamePid = null;
+        this.isRunning = false;
+        return false;
+      }
+    }
+    const detected = this.findOsrsPid();
+    if (detected) {
+      this.startMonitoring(detected);
+      return true;
+    }
     return this.isRunning;
   }
 
   public killGame(): void {
+    this.wasKilledByUser = true;
+    this.stopMonitoring();
     if (this.activeProcess && !this.activeProcess.killed) {
-      this.wasKilledByUser = true;
       this.activeProcess.kill('SIGTERM');
-      this.isRunning = false;
       this.activeProcess = null;
     }
+    const pid = this.gamePid || this.findOsrsPid();
+    if (pid) {
+      try {
+        process.kill(pid, 'SIGTERM');
+        setTimeout(() => {
+          try {
+            process.kill(pid, 'SIGKILL');
+          } catch {}
+        }, 1500);
+      } catch {}
+    }
+    this.gamePid = null;
+    this.isRunning = false;
   }
 }
 

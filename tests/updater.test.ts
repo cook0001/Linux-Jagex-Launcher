@@ -41,6 +41,33 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
     assert.ok(version.length > 0);
   });
 
+  await t.test('AutoUpdater detects Linux distro family correctly', () => {
+    const family = updater.getSystemFamily();
+    assert.ok(['debian', 'arch', 'fedora', 'unknown'].includes(family));
+  });
+
+  await t.test('AutoUpdater installUpdate safeguards against non-existent files', async () => {
+    const res = await updater.installUpdate('/tmp/non-existent-jagex-package.deb', 'deb');
+    assert.strictEqual(res.success, false);
+    assert.ok(res.error && res.error.includes('found'));
+  });
+
+  await t.test('AutoUpdater downloadUpdate validates release assets properly', async () => {
+    const mockRelease: any = {
+      version: '1.4.0',
+      tagName: 'v1.4.0',
+      releaseNotes: 'Mock notes',
+      publishedAt: new Date().toISOString(),
+      htmlUrl: 'https://github.com/cook0001/Linux-Jagex-Launcher/releases',
+      assets: {}
+    };
+
+    // Attempting to download when no asset exists should fail gracefully
+    const dl = await updater.downloadUpdate(mockRelease, 'deb');
+    assert.strictEqual(dl.success, false);
+    assert.ok(dl.error && dl.error.includes('not found'));
+  });
+
   await t.test('StoreManager manages updater settings and state correctly', () => {
     const settings = store.getSettings();
     assert.strictEqual(typeof settings.autoCheckUpdates, 'boolean');

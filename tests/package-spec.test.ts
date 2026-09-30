@@ -133,6 +133,9 @@ test('Repository and package configuration', async (t) => {
     assert.ok(fs.existsSync(path.join(debianDir, 'install')), 'debian/install must exist');
     assert.ok(fs.existsSync(path.join(debianDir, 'source/format')), 'debian/source/format must exist');
 
+    assert.ok(fs.existsSync(path.join(ppaDir, 'linux-jagex-launcher')), 'Binary wrapper packaging/ppa/linux-jagex-launcher must exist');
+    assert.ok(fs.statSync(path.join(ppaDir, 'linux-jagex-launcher')).mode & 0o111, 'Binary wrapper must be executable');
+
     const control = fs.readFileSync(path.join(debianDir, 'control'), 'utf8');
     assert.ok(control.includes('Package: linux-jagex-launcher'));
     assert.ok(control.includes('Architecture: amd64'));

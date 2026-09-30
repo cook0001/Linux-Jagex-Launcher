@@ -1,3 +1,15 @@
+linux-jagex-launcher (1.4.0-1ubuntu1~noble) noble; urgency=medium
+
+  * Native Linux system tray integration with instant character launch menu.
+  * Quick Shortcuts and Client Folders Hub for screenshots, cache, and logs.
+  * Desktop Shortcuts and application icon re-registration utility in Settings.
+  * Official Launchpad Ubuntu PPA support (ppa:danielcook2016/linux-jagex-launcher).
+  * Bit-for-bit reproducible Debian source packaging and automated GPG signing.
+  * In-place AppImage updates with SHA256 checksum verification.
+  * AppStream metadata and Flathub Quality Guidelines compliance.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Wed, 30 Sep 2026 04:09:04 -0500
+
 linux-jagex-launcher (1.3.0-1ubuntu1~noble) noble; urgency=medium
 
   * World ping and latency benchmarking tool for RS3 (1-141) and OSRS (301-595).
@@ -7,7 +19,7 @@ linux-jagex-launcher (1.3.0-1ubuntu1~noble) noble; urgency=medium
   * Lightweight JVM memory management (768MB heap limit) for low-RAM Linux machines.
   * Re-arranged settings tabs (General, RuneScape 3, Old School) with contextual routing.
 
- -- Daniel Cook <cook0001@users.noreply.github.com>  Mon, 28 Sep 2026 21:25:00 -0500
+ -- Daniel Cook <danielcook2016@outlook.com>  Mon, 28 Sep 2026 21:25:00 -0500
 
 linux-jagex-launcher (1.2.0-1ubuntu1~noble) noble; urgency=medium
 

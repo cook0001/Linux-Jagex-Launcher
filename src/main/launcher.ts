@@ -7,6 +7,7 @@ const app = (electron as any)?.app || ((electron as any)?.default?.app) || undef
 import os from 'os';
 import { store } from './store.ts';
 import { installer } from './installer.ts';
+import { desktopIntegration } from './desktop.ts';
 
 export interface GameLaunchOptions {
   sessionId?: string;
@@ -63,9 +64,12 @@ export function classifyCrash(
   const combined = (stderr + '\n' + stdout).toLowerCase();
 
   // 1. Missing Dynamic Shared Library
-  const missingLibMatch = stderr.match(/cannot open shared object file:\s*([^\s:]+)/i);
-  if (missingLibMatch || combined.includes('libssl.so.1.1') || combined.includes('libcrypto.so.1.1')) {
-    const lib = missingLibMatch ? missingLibMatch[1] : (combined.includes('libssl') ? 'libssl.so.1.1' : 'library');
+  const missingLibMatch = stderr.match(/error while loading shared libraries:\s*([^\s:]+):/i) ||
+                          stderr.match(/cannot open shared object file:\s*([^\s:]+)/i);
+  if (missingLibMatch || combined.includes('libssl.so.1.1') || combined.includes('libcrypto.so.1.1') || combined.includes('libopengl.so.0')) {
+    const rawLib = missingLibMatch ? missingLibMatch[1] : (combined.includes('libssl') ? 'libssl.so.1.1' : (combined.includes('libopengl') ? 'libOpenGL.so.0' : 'library'));
+    const lib = rawLib.trim();
+
     if (lib.includes('libssl') || lib.includes('libcrypto')) {
       return {
         category: 'missing_lib',
@@ -76,6 +80,16 @@ export function classifyCrash(
         actionLabel: 'Install libssl1.1'
       };
     }
+
+    if (lib.toLowerCase().includes('libopengl')) {
+      return {
+        category: 'missing_lib',
+        title: 'Missing OpenGL Dispatch Library (libOpenGL.so.0)',
+        summary: 'The client failed to load libOpenGL.so.0. The native rs2client binary requires vendor-neutral OpenGL dispatch libraries.',
+        remediation: 'Install libopengl0: sudo apt install -y libopengl0 (or pacman -S libglvnd on Arch).'
+      };
+    }
+
     return {
       category: 'missing_lib',
       title: `Missing System Library: ${lib}`,
@@ -174,6 +188,8 @@ function commandExists(cmd: string): boolean {
 
 export class GameLauncher {
   private activeProcess: ChildProcess | null = null;
+  private gamePid: number | null = null;
+  private monitorInterval: NodeJS.Timeout | null = null;
   private isRunning: boolean = false;
   private wasKilledByUser: boolean = false;
   private crashFile: string;
@@ -188,7 +204,92 @@ export class GameLauncher {
     this.crashFile = path.join(configDir, 'last_crash.json');
   }
 
+  public findRs2ClientPid(): number | null {
+    if (process.platform !== 'linux') return null;
+    try {
+      const pids = fs.readdirSync('/proc').filter((p) => /^\d+$/.test(p));
+      for (const pid of pids) {
+        try {
+          const numPid = parseInt(pid, 10);
+          if (numPid === process.pid) continue;
+
+          // 1. Check /proc/<pid>/comm (exact process name set by Linux kernel)
+          try {
+            const comm = fs.readFileSync(`/proc/${pid}/comm`, 'utf8').trim();
+            if (comm === 'rs2client') {
+              return numPid;
+            }
+          } catch {}
+
+          // 2. Check /proc/<pid>/exe symlink
+          try {
+            const exe = fs.readlinkSync(`/proc/${pid}/exe`);
+            if (path.basename(exe) === 'rs2client') {
+              return numPid;
+            }
+          } catch {}
+
+          // 3. Check /proc/<pid>/cmdline argv[0]
+          const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
+          const argv0 = cmdline.split('\0')[0].trim();
+          if (argv0.endsWith('rs2client') || path.basename(argv0) === 'rs2client') {
+            return numPid;
+          }
+        } catch {}
+      }
+    } catch {}
+    return null;
+  }
+
+  private monitorRs2Client(pid: number, mainWindow?: BrowserWindow) {
+    if (this.monitorInterval) {
+      clearInterval(this.monitorInterval);
+      this.monitorInterval = null;
+    }
+    const settings = store.getSettings();
+    this.monitorInterval = setInterval(() => {
+      let isAlive = false;
+      try {
+        process.kill(pid, 0);
+        isAlive = true;
+      } catch {
+        isAlive = false;
+      }
+
+      if (!isAlive) {
+        if (this.monitorInterval) {
+          clearInterval(this.monitorInterval);
+          this.monitorInterval = null;
+        }
+        console.log(`[Launcher] RuneScape client (PID ${pid}) exited.`);
+        this.isRunning = false;
+        this.gamePid = null;
+        if (mainWindow && !mainWindow.isDestroyed()) {
+          mainWindow.webContents.send('game-state-changed', { isRunning: false });
+          if (settings.minimizeToTray && !settings.closeOnLaunch) {
+            mainWindow.show();
+          }
+        }
+      }
+    }, 1000);
+  }
+
   public isGameRunning(): boolean {
+    if (this.gamePid) {
+      try {
+        process.kill(this.gamePid, 0);
+        return true;
+      } catch {
+        this.gamePid = null;
+        this.isRunning = false;
+      }
+    }
+    const detected = this.findRs2ClientPid();
+    if (detected) {
+      this.gamePid = detected;
+      this.isRunning = true;
+      return true;
+    }
     return this.isRunning;
   }
 
@@ -212,6 +313,18 @@ export class GameLauncher {
   }
 
   public async launchRs3(mainWindow?: BrowserWindow, options?: GameLaunchOptions): Promise<void> {
+    const existingPid = this.findRs2ClientPid();
+    if (existingPid) {
+      console.log(`[Launcher] RuneScape 3 is already running (PID ${existingPid}). Adopting session.`);
+      this.gamePid = existingPid;
+      this.isRunning = true;
+      this.monitorRs2Client(existingPid, mainWindow);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('game-state-changed', { isRunning: true });
+      }
+      return;
+    }
+
     if (this.isRunning) {
       throw new Error('Game is already running');
     }
@@ -245,10 +358,18 @@ export class GameLauncher {
 
     // Isolated library path to resolve libssl1.1 on Ubuntu 22.04 and 24.04 without breaking host apt
     const compatLibDir = installer.getCompatLibDir();
-    let ldLibraryPath = process.env.LD_LIBRARY_PATH || '';
-    if (fs.existsSync(compatLibDir)) {
-      ldLibraryPath = [compatLibDir, ldLibraryPath].filter(Boolean).join(':');
+    let ldLibraryPath = compatLibDir;
+    if (process.env.LD_LIBRARY_PATH) {
+      const cleanParts = process.env.LD_LIBRARY_PATH
+        .split(':')
+        .filter((p) => p && !p.includes('electron') && !p.includes('node_modules') && !p.includes('client/usr'));
+      if (cleanParts.length > 0) {
+        ldLibraryPath = [compatLibDir, ...cleanParts].join(':');
+      }
     }
+
+    // Ensure official desktop entry and icon are registered in GNOME/KDE
+    desktopIntegration.installRs3Integration();
 
     // Determine effective settings (Safe Mode overrides experimental options)
     const isSafeMode = Boolean(options?.safeMode);
@@ -270,7 +391,7 @@ export class GameLauncher {
       ...process.env,
       HOME: gameHome,
       LC_NUMERIC: 'C',
-      PULSE_PROP_OVERRIDE: "application.name='RuneScape' application.icon_name='runescape' media.role='game'",
+      PULSE_PROP_OVERRIDE: 'application.name="RuneScape" application.icon_name="runescape" media.role="game"',
       PULSE_LATENCY_MSEC: audioLatencyFix ? '100' : (process.env.PULSE_LATENCY_MSEC || '100'),
       SDL_VIDEODRIVER: forceX11 ? 'x11' : (process.env.SDL_VIDEODRIVER || 'x11'),
       SDL_VIDEO_X11_WMCLASS: 'RuneScape',
@@ -283,6 +404,17 @@ export class GameLauncher {
     if (ldLibraryPath) {
       env.LD_LIBRARY_PATH = ldLibraryPath;
     }
+
+    // Strip Electron, Chromium, and Wayland runtime variables that crash GTK2 / client wrapper
+    delete env.OZONE_PLATFORM;
+    delete env.ELECTRON_RUN_AS_NODE;
+    delete env.ELECTRON_NO_ATTACH;
+    delete env.NODE_OPTIONS;
+    delete env.CHROME_DESKTOP;
+    delete env.ORIGINAL_XDG_CURRENT_DESKTOP;
+    delete env.EGL_PLATFORM;
+    delete env.NO_AT_BRIDGE;
+    delete env.GTK_MODULES;
 
     // Unset XMODIFIERS to prevent IBus / Fcitx GTK2 deadlocks during startup
     delete env.XMODIFIERS;
@@ -361,49 +493,53 @@ export class GameLauncher {
     }
 
     let quitTimeout: NodeJS.Timeout | null = null;
-    let stderrBuffer = '';
-    const stdoutRing: string[] = [];
-    const stderrRing: string[] = [];
-    const maxRingLines = 150;
+    const logDir = path.join(gameHome, 'logs');
+    if (!fs.existsSync(logDir)) {
+      try {
+        fs.mkdirSync(logDir, { recursive: true });
+      } catch {}
+    }
+    const outLogPath = path.join(logDir, 'client.log');
+    const errLogPath = path.join(logDir, 'client-error.log');
 
     try {
+      const outFd = fs.openSync(outLogPath, 'a');
+      const errFd = fs.openSync(errLogPath, 'a');
+
       const child = spawn(baseCmd, baseArgs, {
         env,
         detached: true,
-        stdio: ['ignore', 'pipe', 'pipe']
+        stdio: ['ignore', outFd, errFd]
       });
+
+      // Child inherits the open files via dup; parent closes its local handles
+      try {
+        fs.closeSync(outFd);
+        fs.closeSync(errFd);
+      } catch {}
+
+      child.unref();
 
       this.activeProcess = child;
       this.isRunning = true;
-
-      child.stderr?.on('data', (chunk) => {
-        const str = chunk.toString();
-        stderrBuffer += str;
-        for (const line of str.split('\n')) {
-          if (line.trim()) {
-            stderrRing.push(line.trim());
-            if (stderrRing.length > maxRingLines) stderrRing.shift();
-          }
-        }
-        console.error(`[RS3 Client stderr] ${str.trim()}`);
-      });
-
-      child.stdout?.on('data', (chunk) => {
-        const str = chunk.toString();
-        for (const line of str.split('\n')) {
-          if (line.trim()) {
-            stdoutRing.push(line.trim());
-            if (stdoutRing.length > maxRingLines) stdoutRing.shift();
-          }
-        }
-        console.log(`[RS3 Client stdout] ${chunk.toString().trim()}`);
-      });
 
       if (mainWindow && !mainWindow.isDestroyed()) {
         mainWindow.webContents.send('game-state-changed', { isRunning: true });
       }
 
+      // Concurrently poll for rs2client while wrapper is active
+      const startupInterval = setInterval(() => {
+        const detectedPid = this.findRs2ClientPid();
+        if (detectedPid) {
+          clearInterval(startupInterval);
+          console.log(`[Launcher] Detected active rs2client (PID ${detectedPid}) while wrapper is active.`);
+          this.gamePid = detectedPid;
+          this.monitorRs2Client(detectedPid, mainWindow);
+        }
+      }, 500);
+
       child.on('error', (err) => {
+        clearInterval(startupInterval);
         console.error('[Launcher] Process error:', err);
         if (quitTimeout) {
           clearTimeout(quitTimeout);
@@ -417,13 +553,58 @@ export class GameLauncher {
         }
       });
 
-      child.on('exit', (code, signal) => {
-        console.log(`[Launcher] RuneScape process terminated with code: ${code}, signal: ${signal}`);
+      child.on('exit', async (code, signal) => {
+        clearInterval(startupInterval);
+        console.log(`[Launcher] RuneScape wrapper process terminated with code: ${code}, signal: ${signal}`);
+
+        // If rs2client was already discovered and is actively running, continue monitoring smoothly
+        if (this.gamePid) {
+          try {
+            process.kill(this.gamePid, 0);
+            console.log(`[Launcher] Wrapper process closed; game client (PID ${this.gamePid}) is actively running.`);
+            this.activeProcess = null;
+            return;
+          } catch {
+            this.gamePid = null;
+          }
+        }
+
+        // Check if rs2client was spawned and is actively running
+        let rs2Pid = this.findRs2ClientPid();
+        if (!rs2Pid) {
+          for (let i = 0; i < 25; i++) {
+            await new Promise((r) => setTimeout(r, 400));
+            rs2Pid = this.findRs2ClientPid();
+            if (rs2Pid) break;
+          }
+        }
+
+        if (rs2Pid) {
+          console.log(`[Launcher] RuneScape 3 client (rs2client) is actively running (PID ${rs2Pid}). Monitoring game session...`);
+          this.activeProcess = null;
+          this.gamePid = rs2Pid;
+          this.monitorRs2Client(rs2Pid, mainWindow);
+          return;
+        }
+
         this.isRunning = false;
         this.activeProcess = null;
+        this.gamePid = null;
 
         if (code !== 0 && code !== null && !this.wasKilledByUser) {
-          const classification = classifyCrash(code, signal, stderrBuffer, stdoutRing.join('\n'));
+          let stderrBuffer = '';
+          let stdoutBuffer = '';
+          try {
+            if (fs.existsSync(errLogPath)) {
+              stderrBuffer = fs.readFileSync(errLogPath, 'utf8').slice(-4000);
+            }
+          } catch {}
+          try {
+            if (fs.existsSync(outLogPath)) {
+              stdoutBuffer = fs.readFileSync(outLogPath, 'utf8').slice(-4000);
+            }
+          } catch {}
+          const classification = classifyCrash(code, signal, stderrBuffer, stdoutBuffer);
           const displayServer = process.env.XDG_SESSION_TYPE || (process.env.WAYLAND_DISPLAY ? 'wayland' : 'x11');
           const totalRamGb = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(1);
 
@@ -438,8 +619,8 @@ export class GameLauncher {
             remediation: classification.remediation,
             actionId: classification.actionId,
             actionLabel: classification.actionLabel,
-            stderrSnippet: sanitizeReportText(stderrRing.slice(-40).join('\n')),
-            stdoutSnippet: sanitizeReportText(stdoutRing.slice(-20).join('\n')),
+            stderrSnippet: sanitizeReportText(stderrBuffer.split('\n').slice(-40).join('\n')),
+            stdoutSnippet: sanitizeReportText(stdoutBuffer.split('\n').slice(-20).join('\n')),
             systemInfo: {
               os: `${os.type()} ${os.release()} (${os.arch()})`,
               displayServer,
@@ -493,12 +674,22 @@ export class GameLauncher {
   }
 
   public killGame(): void {
+    this.wasKilledByUser = true;
+    if (this.monitorInterval) {
+      clearInterval(this.monitorInterval);
+      this.monitorInterval = null;
+    }
+    if (this.gamePid) {
+      try {
+        process.kill(this.gamePid, 'SIGTERM');
+      } catch {}
+      this.gamePid = null;
+    }
     if (this.activeProcess && !this.activeProcess.killed) {
-      this.wasKilledByUser = true;
       this.activeProcess.kill('SIGTERM');
-      this.isRunning = false;
       this.activeProcess = null;
     }
+    this.isRunning = false;
   }
 }
 

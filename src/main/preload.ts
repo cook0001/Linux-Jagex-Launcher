@@ -72,7 +72,8 @@ export const api = {
 
   // Auto Updater
   checkForUpdates: () => ipcRenderer.invoke('updater:check'),
-  downloadUpdate: (releaseInfo: any) => ipcRenderer.invoke('updater:download', releaseInfo),
+  downloadUpdate: (releaseInfo: any, targetFormat?: string) => ipcRenderer.invoke('updater:download', releaseInfo, targetFormat),
+  installUpdate: (filePath?: string, format?: string) => ipcRenderer.invoke('updater:install', filePath, format),
   applyUpdateAndRestart: () => ipcRenderer.invoke('updater:applyAndRestart'),
   getUpdaterFormatInfo: () => ipcRenderer.invoke('updater:getFormatInfo'),
   skipUpdateVersion: (version: string) => ipcRenderer.invoke('updater:skipVersion', version),
@@ -94,6 +95,13 @@ export const api = {
   // World Latency & Ping
   pingRs3Worlds: (worldIds?: number[]) => ipcRenderer.invoke('ping:rs3-worlds', worldIds),
   pingOsrsWorlds: (subIds?: number[]) => ipcRenderer.invoke('ping:osrs-worlds', subIds),
+
+  // Desktop shortcuts & icons
+  repairDesktopShortcuts: () => ipcRenderer.invoke('desktop:repairShortcuts'),
+
+  // Quick Folders Hub
+  openFolder: (folderIdOrPath: string) => ipcRenderer.invoke('utils:openFolder', folderIdOrPath),
+  getQuickFolders: () => ipcRenderer.invoke('utils:getQuickFolders'),
 };
 
 contextBridge.exposeInMainWorld('jagexApi', api);

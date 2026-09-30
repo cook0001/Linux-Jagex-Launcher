@@ -1,7 +1,8 @@
 Source: linux-jagex-launcher
 Section: games
 Priority: optional
-Maintainer: Daniel Cook <cook0001@users.noreply.github.com>
+Maintainer: Daniel Cook <danielcook2016@outlook.com>
+XSBC-Original-Maintainer: Daniel Cook <danielcook2016@outlook.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.2
 Homepage: https://cook0001.github.io/Linux-Jagex-Launcher/

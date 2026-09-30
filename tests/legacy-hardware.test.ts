@@ -92,4 +92,21 @@ test('Older Linux Hardware & Low-Spec Performance Mode Suite', async (t) => {
     assert.ok(appCode.includes("openSettings('tab-rs3')"), 'Quick settings on RS3 must open RS3 tab');
     assert.ok(appCode.includes("openSettings('tab-osrs')"), 'Quick settings on OSRS must open OSRS tab');
   });
+
+  await t.test('UI styles disable heavy backdrop-filter blurs and continuous animations for general use', () => {
+    const layoutPath = path.resolve(process.cwd(), 'src/renderer/styles/layout.css');
+    const layoutCss = fs.readFileSync(layoutPath, 'utf8');
+    assert.ok(!layoutCss.includes('backdrop-filter: blur(12px)'), 'layout.css must not use heavy 12px blurs');
+    assert.ok(!layoutCss.includes('backdrop-filter: blur(20px)'), 'layout.css must not use heavy 20px blurs');
+
+    const animPath = path.resolve(process.cwd(), 'src/renderer/styles/animations.css');
+    const animCss = fs.readFileSync(animPath, 'utf8');
+    assert.ok(!animCss.includes('animation: play-shimmer 4s infinite'), 'Play button shimmer must not run continuously');
+
+    const osrsPath = path.resolve(process.cwd(), 'src/main/osrs.ts');
+    const osrsCode = fs.readFileSync(osrsPath, 'utf8');
+    assert.ok(osrsCode.includes("'-Xmx768m'"), 'OSRS manager must limit heap to 768MB in lowSpecMode');
+    assert.ok(osrsCode.includes("'-Dsun.java2d.opengl=true'"), 'OSRS manager must force OpenGL acceleration in lowSpecMode');
+  });
 });
+

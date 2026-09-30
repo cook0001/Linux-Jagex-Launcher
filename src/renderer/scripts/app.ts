@@ -53,10 +53,21 @@ declare global {
         currentVersion: string;
         latestVersion: string;
         packageFormat: string;
+        systemFamily?: string;
+        supportedFormats?: string[];
         releaseInfo?: any;
         error?: string;
       }>;
-      downloadUpdate: (releaseInfo: any) => Promise<{ success: boolean; filePath?: string; error?: string }>;
+      downloadUpdate: (releaseInfo: any, targetFormat?: string) => Promise<{ success: boolean; filePath?: string; format?: string; error?: string }>;
+      installUpdate: (filePath?: string, format?: string) => Promise<{
+        success: boolean;
+        requiresRestart?: boolean;
+        message?: string;
+        installedPath?: string;
+        manualCommand?: string;
+        cancelled?: boolean;
+        error?: string;
+      }>;
       applyUpdateAndRestart: () => Promise<boolean>;
       getUpdaterFormatInfo: () => Promise<{ format: string; label: string; currentVersion: string }>;
       skipUpdateVersion: (version: string) => Promise<any>;
@@ -80,6 +91,9 @@ declare global {
       }>;
       pingRs3Worlds: (worldIds?: number[]) => Promise<any[]>;
       pingOsrsWorlds: (subIds?: number[]) => Promise<any[]>;
+      repairDesktopShortcuts: () => Promise<{ success: boolean; error?: string }>;
+      openFolder: (folderIdOrPath: string) => Promise<{ success: boolean; path: string; error?: string }>;
+      getQuickFolders: () => Promise<any[]>;
     };
   }
 }
@@ -95,6 +109,9 @@ class JagexLauncherApp {
   private featuredBannerUrl: string | null = null;
   private pendingUpdateResult: any = null;
   private isUpdateDownloaded: boolean = false;
+  private isUpdateInstalled: boolean = false;
+  private selectedUpdaterFormat: 'deb' | 'appimage' = 'deb';
+  private downloadedUpdatePath: string | null = null;
   private deckInfo: any = null;
   private gamepadNav: GamepadNavigator | null = null;
   private currentPingGame: 'rs3' | 'osrs' = 'rs3';
@@ -907,40 +924,98 @@ class JagexLauncherApp {
 
     const modal = document.getElementById('modal-updater');
     const versionTag = document.getElementById('modal-updater-version-tag');
+    const headline = document.getElementById('modal-updater-headline');
     const formatDesc = document.getElementById('modal-updater-format-desc');
     const notesBox = document.getElementById('modal-updater-notes');
-    const actionBtn = document.getElementById('btn-action-updater');
+    const actionBtn = document.getElementById('btn-action-updater') as HTMLButtonElement | null;
     const distroNotice = document.getElementById('modal-updater-distro-notice');
-    const distroText = document.getElementById('modal-updater-distro-text');
     const progressSection = document.getElementById('modal-updater-progress-section');
+    const statusAlert = document.getElementById('modal-updater-status-alert');
+    const formatRow = document.getElementById('modal-updater-format-row');
+    const btnDeb = document.getElementById('btn-updater-fmt-deb');
+    const btnAppImage = document.getElementById('btn-updater-fmt-appimage');
 
-    if (versionTag) versionTag.textContent = `v${res.currentVersion} → v${res.latestVersion}`;
-    if (formatDesc) formatDesc.textContent = `Package Format: ${res.packageFormat.toUpperCase()}`;
-    if (notesBox) notesBox.innerHTML = this.formatReleaseNotesForHumans(res.releaseInfo?.releaseNotes, res.latestVersion);
+    const isSameVersion = res.currentVersion === res.latestVersion;
+    if (versionTag) {
+      versionTag.textContent = isSameVersion
+        ? `v${res.currentVersion} (Latest Published)`
+        : `v${res.currentVersion} → v${res.latestVersion}`;
+    }
+
+    if (headline) {
+      headline.textContent = isSameVersion
+        ? 'Latest Release is already installed'
+        : 'A new version of Linux Jagex Launcher is ready!';
+    }
+
+    if (notesBox) {
+      notesBox.innerHTML = this.formatReleaseNotesForHumans(res.releaseInfo?.releaseNotes, res.latestVersion);
+    }
 
     if (progressSection) progressSection.classList.add('hidden');
+    if (statusAlert) statusAlert.classList.add('hidden');
+    if (distroNotice) distroNotice.classList.add('hidden');
 
+    this.isUpdateDownloaded = false;
+    this.isUpdateInstalled = false;
+    this.downloadedUpdatePath = null;
+
+    const hasDeb = Boolean(res.releaseInfo?.assets?.deb);
+    const hasAppImage = Boolean(res.releaseInfo?.assets?.appImage);
+
+    // Initial selected format
     if (res.packageFormat === 'appimage') {
-      if (actionBtn) actionBtn.textContent = this.isUpdateDownloaded ? 'Restart & Install' : 'Download & Install';
-      if (distroNotice) distroNotice.classList.add('hidden');
-    } else if (res.packageFormat === 'deb') {
-      if (actionBtn) actionBtn.textContent = 'Download .deb Package';
-      if (distroNotice) distroNotice.classList.add('hidden');
-    } else if (res.packageFormat === 'flatpak') {
-      if (actionBtn) actionBtn.textContent = 'View on GitHub';
-      if (distroNotice && distroText) {
-        distroNotice.classList.remove('hidden');
-        distroText.innerHTML = 'Flatpak packages update via your software center or <code>flatpak update</code>.';
-      }
-    } else if (res.packageFormat === 'aur') {
-      if (actionBtn) actionBtn.textContent = 'View on GitHub';
-      if (distroNotice && distroText) {
-        distroNotice.classList.remove('hidden');
-        distroText.innerHTML = 'Arch Linux packages update via AUR. Run <code>yay -Syu</code> or <code>paru -Syu</code>.';
-      }
+      this.selectedUpdaterFormat = 'appimage';
+    } else if (res.packageFormat === 'deb' || res.systemFamily === 'debian') {
+      this.selectedUpdaterFormat = hasDeb ? 'deb' : 'appimage';
     } else {
-      if (actionBtn) actionBtn.textContent = 'View on GitHub';
-      if (distroNotice) distroNotice.classList.add('hidden');
+      this.selectedUpdaterFormat = hasAppImage ? 'appimage' : 'deb';
+    }
+
+    const updateFormatUI = () => {
+      if (formatDesc) {
+        formatDesc.textContent = this.selectedUpdaterFormat === 'deb'
+          ? 'Package: Debian / Ubuntu (.deb via PolicyKit)'
+          : 'Package: AppImage (Portable Linux Binary)';
+      }
+      if (btnDeb) {
+        if (this.selectedUpdaterFormat === 'deb') btnDeb.classList.add('active');
+        else btnDeb.classList.remove('active');
+      }
+      if (btnAppImage) {
+        if (this.selectedUpdaterFormat === 'appimage') btnAppImage.classList.add('active');
+        else btnAppImage.classList.remove('active');
+      }
+    };
+
+    if (hasDeb && hasAppImage) {
+      formatRow?.classList.remove('hidden');
+      updateFormatUI();
+
+      btnDeb?.replaceWith(btnDeb.cloneNode(true));
+      btnAppImage?.replaceWith(btnAppImage.cloneNode(true));
+
+      const newBtnDeb = document.getElementById('btn-updater-fmt-deb');
+      const newBtnAppImage = document.getElementById('btn-updater-fmt-appimage');
+
+      newBtnDeb?.addEventListener('click', () => {
+        this.selectedUpdaterFormat = 'deb';
+        updateFormatUI();
+      });
+      newBtnAppImage?.addEventListener('click', () => {
+        this.selectedUpdaterFormat = 'appimage';
+        updateFormatUI();
+      });
+    } else {
+      formatRow?.classList.add('hidden');
+      updateFormatUI();
+    }
+
+    if (actionBtn) {
+      actionBtn.removeAttribute('disabled');
+      actionBtn.textContent = isSameVersion ? 'Download & Reinstall' : 'Download & Install';
+      actionBtn.style.background = '';
+      actionBtn.style.borderColor = '';
     }
 
     modal?.classList.remove('hidden');
@@ -2074,6 +2149,19 @@ class JagexLauncherApp {
       }
     }, 1000);
 
+    // Top bar login triggers
+    const loginBtn = document.getElementById('btn-login');
+    loginBtn?.addEventListener('click', async () => {
+      await this.triggerLogin();
+    });
+
+    const browserLoginHelpBtn = document.getElementById('btn-browser-login-help');
+    browserLoginHelpBtn?.addEventListener('click', () => {
+      const modal = document.getElementById('modal-browser-login');
+      modal?.classList.remove('hidden');
+      this.checkClipboardForCode();
+    });
+
     // Account modal
     const accountModal = document.getElementById('modal-account');
     const accountPill = document.getElementById('account-logged-in');
@@ -2129,8 +2217,12 @@ class JagexLauncherApp {
           }
         } else {
           if (updateStatusMsg) {
-            updateStatusMsg.textContent = `You are running the latest version (v${res.currentVersion}).`;
+            updateStatusMsg.innerHTML = `You are running the latest version (v${res.currentVersion}). <a href="#" id="link-reinstall-latest" style="color: #60a5fa; text-decoration: underline; margin-left: 6px; cursor: pointer;">Open Updater / Reinstall</a>`;
             updateStatusMsg.style.color = '#34d399';
+            document.getElementById('link-reinstall-latest')?.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.openUpdateModal(res);
+            });
           }
         }
       } catch (err: any) {
@@ -2145,7 +2237,7 @@ class JagexLauncherApp {
     const updaterModal = document.getElementById('modal-updater');
     const closeUpdaterBtn = document.getElementById('btn-close-updater');
     const cancelUpdaterBtn = document.getElementById('btn-cancel-updater');
-    const actionUpdaterBtn = document.getElementById('btn-action-updater');
+    const actionUpdaterBtn = document.getElementById('btn-action-updater') as HTMLButtonElement | null;
     const skipUpdateBtn = document.getElementById('btn-skip-update-version');
     const titlebarUpdateBanner = document.getElementById('titlebar-update-banner');
 
@@ -2172,23 +2264,30 @@ class JagexLauncherApp {
     actionUpdaterBtn?.addEventListener('click', async () => {
       if (!this.pendingUpdateResult) return;
       const res = this.pendingUpdateResult;
-      const format = res.packageFormat;
 
-      if (format === 'appimage') {
-        if (this.isUpdateDownloaded) {
-          try {
-            await window.jagexApi.applyUpdateAndRestart();
-          } catch (e: any) {
-            alert(`Failed to restart: ${e.message}`);
-          }
-          return;
+      // If update is already installed, restart and launch
+      if (this.isUpdateInstalled) {
+        try {
+          await window.jagexApi.applyUpdateAndRestart();
+        } catch (e: any) {
+          alert(`Failed to restart: ${e.message}`);
         }
+        return;
+      }
 
-        const progressSection = document.getElementById('modal-updater-progress-section');
-        const progressBar = document.getElementById('modal-updater-progress-bar');
-        const progressStatus = document.getElementById('modal-updater-progress-status');
-        const progressPercent = document.getElementById('modal-updater-progress-percent');
+      const progressSection = document.getElementById('modal-updater-progress-section');
+      const progressBar = document.getElementById('modal-updater-progress-bar');
+      const progressStatus = document.getElementById('modal-updater-progress-status');
+      const progressPercent = document.getElementById('modal-updater-progress-percent');
+      const statusAlert = document.getElementById('modal-updater-status-alert');
+      const distroNotice = document.getElementById('modal-updater-distro-notice');
+      const distroText = document.getElementById('modal-updater-distro-text');
 
+      statusAlert?.classList.add('hidden');
+      distroNotice?.classList.add('hidden');
+
+      // Step 1: Download phase (if not already downloaded)
+      if (!this.isUpdateDownloaded || !this.downloadedUpdatePath) {
         progressSection?.classList.remove('hidden');
         actionUpdaterBtn.setAttribute('disabled', 'true');
         actionUpdaterBtn.textContent = 'Downloading...';
@@ -2200,53 +2299,121 @@ class JagexLauncherApp {
         });
 
         try {
-          const dlRes = await window.jagexApi.downloadUpdate(res.releaseInfo);
+          const dlRes = await window.jagexApi.downloadUpdate(res.releaseInfo, this.selectedUpdaterFormat);
           unsub();
-          if (dlRes.success) {
-            this.isUpdateDownloaded = true;
-            actionUpdaterBtn.removeAttribute('disabled');
-            actionUpdaterBtn.textContent = 'Restart & Install';
-            if (progressStatus) progressStatus.textContent = 'Update verified & ready to install!';
-          } else {
+
+          if (!dlRes.success || !dlRes.filePath) {
             actionUpdaterBtn.removeAttribute('disabled');
             actionUpdaterBtn.textContent = 'Retry Download';
-            alert(`Download failed: ${dlRes.error}`);
-          }
-        } catch (e: any) {
-          unsub();
-          actionUpdaterBtn.removeAttribute('disabled');
-          actionUpdaterBtn.textContent = 'Retry Download';
-          alert(`Download error: ${e.message}`);
-        }
-      } else if (format === 'deb') {
-        actionUpdaterBtn.setAttribute('disabled', 'true');
-        actionUpdaterBtn.textContent = 'Downloading...';
-        try {
-          const dlRes = await window.jagexApi.downloadUpdate(res.releaseInfo);
-          actionUpdaterBtn.removeAttribute('disabled');
-          if (dlRes.success) {
-            actionUpdaterBtn.textContent = 'Downloaded (.deb)';
-            const distroNotice = document.getElementById('modal-updater-distro-notice');
-            const distroText = document.getElementById('modal-updater-distro-text');
-            if (distroNotice && distroText) {
-              distroNotice.classList.remove('hidden');
-              distroText.innerHTML = `Saved to <strong>${dlRes.filePath}</strong>.<br>Install via: <code>sudo apt install ${dlRes.filePath}</code>`;
+            if (statusAlert) {
+              statusAlert.style.background = 'rgba(239, 68, 68, 0.15)';
+              statusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+              statusAlert.style.color = '#fca5a5';
+              statusAlert.textContent = `❌ Download failed: ${dlRes.error || 'Unknown error'}`;
+              statusAlert.classList.remove('hidden');
             }
-          } else {
-            actionUpdaterBtn.textContent = 'Retry Download';
-            alert(`Download failed: ${dlRes.error}`);
+            return;
           }
+
+          this.isUpdateDownloaded = true;
+          this.downloadedUpdatePath = dlRes.filePath;
+          if (dlRes.format) this.selectedUpdaterFormat = dlRes.format as any;
         } catch (e: any) {
+          unsub();
           actionUpdaterBtn.removeAttribute('disabled');
           actionUpdaterBtn.textContent = 'Retry Download';
-          alert(`Download error: ${e.message}`);
+          if (statusAlert) {
+            statusAlert.style.background = 'rgba(239, 68, 68, 0.15)';
+            statusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            statusAlert.style.color = '#fca5a5';
+            statusAlert.textContent = `❌ Download error: ${e.message}`;
+            statusAlert.classList.remove('hidden');
+          }
+          return;
         }
-      } else {
-        const url = res.releaseInfo?.htmlUrl || 'https://github.com/cook0001/Linux-Jagex-Launcher/releases';
-        if (window.jagexApi) {
-          window.jagexApi.openExternal(url);
+      }
+
+      // Step 2: Installation phase
+      actionUpdaterBtn.setAttribute('disabled', 'true');
+      actionUpdaterBtn.textContent = this.selectedUpdaterFormat === 'deb'
+        ? 'Installing (Admin Prompt)...'
+        : 'Installing AppImage...';
+
+      if (progressStatus) {
+        progressStatus.textContent = this.selectedUpdaterFormat === 'deb'
+          ? 'Prompting for root authentication to install .deb...'
+          : 'Configuring AppImage and updating desktop shortcuts...';
+      }
+
+      const unsubInstall = window.jagexApi.onUpdateProgress((p: any) => {
+        if (progressBar) progressBar.style.width = `${p.progress}%`;
+        if (progressStatus) progressStatus.textContent = p.message;
+        if (progressPercent) progressPercent.textContent = `${p.progress}%`;
+      });
+
+      try {
+        const installRes = await window.jagexApi.installUpdate(this.downloadedUpdatePath, this.selectedUpdaterFormat);
+        unsubInstall();
+
+        if (installRes.success) {
+          this.isUpdateInstalled = true;
+          actionUpdaterBtn.removeAttribute('disabled');
+          actionUpdaterBtn.textContent = 'Restart & Launch Updated Version';
+          actionUpdaterBtn.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
+          actionUpdaterBtn.style.borderColor = '#34d399';
+
+          if (statusAlert) {
+            statusAlert.style.background = 'rgba(16, 185, 129, 0.15)';
+            statusAlert.style.border = '1px solid rgba(52, 211, 153, 0.3)';
+            statusAlert.style.color = '#34d399';
+            statusAlert.innerHTML = `
+              <div style="font-weight: 700; margin-bottom: 2px;">🎉 ${installRes.message || 'Installation Successful!'}</div>
+              <div style="color: #94a3b8;">${this.selectedUpdaterFormat === 'deb' ? 'Package installed to /usr/bin/jagex-launcher.' : 'AppImage configured and desktop entries updated.'} Click below to restart.</div>
+            `;
+            statusAlert.classList.remove('hidden');
+          }
+          if (progressStatus) progressStatus.textContent = 'Ready to launch!';
+        } else if (installRes.cancelled) {
+          actionUpdaterBtn.removeAttribute('disabled');
+          actionUpdaterBtn.textContent = 'Try Install Again';
+          if (distroNotice && distroText) {
+            distroNotice.classList.remove('hidden');
+            distroText.innerHTML = `
+              <div style="font-weight: 600; color: #facc15; margin-bottom: 4px;">⚠️ System authentication was cancelled</div>
+              <div style="margin-bottom: 8px; color: #cbd5e1;">You can install the downloaded package manually in your terminal:</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 4px; font-family: monospace; font-size: 11px;">
+                <span id="text-copy-deb-cmd">${installRes.manualCommand || `sudo apt install "${this.downloadedUpdatePath}"`}</span>
+                <button type="button" id="btn-copy-install-cmd" class="btn-secondary" style="padding: 2px 8px; font-size: 10px; margin-left: 8px;">Copy</button>
+              </div>
+            `;
+            document.getElementById('btn-copy-install-cmd')?.addEventListener('click', () => {
+              const cmd = installRes.manualCommand || `sudo apt install "${this.downloadedUpdatePath}"`;
+              navigator.clipboard.writeText(cmd);
+              const btn = document.getElementById('btn-copy-install-cmd');
+              if (btn) btn.textContent = 'Copied!';
+            });
+          }
         } else {
-          window.open(url, '_blank');
+          actionUpdaterBtn.removeAttribute('disabled');
+          actionUpdaterBtn.textContent = 'Retry Install';
+          if (statusAlert) {
+            statusAlert.style.background = 'rgba(239, 68, 68, 0.15)';
+            statusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+            statusAlert.style.color = '#fca5a5';
+            statusAlert.textContent = `❌ ${installRes.error || 'Installation failed.'}`;
+            statusAlert.classList.remove('hidden');
+          }
+        }
+      } catch (e: any) {
+        unsubInstall();
+        actionUpdaterBtn.removeAttribute('disabled');
+        actionUpdaterBtn.textContent = 'Retry Install';
+        if (statusAlert) {
+          statusAlert.style.background = 'rgba(239, 68, 68, 0.15)';
+          statusAlert.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+          statusAlert.style.color = '#fca5a5';
+          statusAlert.textContent = `❌ Error during installation: ${e.message}`;
+          statusAlert.classList.remove('hidden');
         }
       }
     });
@@ -2275,6 +2442,54 @@ class JagexLauncherApp {
           deckStatusMsg.textContent = `Error adding to Steam: ${err.message}`;
           deckStatusMsg.style.color = '#f87171';
         }
+      }
+    });
+
+    // Desktop & System Integration: Re-register shortcuts & dock icons
+    const reRegisterShortcutsBtn = document.getElementById('btn-re-register-shortcuts');
+    const shortcutsStatusMsg = document.getElementById('setting-shortcuts-status-msg');
+
+    reRegisterShortcutsBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.repairDesktopShortcuts) return;
+      if (shortcutsStatusMsg) {
+        shortcutsStatusMsg.style.display = 'block';
+        shortcutsStatusMsg.textContent = 'Updating desktop entries, MIME types, and hicolor icon caches...';
+        shortcutsStatusMsg.style.color = '#94a3b8';
+      }
+      try {
+        await window.jagexApi.repairDesktopShortcuts();
+        if (shortcutsStatusMsg) {
+          shortcutsStatusMsg.textContent = '✓ Desktop shortcuts and dock icon caches successfully updated!';
+          shortcutsStatusMsg.style.color = '#34d399';
+          setTimeout(() => {
+            if (shortcutsStatusMsg) shortcutsStatusMsg.style.display = 'none';
+          }, 6000);
+        }
+      } catch (err: any) {
+        if (shortcutsStatusMsg) {
+          shortcutsStatusMsg.textContent = `Error updating shortcuts: ${err?.message || err}`;
+          shortcutsStatusMsg.style.color = '#f87171';
+        }
+      }
+    });
+
+    // Quick Folders Hub: Open Folders
+    document.querySelectorAll('.btn-quick-folder[data-folder]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const folderKey = btn.getAttribute('data-folder');
+        if (!folderKey || !window.jagexApi?.openFolder) return;
+        try {
+          await window.jagexApi.openFolder(folderKey);
+        } catch (err) {
+          console.error('[Folders] Failed to open folder:', err);
+        }
+      });
+    });
+
+    const openLauncherConfigBtn = document.getElementById('btn-open-launcher-config');
+    openLauncherConfigBtn?.addEventListener('click', async () => {
+      if (window.jagexApi?.openFolder) {
+        await window.jagexApi.openFolder('launcher-config');
       }
     });
 

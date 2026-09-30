@@ -14,6 +14,16 @@ import { updater } from './updater';
 import { deck } from './deck';
 import { steamShortcuts } from './steam-shortcuts';
 import { worldPing } from './ping';
+import { desktopIntegration } from './desktop';
+import { trayManager } from './tray';
+import { quickFolders } from './folders';
+
+app.name = 'linux-jagex-launcher';
+app.setName('linux-jagex-launcher');
+if (process.platform === 'linux') {
+  app.setDesktopName('linux-jagex-launcher.desktop');
+  desktopIntegration.ensureAll();
+}
 
 if (process.platform === 'linux' && typeof process.getuid === 'function' && process.getuid() === 0) {
   console.warn('[Security] WARNING: Running with sudo/root privileges causes permission corruption on user game data and cache directories!');
@@ -131,6 +141,14 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
 
+  mainWindow.on('close', (event) => {
+    const settings = store.getSettings();
+    if (!isQuitting && settings.minimizeToTray) {
+      event.preventDefault();
+      mainWindow?.hide();
+    }
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -142,6 +160,13 @@ function createWindow() {
     }
   });
 }
+
+let isQuitting = false;
+
+app.on('before-quit', () => {
+  isQuitting = true;
+  trayManager.setQuitting(true);
+});
 
 async function checkUpdatesInBackground() {
   try {
@@ -164,9 +189,15 @@ async function checkUpdatesInBackground() {
 // App lifecycle
 app.whenReady().then(() => {
   createWindow();
+  if (mainWindow) {
+    trayManager.init(mainWindow);
+  }
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+      if (mainWindow) trayManager.init(mainWindow);
+    }
   });
 
   // Initial update check 4s after launch
@@ -178,8 +209,8 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   const settings = store.getSettings();
-  if (settings.minimizeToTray && launcher.isGameRunning()) {
-    // Keep alive in tray if game is still active
+  if (!isQuitting && settings.minimizeToTray) {
+    // Keep alive in tray
   } else {
     app.quit();
   }
@@ -211,6 +242,19 @@ ipcMain.handle('utils:openExternal', async (_, url: string) => {
   if (url.startsWith('https://') || url.startsWith('http://')) {
     await shell.openExternal(url);
   }
+});
+
+ipcMain.handle('utils:openFolder', async (_, folderIdOrPath: string) => {
+  return await quickFolders.openFolder(folderIdOrPath);
+});
+
+ipcMain.handle('utils:getQuickFolders', () => {
+  return quickFolders.getFolders();
+});
+
+ipcMain.handle('desktop:repairShortcuts', async () => {
+  desktopIntegration.ensureAll();
+  return { success: true };
 });
 
 ipcMain.handle('utils:readClipboard', () => {
@@ -561,8 +605,16 @@ ipcMain.handle('updater:check', async () => {
   return await updater.checkForUpdates();
 });
 
-ipcMain.handle('updater:download', async (_, releaseInfo: any) => {
-  return await updater.downloadUpdate(releaseInfo, (progress) => {
+ipcMain.handle('updater:download', async (_, releaseInfo: any, targetFormat?: any) => {
+  return await updater.downloadUpdate(releaseInfo, targetFormat, (progress) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('updater:progress', progress);
+    }
+  });
+});
+
+ipcMain.handle('updater:install', async (_, filePath?: string, format?: any) => {
+  return await updater.installUpdate(filePath, format, (progress) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('updater:progress', progress);
     }
@@ -602,6 +654,4 @@ ipcMain.handle('ping:rs3-worlds', async (_, worldIds?: number[]) => {
 ipcMain.handle('ping:osrs-worlds', async (_, subIds?: number[]) => {
   return await worldPing.pingOsrsWorlds(subIds);
 });
-
-
-
+export { launcher } from './launcher';

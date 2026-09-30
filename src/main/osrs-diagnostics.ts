@@ -194,11 +194,15 @@ export class OsrsDoctor {
 
   public detectZombieProcesses(): number[] {
     const zombies: number[] = [];
+    const activeGamePid = osrs.getGamePid();
     if (process.platform === 'linux') {
       try {
         const pids = fs.readdirSync('/proc').filter((p) => /^\d+$/.test(p));
         for (const pid of pids) {
           try {
+            const numPid = parseInt(pid, 10);
+            if (numPid === process.pid || (activeGamePid && numPid === activeGamePid)) continue;
+
             const cmdline = fs.readFileSync(`/proc/${pid}/cmdline`, 'utf8');
             if (
               (cmdline.includes('RuneLite.jar') ||
@@ -206,12 +210,11 @@ export class OsrsDoctor {
                cmdline.includes('net.runelite.client.RuneLite') ||
                cmdline.includes('hdos.dev') ||
                cmdline.includes('/hdos/')) &&
-              !cmdline.includes('linux-jagex-launcher')
+              !cmdline.includes('linux-jagex-launcher') &&
+              !cmdline.includes('tsx') &&
+              !cmdline.includes('oxlint')
             ) {
-              const numPid = parseInt(pid, 10);
-              if (numPid !== process.pid) {
-                zombies.push(numPid);
-              }
+              zombies.push(numPid);
             }
           } catch {}
         }
@@ -365,7 +368,18 @@ export class OsrsDoctor {
     }
 
     // 3. Java Version & Architecture Validation
-    if (javaPath && javaInfo.majorVersion !== null) {
+    if (!javaPath) {
+      checks.push({
+        id: 'osrs_java_version',
+        name: 'Java Version Compatibility',
+        category: 'java',
+        status: 'error',
+        message: 'No Java runtime available to verify version compatibility. Java 17 or 21 is required.',
+        remediation: 'Install OpenJDK 17 or 21: sudo apt install openjdk-17-jre (or pacman -S jre17-openjdk).',
+        actionId: 'install_headful_java',
+        actionLabel: 'Install Java 17'
+      });
+    } else if (javaInfo.majorVersion !== null) {
       if (javaInfo.majorVersion < 11) {
         missingPackages.push('java');
         checks.push({
@@ -387,7 +401,7 @@ export class OsrsDoctor {
           message: `Java ${javaInfo.version || javaInfo.majorVersion} detected (${javaInfo.is64Bit ? '64-Bit' : '32-Bit'}). Meets requirements for RuneLite and HDOS.`
         });
       }
-    } else if (javaPath) {
+    } else {
       checks.push({
         id: 'osrs_java_version',
         name: 'Java Version Compatibility',
@@ -398,7 +412,18 @@ export class OsrsDoctor {
     }
 
     // 4. Headless JRE Check (The #1 Linux OSRS Trap)
-    if (javaPath && javaInfo.isHeadless) {
+    if (!javaPath) {
+      checks.push({
+        id: 'osrs_java_headless',
+        name: 'Headful GUI Display Support (AWT / Swing)',
+        category: 'java',
+        status: 'error',
+        message: 'No Java runtime detected. A headful OpenJDK installation (providing libawt_xawt.so) is required.',
+        remediation: 'Install the complete headful JRE package via your package manager.',
+        actionId: 'install_headful_java',
+        actionLabel: 'Install Headful JRE'
+      });
+    } else if (javaInfo.isHeadless) {
       missingPackages.push('java');
       checks.push({
         id: 'osrs_java_headless',
@@ -410,7 +435,7 @@ export class OsrsDoctor {
         actionId: 'install_headful_java',
         actionLabel: 'Install Headful JRE'
       });
-    } else if (javaPath) {
+    } else {
       checks.push({
         id: 'osrs_java_headless',
         name: 'Headful GUI Display Support (AWT / Swing)',
@@ -532,6 +557,14 @@ export class OsrsDoctor {
         category: 'storage',
         status: 'ok',
         message: 'User profile directory ~/.runelite has clean non-root user permissions.'
+      });
+    } else {
+      checks.push({
+        id: 'osrs_profile_perms',
+        name: 'RuneLite Profile Directory Permissions (~/.runelite)',
+        category: 'storage',
+        status: 'ok',
+        message: 'User profile directory ~/.runelite is clean (not yet created).'
       });
     }
 
