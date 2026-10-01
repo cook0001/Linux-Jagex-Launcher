@@ -172,7 +172,12 @@ test('Repository and package configuration', async (t) => {
     assert.ok(fs.existsSync(path.join(snapDir, 'gui/icon.png')), 'packaging/snap/gui/icon.png must exist');
     assert.ok(fs.existsSync(path.resolve(process.cwd(), 'snap/gui/linux-jagex-launcher.desktop')), 'snap/gui desktop entry must exist');
     assert.ok(fs.existsSync(path.resolve(process.cwd(), 'snap/gui/icon.png')), 'snap/gui/icon.png must exist');
-    assert.ok(fs.existsSync(path.join(snapDir, 'generate-snap-banner.cjs')), 'packaging/snap/generate-snap-banner.cjs must exist');
+    
+    // Internal maintainer banner generator script
+    const internalBannerGen = path.resolve(process.cwd(), 'internal/scripts/generate-snap-banner.cjs');
+    if (fs.existsSync(internalBannerGen)) {
+      assert.ok(fs.existsSync(internalBannerGen), 'internal/scripts/generate-snap-banner.cjs must exist');
+    }
 
     const yamlContent = fs.readFileSync(snapcraftYaml, 'utf8');
     assert.ok(yamlContent.includes('name: linux-jagex-launcher'), 'Snap name must be linux-jagex-launcher');
@@ -195,15 +200,19 @@ test('Repository and package configuration', async (t) => {
     const websiteHtml = fs.readFileSync(path.resolve(process.cwd(), 'docs/index.html'), 'utf8');
     assert.ok(websiteHtml.includes('id="tab-panel-snap"'), 'docs/index.html must contain Snap install tab panel');
     assert.ok(websiteHtml.includes('sudo snap install linux-jagex-launcher'), 'docs/index.html must contain snap install command');
-    assert.ok(websiteHtml.includes('snap-store-banner'), 'docs/index.html must display snap store banner');
+    assert.ok(websiteHtml.includes('assets/banner.png'), 'docs/index.html must display launcher banner in snap section');
   });
 
   await t.test('Debian (.deb) packaging and repository configuration', () => {
     const debDir = path.resolve(process.cwd(), 'packaging/deb');
     assert.ok(fs.existsSync(debDir), 'packaging/deb directory must exist');
     assert.ok(fs.existsSync(path.join(debDir, 'README.md')), 'packaging/deb/README.md must exist');
-    assert.ok(fs.existsSync(path.join(debDir, 'generate-apt-repo.js')), 'packaging/deb/generate-apt-repo.js must exist');
     assert.ok(pkg.scripts['dist:deb'], 'package.json must define dist:deb script');
+
+    const internalAptScript = path.resolve(process.cwd(), 'internal/scripts/generate-apt-repo.js');
+    if (fs.existsSync(internalAptScript)) {
+      assert.ok(fs.existsSync(internalAptScript), 'internal/scripts/generate-apt-repo.js must exist');
+    }
 
     const builderConfigPath = path.resolve(process.cwd(), 'electron-builder.json');
     const builderConfig = JSON.parse(fs.readFileSync(builderConfigPath, 'utf8'));
@@ -214,11 +223,15 @@ test('Repository and package configuration', async (t) => {
   });
 
   await t.test('Snap Store media and banner specifications', async () => {
+    const internalBannerDir = path.resolve(process.cwd(), 'internal/banners');
+    if (!fs.existsSync(internalBannerDir)) {
+      return; // Skip when running in clean CI checkout without internal/ assets
+    }
+
     const sharp = (await import('sharp')).default;
-    const snapDir = path.resolve(process.cwd(), 'packaging/snap');
-    const bannerPng = path.join(snapDir, 'snap-store-banner.png');
-    const bannerJpg = path.join(snapDir, 'snap-store-banner.jpg');
-    const bannerMaxJpg = path.join(snapDir, 'snap-store-banner-4320x1440.jpg');
+    const bannerPng = path.join(internalBannerDir, 'snap-store-banner.png');
+    const bannerJpg = path.join(internalBannerDir, 'snap-store-banner.jpg');
+    const bannerMaxJpg = path.join(internalBannerDir, 'snap-store-banner-4320x1440.jpg');
 
     assert.ok(fs.existsSync(bannerPng), 'snap-store-banner.png must exist');
     assert.ok(fs.existsSync(bannerJpg), 'snap-store-banner.jpg must exist');

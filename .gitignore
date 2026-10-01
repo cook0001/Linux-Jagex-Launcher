@@ -84,6 +84,10 @@ NOTES*
 notes.txt
 *.notes
 
+# Internal maintainer utilities, store marketing media, and release automation
+internal/
+*snap-store-banner*
+
 # Python cache & virtual environments
 __pycache__/
 *.py[cod]

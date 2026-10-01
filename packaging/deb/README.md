@@ -65,12 +65,12 @@ sudo apt-get install -f  # Fix any missing dependencies
 
 ---
 
-## 5. Generating an APT Repository
+## 5. Generating an APT Repository (Internal Maintainer Tool)
 
 To index `.deb` files into a static APT repository structure:
 
 ```bash
-node packaging/deb/generate-apt-repo.js
+node internal/scripts/generate-apt-repo.js
 ```
 
 This generates `Packages`, `Packages.gz`, and `Release` files in `docs/apt/` with SHA-256 and MD5 cryptographic checksums.

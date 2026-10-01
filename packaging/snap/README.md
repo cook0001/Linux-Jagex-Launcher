@@ -137,28 +137,28 @@ Canonical's Snap Store requires promotional banners for the store listing with s
 | **Max Resolution** | 4320 x 1440 px | 4320 x 1440 px (Maximum tier) | ✓ Passed |
 | **File Size Limit** | < 2.0 MB | PNG: ~1.42 MB, JPG: ~0.20 MB | ✓ Passed |
 
-### Available Banner Assets in `packaging/snap/`:
-- `snap-store-banner.png` (2160 x 720, 3:1 HiDPI, PNG, ~1.4 MB)
-- `snap-store-banner.jpg` (2160 x 720, 3:1 HiDPI, JPEG, ~200 KB)
-- `snap-store-banner-4320x1440.jpg` (4320 x 1440, 3:1 Maximum allowed resolution, JPEG, ~450 KB)
+### Store Banner Assets & Generator
+
+Promotional banners and generation tooling are maintained locally in `internal/` (ignored by Git) for maintainer use:
+- `internal/banners/snap-store-banner.png` (2160 x 720, 3:1 HiDPI, PNG, ~1.4 MB)
+- `internal/banners/snap-store-banner.jpg` (2160 x 720, 3:1 HiDPI, JPEG, ~200 KB)
+- `internal/banners/snap-store-banner-4320x1440.jpg` (4320 x 1440, 3:1 Maximum allowed resolution, JPEG, ~450 KB)
+- `internal/banners/snap-store-banner-1440x480.png` (1440 x 480 Standard banner, PNG)
+- `internal/scripts/generate-snap-banner.cjs` (Banner generator script)
+
 ### Packaging Directory Structure:
 ```
 packaging/snap/
-├── README.md                      # Comprehensive Snapcraft guide
-├── snapcraft.yaml                 # Canonical Snapcraft packaging specification
-├── generate-snap-banner.cjs       # 3:1 Snap Store banner generation script
-├── gui/
-│   ├── linux-jagex-launcher.desktop # App menu desktop definition
-│   └── icon.png                   # 512x512 application icon
-├── snap-store-banner.png          # 2160x720 HiDPI banner (PNG)
-├── snap-store-banner.jpg          # 2160x720 HiDPI banner (JPEG)
-├── snap-store-banner-4320x1440.jpg# 4320x1440 Max resolution banner (JPEG)
-└── snap-store-banner-1440x480.png # 1440x480 Standard banner (PNG)
+├── README.md                        # Comprehensive Snapcraft guide
+├── snapcraft.yaml                   # Canonical Snapcraft packaging specification
+└── gui/
+    ├── linux-jagex-launcher.desktop # App menu desktop definition
+    └── icon.png                     # 512x512 application icon
 ```
 
-To re-generate or adjust these banners at any time:
+To re-generate or adjust banners at any time:
 ```bash
-node packaging/snap/generate-snap-banner.cjs
+node internal/scripts/generate-snap-banner.cjs
 ```
 
 
