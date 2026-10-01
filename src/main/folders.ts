@@ -21,7 +21,8 @@ export class QuickFoldersManager {
 
   constructor() {
     const home = os.homedir();
-    const ljlData = path.join(home, '.local', 'share', 'linux-jagex-launcher', 'game-data');
+    const dataRoot = process.env.SNAP_USER_COMMON || home;
+    const ljlData = path.join(dataRoot, '.local', 'share', 'linux-jagex-launcher', 'game-data');
 
     this.folders = [
       // Screenshots
@@ -111,7 +112,7 @@ export class QuickFoldersManager {
         category: 'config',
         client: 'launcher',
         label: 'Launcher Data & Config',
-        primaryPath: path.join(home, '.config', 'linux-jagex-launcher'),
+        primaryPath: path.join(dataRoot, '.config', 'linux-jagex-launcher'),
       },
     ];
   }
@@ -147,7 +148,7 @@ export class QuickFoldersManager {
         fs.mkdirSync(resolved, { recursive: true });
       }
 
-      if (shell?.openPath) {
+      if (process.versions.electron && shell?.openPath) {
         const err = await shell.openPath(resolved);
         if (err) {
           return { success: false, path: resolved, error: err };

@@ -1,0 +1,42 @@
+name: linux-jagex-launcher
+base: core24
+version: '1.4.3'
+summary: Authentic, native Jagex Launcher for Linux
+description: |
+  Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and
+  Old School RuneScape (RuneLite, HDOS, and Official client) with direct
+  OAuth 2.0 PKCE authentication.
+
+grade: stable
+confinement: strict
+
+apps:
+  linux-jagex-launcher:
+    command: linux-jagex-launcher
+    extensions: [gnome]
+    plugs:
+      - home
+      - browser-support
+      - network
+      - network-bind
+      - audio-playback
+      - opengl
+      - joystick
+      - process-control
+      - removable-media
+    common-id: com.jagex.launcher.linux
+    desktop: meta/gui/linux-jagex-launcher.desktop
+    environment:
+      SNAP_USER_COMMON: $SNAP_USER_COMMON
+
+parts:
+  app:
+    plugin: dump
+    source: release/linux-unpacked
+    stage-packages:
+      - libnss3
+      - libnspr4
+      - libxss1
+      - libasound2t64 | libasound2
+      - libdrm2
+      - libgbm1

@@ -11,7 +11,7 @@ import { desktopIntegration } from './desktop.ts';
 const GITHUB_REPO = 'cook0001/Linux-Jagex-Launcher';
 const RELEASES_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
 
-export type PackageFormat = 'appimage' | 'flatpak' | 'deb' | 'aur' | 'tar' | 'dev';
+export type PackageFormat = 'appimage' | 'flatpak' | 'snap' | 'deb' | 'aur' | 'tar' | 'dev';
 
 export interface ReleaseAsset {
   name: string;
@@ -29,6 +29,7 @@ export interface ReleaseInfo {
     appImage?: ReleaseAsset;
     deb?: ReleaseAsset;
     tar?: ReleaseAsset;
+    snap?: ReleaseAsset;
     checksums?: ReleaseAsset;
   };
 }
@@ -39,7 +40,7 @@ export interface UpdateCheckResult {
   latestVersion: string;
   packageFormat: PackageFormat;
   systemFamily: 'debian' | 'arch' | 'fedora' | 'unknown';
-  supportedFormats: ('appimage' | 'deb' | 'tar')[];
+  supportedFormats: ('appimage' | 'deb' | 'tar' | 'snap')[];
   releaseInfo?: ReleaseInfo;
   error?: string;
 }
@@ -96,6 +97,7 @@ export class AutoUpdater {
   public getPackageFormat(): PackageFormat {
     if (process.env.APPIMAGE) return 'appimage';
     if (fs.existsSync('/.flatpak-info') || process.env.FLATPAK_ID) return 'flatpak';
+    if (process.env.SNAP) return 'snap';
     if (process.env.AUR_PKG) return 'aur';
     if (fs.existsSync('/usr/share/doc/jagex-launcher') || fs.existsSync('/var/lib/dpkg/info/jagex-launcher.list')) {
       return 'deb';
@@ -113,9 +115,9 @@ export class AutoUpdater {
 
   public getCurrentVersion(): string {
     if (typeof app !== 'undefined' && app && typeof app.getVersion === 'function') {
-      return app.getVersion() || '1.4.1';
+      return app.getVersion() || '1.4.3';
     }
-    return '1.4.1';
+    return '1.4.3';
   }
 
   public getFormatDisplayLabel(format?: PackageFormat): string {
@@ -123,6 +125,7 @@ export class AutoUpdater {
     switch (f) {
       case 'appimage': return 'AppImage (Direct In-App Updates)';
       case 'flatpak': return 'Flatpak / Flathub';
+      case 'snap': return 'Snap (Managed by Snapd)';
       case 'deb': return 'Debian / Ubuntu (.deb)';
       case 'aur': return 'Arch Linux (AUR)';
       case 'tar': return 'Standalone Tarball';
@@ -141,7 +144,8 @@ export class AutoUpdater {
           'Accept': 'application/vnd.github.v3+json',
           'User-Agent': `Linux-Jagex-Launcher/${currentVersion}`
         },
-        cache: 'no-store'
+        cache: 'no-store',
+        signal: AbortSignal.timeout(15000)
       });
 
       if (!res.ok) {
@@ -173,17 +177,20 @@ export class AutoUpdater {
             assets.deb = { name, url: a.browser_download_url, size: a.size };
           } else if (name.endsWith('.tar.gz')) {
             assets.tar = { name, url: a.browser_download_url, size: a.size };
+          } else if (name.endsWith('.snap')) {
+            assets.snap = { name, url: a.browser_download_url, size: a.size };
           } else if (name.includes('SHA256SUMS')) {
             assets.checksums = { name, url: a.browser_download_url, size: a.size };
           }
         }
       }
 
-      const supportedFormats: ('appimage' | 'deb' | 'tar')[] = [];
+      const supportedFormats: ('appimage' | 'deb' | 'tar' | 'snap')[] = [];
       if (assets.appImage) supportedFormats.push('appimage');
       if (assets.deb && (systemFamily === 'debian' || packageFormat === 'deb' || packageFormat === 'dev')) {
         supportedFormats.push('deb');
       }
+      if (assets.snap) supportedFormats.push('snap');
       if (assets.tar) supportedFormats.push('tar');
 
       const releaseInfo: ReleaseInfo = {
@@ -282,6 +289,10 @@ export class AutoUpdater {
         asset = releaseInfo.assets.deb;
         if (!asset) throw new Error('Debian package asset (.deb) not found in latest GitHub release.');
         targetFileName = asset.name || `jagex-launcher_${releaseInfo.version}_amd64.deb`;
+      } else if (format === 'snap') {
+        asset = releaseInfo.assets.snap;
+        if (!asset) throw new Error('Snap package asset (.snap) not found in latest GitHub release.');
+        targetFileName = asset.name || `linux-jagex-launcher_${releaseInfo.version}_amd64.snap`;
       } else if (format === 'tar') {
         asset = releaseInfo.assets.tar;
         if (!asset) throw new Error('Tarball asset (.tar.gz) not found in latest GitHub release.');
@@ -295,17 +306,22 @@ export class AutoUpdater {
           format = 'deb';
           asset = releaseInfo.assets.deb;
           targetFileName = releaseInfo.assets.deb.name;
+        } else if (releaseInfo.assets.snap) {
+          format = 'snap';
+          asset = releaseInfo.assets.snap;
+          targetFileName = releaseInfo.assets.snap.name;
         } else {
           throw new Error(`In-app binary download is not applicable for ${format} packages without release assets.`);
         }
       }
 
-      const targetFile = path.join(this.updateDir, targetFileName);
+      const safeFileName = path.basename(targetFileName);
+      const targetFile = path.join(this.updateDir, safeFileName);
       const tempFile = targetFile + '.part';
 
       notify('downloading', 0, `Downloading ${asset.name} (${(asset.size / 1024 / 1024).toFixed(1)} MB)...`, 0, asset.size);
 
-      const res = await fetch(asset.url);
+      const res = await fetch(asset.url, { signal: AbortSignal.timeout(30000) });
       if (!res.ok) throw new Error(`Download failed: ${res.status} ${res.statusText}`);
 
       const totalBytes = asset.size || parseInt(res.headers.get('content-length') || '0', 10);
@@ -343,7 +359,7 @@ export class AutoUpdater {
       // Verify Checksums if SHA256SUMS.txt asset is available
       if (releaseInfo.assets.checksums) {
         try {
-          const sumRes = await fetch(releaseInfo.assets.checksums.url);
+          const sumRes = await fetch(releaseInfo.assets.checksums.url, { signal: AbortSignal.timeout(15000) });
           if (sumRes.ok) {
             const sumText = await sumRes.text();
             const expectedMatch = sumText.split('\n').find(line => line.includes(asset!.name));
@@ -514,6 +530,76 @@ export class AutoUpdater {
     });
   }
 
+  public async installSnapPackage(
+    snapPath: string,
+    onProgress?: (p: UpdateProgress) => void
+  ): Promise<{
+    success: boolean;
+    requiresRestart?: boolean;
+    message?: string;
+    installedPath?: string;
+    manualCommand?: string;
+    cancelled?: boolean;
+    error?: string;
+  }> {
+    if (!fs.existsSync(snapPath)) {
+      return { success: false, error: `Snap package not found at: ${snapPath}` };
+    }
+
+    const notify = (status: UpdateProgress['status'], progress: number, message: string) => {
+      if (onProgress) onProgress({ status, progress, message });
+    };
+
+    notify('installing', 10, 'Prompting for administrator authentication to install snap package...');
+
+    const hasPkexec = fs.existsSync('/usr/bin/pkexec');
+    if (!hasPkexec) {
+      const cmd = `sudo snap install --dangerous "${snapPath}"`;
+      notify('error', 0, 'pkexec (PolicyKit) not found. Manual installation required.');
+      return {
+        success: false,
+        error: 'pkexec (PolicyKit) was not found on your system.',
+        manualCommand: cmd
+      };
+    }
+
+    return new Promise((resolve) => {
+      const child = spawn('pkexec', ['snap', 'install', '--dangerous', snapPath], {
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+
+      let stderr = '';
+      child.stderr?.on('data', (d) => {
+        stderr += d.toString();
+        notify('installing', 50, 'Configuring and installing Linux Jagex Launcher Snap...');
+      });
+
+      child.on('close', (code) => {
+        if (code === 0) {
+          notify('ready', 100, 'Snap package installed successfully!');
+          resolve({
+            success: true,
+            requiresRestart: true,
+            installedPath: '/snap/bin/linux-jagex-launcher',
+            message: 'Installation successful! Restart the launcher to use the new version.'
+          });
+        } else if (code === 126 || code === 127) {
+          const msg = 'Authentication was dismissed or cancelled.';
+          notify('error', 0, msg);
+          resolve({ success: false, cancelled: true, error: msg });
+        } else {
+          const err = stderr.trim() || `snap install process exited with status code ${code}`;
+          notify('error', 0, `Installation failed: ${err}`);
+          resolve({
+            success: false,
+            error: err,
+            manualCommand: `sudo snap install --dangerous "${snapPath}"`
+          });
+        }
+      });
+    });
+  }
+
   public async installAppImage(
     appImagePath: string,
     onProgress?: (p: UpdateProgress) => void
@@ -609,6 +695,8 @@ export class AutoUpdater {
     try {
       if (targetFormat === 'deb') {
         return await this.installDebPackage(targetFile, onProgress);
+      } else if (targetFormat === 'snap') {
+        return await this.installSnapPackage(targetFile, onProgress);
       } else if (targetFormat === 'appimage') {
         return await this.installAppImage(targetFile, onProgress);
       } else {

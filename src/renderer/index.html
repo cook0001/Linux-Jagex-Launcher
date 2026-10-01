@@ -151,6 +151,15 @@
               <span id="label-world-ping-text">World Ping</span>
             </button>
 
+            <!-- Live Client Logs Button -->
+            <button id="btn-live-logs" class="btn-world-ping" title="View live client output and terminal logs in real-time">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <span>Live Logs</span>
+            </button>
+
             <!-- Account Pill / Login Trigger -->
             <div class="account-widget" id="account-widget">
               <div id="account-logged-in" class="account-pill hidden">
@@ -229,6 +238,21 @@
               </div>
             </div>
           </section>
+        <!-- Active Multi-Instance Drawer (visible when 1+ clients running) -->
+        <div id="active-instances-tray" class="active-instances-tray hidden">
+          <div class="active-instances-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-pulse-dot" style="width: 8px; height: 8px;"></span>
+              <span class="active-instances-title">ACTIVE GAME CLIENTS</span>
+              <span id="active-instances-count-badge" class="badge-member" style="font-size: 9px; padding: 1px 6px;">0 RUNNING</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button id="btn-instances-kill-all" class="btn-secondary" style="font-size: 10px; padding: 3px 8px; color: #f87171;">Stop All</button>
+            </div>
+          </div>
+          <div id="active-instances-list" class="active-instances-list">
+            <!-- Dynamically populated running client instances -->
+          </div>
         </div>
 
         <!-- Official Jagex Launcher Action Dock (Bottom Bar) -->
@@ -411,6 +435,41 @@
                   <span class="setting-desc">Disables heavy UI background blurs, turns off continuous animations, limits OSRS heap to 768MB to stop memory thrashing, and forces Mesa hardware acceleration on older GPUs.</span>
                 </div>
               </label>
+
+              <label class="setting-toggle">
+                <input type="checkbox" id="setting-allow-multi-instance" checked>
+                <div class="toggle-slider"></div>
+                <div class="setting-text">
+                  <span class="setting-name">Multi-Instance Client Manager</span>
+                  <span class="setting-desc">Enables launching multiple accounts and concurrent game windows simultaneously with live per-client tracking and termination.</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="settings-section">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <h4 class="settings-section-title" style="margin: 0;">Graphics Hardware & Multi-GPU Acceleration</h4>
+                <span id="gpu-detected-badge" class="badge-member" style="font-size: 10px;">SCANNING GPU...</span>
+              </div>
+              <p style="font-size: 11px; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.4;">
+                Direct games to run on your dedicated high-performance GPU or integrated power-saving GPU. Supports NVIDIA PRIME offload, AMD DRI_PRIME, and Intel graphics.
+              </p>
+
+              <div id="gpu-hardware-summary" style="margin-bottom: 10px; padding: 8px 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; font-size: 11px; color: #cbd5e1;">
+                <div id="gpu-devices-list" style="display: flex; flex-direction: column; gap: 4px;">
+                  <span>Scanning graphics adapters...</span>
+                </div>
+              </div>
+
+              <div class="setting-input-group">
+                <label for="setting-preferred-gpu" class="input-label">Preferred GPU Acceleration</label>
+                <select id="setting-preferred-gpu" class="setting-text-input">
+                  <option value="auto">Auto / System Default (Recommended)</option>
+                  <option value="discrete">Dedicated / Discrete GPU (High Performance — DRI_PRIME=1 / NVIDIA PRIME)</option>
+                  <option value="integrated">Integrated GPU (Battery & Power Saving — DRI_PRIME=0)</option>
+                </select>
+                <span class="input-hint">Sets <code>DRI_PRIME</code>, <code>__NV_PRIME_RENDER_OFFLOAD=1</code>, and Vulkan/OpenGL layers before game launch.</span>
+              </div>
             </div>
 
             <div class="settings-section">
@@ -515,7 +574,7 @@
 
               <div class="maintenance-row" style="margin-bottom: 12px;">
                 <div>
-                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.4.1</span>
+                  <span class="setting-name" id="setting-updater-version-label">Linux Jagex Launcher v1.4.3</span>
                   <span class="setting-desc" id="setting-updater-format-label">Detecting package format...</span>
                 </div>
                 <button id="btn-check-updates-now" class="btn-secondary" style="font-size: 11px; padding: 6px 12px;">Check for Updates</button>
@@ -763,6 +822,24 @@
             </div>
 
             <div class="settings-section">
+              <h4 class="settings-section-title">Display & UI Scaling (HiDPI)</h4>
+              <div class="setting-input-group">
+                <label for="setting-osrs-ui-scale" class="input-label">OSRS UI Scale Factor</label>
+                <select id="setting-osrs-ui-scale" class="setting-text-input">
+                  <option value="auto">Auto (System / Display Default)</option>
+                  <option value="1.0">100% (1.0x - Standard 1080p / Native)</option>
+                  <option value="1.25">125% (1.25x - QHD / Handheld Comfort)</option>
+                  <option value="1.5">150% (1.5x - 1440p / Steam Deck Docked)</option>
+                  <option value="1.75">175% (1.75x)</option>
+                  <option value="2.0">200% (2.0x - 4K UHD Retina Scaling)</option>
+                  <option value="2.5">250% (2.5x - 4K High Density)</option>
+                  <option value="3.0">300% (3.0x - Ultrawide / 5K+)</option>
+                </select>
+                <span class="input-hint">Passes <code>-Dsun.java2d.uiScale</code> and exports <code>GDK_SCALE</code> to Java AWT/Swing for crisp UI elements without blur.</span>
+              </div>
+            </div>
+
+            <div class="settings-section">
               <h4 class="settings-section-title">Java Runtime Environment (JRE / JDK)</h4>
               <div class="java-status-box" style="margin-bottom: 12px; padding: 10px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -908,6 +985,65 @@
       </div>
     </div>
 
+    <!-- Modal: Live Client Logs & Terminal Viewer -->
+    <div id="modal-live-logs" class="modal-overlay hidden">
+      <div class="modal-window" style="width: 860px; max-width: 95vw; height: 600px; max-height: 90vh; display: flex; flex-direction: column;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <h3 class="modal-title">Live Client Logs & Terminal</h3>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button id="btn-logs-copy" class="btn-secondary" style="font-size: 11px; padding: 4px 8px; display: flex; align-items: center; gap: 4px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy All</span>
+            </button>
+            <button id="btn-logs-clear" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;">Clear</button>
+            <button id="btn-logs-open-folder" class="btn-secondary" style="font-size: 11px; padding: 4px 8px;" title="Open log directories in system file manager">Open Logs Folder</button>
+            <button id="btn-close-live-logs" class="modal-close">&times;</button>
+          </div>
+        </div>
+
+        <!-- Toolbar Filters -->
+        <div class="logs-toolbar" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 16px; background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <!-- Source filter -->
+            <select id="log-filter-source" class="setting-text-input" style="font-size: 11px; padding: 4px 8px; height: 28px; width: 130px;">
+              <option value="all">All Sources</option>
+              <option value="osrs">Old School (OSRS)</option>
+              <option value="rs3">RuneScape 3</option>
+              <option value="launcher">Launcher Core</option>
+            </select>
+
+            <!-- Level filter -->
+            <select id="log-filter-level" class="setting-text-input" style="font-size: 11px; padding: 4px 8px; height: 28px; width: 120px;">
+              <option value="all">All Levels</option>
+              <option value="warn-error">Warnings & Errors</option>
+              <option value="error">Errors Only</option>
+            </select>
+
+            <!-- Search input -->
+            <div style="position: relative;">
+              <input type="text" id="log-search-input" placeholder="Search log text..." class="setting-text-input" style="font-size: 11px; padding: 4px 8px; height: 28px; width: 180px;">
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 11px; color: #94a3b8; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="log-autoscroll-toggle" checked style="cursor: pointer;">
+              <span>Auto-scroll</span>
+            </label>
+            <span id="log-entry-count" style="font-size: 11px; color: #64748b; font-family: monospace;">0 entries</span>
+          </div>
+        </div>
+
+        <!-- Terminal Output -->
+        <div id="live-logs-terminal" class="live-logs-terminal" style="flex: 1; overflow-y: auto; background: #07090e; font-family: 'JetBrains Mono', 'Fira Code', 'DejaVu Sans Mono', monospace; font-size: 11.5px; padding: 12px 16px; line-height: 1.5; color: #e2e8f0; user-select: text;">
+          <div id="live-logs-placeholder" style="color: #64748b; font-style: italic;">Log entries from running game clients and launcher processes will stream here in real-time...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: Account & Characters Manager -->
     <div id="modal-account" class="modal-overlay hidden">
       <div class="modal-window modal-medium">
@@ -1023,6 +1159,73 @@
       </div>
     </div>
 
+    <!-- Modal: Official OSRS Client Helper -->
+    <div id="modal-official-osrs" class="modal-overlay hidden">
+      <div class="modal-window modal-medium" style="max-width: 540px;">
+        <div class="modal-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="#e5b85a"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+            <div>
+              <h3 class="modal-title" style="margin: 0; font-size: 16px;">Official OSRS Client on Linux</h3>
+              <p style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">Compatibility &amp; Runner Guide</p>
+            </div>
+          </div>
+          <button id="btn-close-official-osrs" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body" style="padding-top: 14px;">
+          <div style="background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.28); border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+              <span style="font-weight: 700; color: #fde047; font-size: 12px;">No Standalone Native Linux Installer</span>
+            </div>
+            <p style="color: #cbd5e1; font-size: 11.5px; line-height: 1.5; margin: 0;">
+              The Official Old School RuneScape C++ client does not offer a standalone native Linux package. On Linux, it runs via <strong>Steam (Proton)</strong> or a custom Wine/Proton runner. For native Linux play, Jagex partners with <strong>RuneLite</strong> and <strong>HDOS</strong>.
+            </p>
+          </div>
+
+          <!-- Option 1: RuneLite (Recommended) -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.28); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #34d399; font-size: 13px;">RuneLite (Recommended • Native Linux)</span>
+              <span style="background: rgba(52, 211, 153, 0.2); color: #6ee7b7; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase;">Official Partner</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 11.5px; line-height: 1.4; margin: 0 0 10px 0;">
+              Runs natively on Linux with 1-click Jagex Account SSO, hardware GPU acceleration, and rich plugin ecosystem.
+            </p>
+            <button id="btn-switch-to-runelite" class="btn-primary" style="width: 100%; padding: 10px; font-size: 12px; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10b981 100%); border-color: #34d399;">
+              Switch to RuneLite (Recommended)
+            </button>
+          </div>
+
+          <!-- Option 2: Steam / Proton -->
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #e2e8f0; font-size: 13px;">Steam (Proton)</span>
+              <span style="background: rgba(148, 163, 184, 0.2); color: #94a3b8; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;">App ID 1343400</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 11.5px; line-height: 1.4; margin: 0 0 10px 0;">
+              Install Old School RuneScape from the Steam store to run the official C++ client with Proton.
+            </p>
+            <button id="btn-launch-steam-osrs" class="btn-secondary" style="width: 100%; padding: 10px; font-size: 12px;">
+              Launch via Steam
+            </button>
+          </div>
+
+          <!-- Option 3: Custom Runner in Settings -->
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #e2e8f0; font-size: 13px;">Custom Runner / Wine Script</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 11.5px; line-height: 1.4; margin: 0 0 10px 0;">
+              Configure a custom executable or Wine/Bottles script path in launcher settings.
+            </p>
+            <button id="btn-configure-custom-osrs" class="btn-secondary" style="width: 100%; padding: 10px; font-size: 12px;">
+              Configure Runner Path in Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: Auto Updater -->
     <div id="modal-updater" class="modal-overlay hidden">
       <div class="modal-window modal-medium" style="max-width: 580px;">
@@ -1037,7 +1240,7 @@
             </div>
             <div>
               <h3 class="modal-title" style="margin: 0; font-size: 16px;">Launcher Update Available</h3>
-              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.4.0 &rarr; v1.4.1</p>
+              <p id="modal-updater-version-tag" style="margin: 2px 0 0 0; font-size: 11px; color: #94a3b8;">v1.4.3</p>
             </div>
           </div>
           <button id="btn-close-updater" class="modal-close">&times;</button>
@@ -1059,6 +1262,7 @@
             <div style="display: flex; gap: 6px;" id="modal-updater-format-options">
               <button type="button" class="updater-format-btn active" data-format="deb" id="btn-updater-fmt-deb" style="padding: 4px 10px; font-size: 11px;">Debian / Ubuntu (.deb)</button>
               <button type="button" class="updater-format-btn" data-format="appimage" id="btn-updater-fmt-appimage" style="padding: 4px 10px; font-size: 11px;">AppImage (Portable)</button>
+              <button type="button" class="updater-format-btn" data-format="snap" id="btn-updater-fmt-snap" style="padding: 4px 10px; font-size: 11px;">Snap (.snap)</button>
             </div>
           </div>
 

@@ -19,16 +19,18 @@ declare global {
       getSessions: () => Promise<any>;
       getActiveAccount: () => Promise<any>;
       syncCharacters: (sub?: string) => Promise<any[]>;
+      onAuthCompleted?: (callback: () => void) => () => void;
       getSettings: () => Promise<any>;
       saveSettings: (settings: any) => Promise<any>;
       checkClientStatus: () => Promise<{ isReady: boolean; version?: string; hash?: string; error?: string }>;
       installClient: () => Promise<string>;
-      checkOsrsStatus: (clientType?: string) => Promise<{ hasJava: boolean; javaPath: string | null; hasClient: boolean; clientPath: string; clientType: string; isSystemClient?: boolean }>;
+      checkOsrsStatus: (clientType?: string) => Promise<{ hasJava: boolean; javaPath: string | null; hasClient: boolean; clientPath: string; clientType: string; isSystemClient?: boolean; steamAvailable?: boolean }>;
       installOsrsClient: (clientType?: string) => Promise<string>;
       getJavaInfo: () => Promise<{ javaPath: string | null; hasJava: boolean }>;
       onInstallProgress: (callback: (data: any) => void) => () => void;
       launchGame: (options?: any) => Promise<void>;
-      isGameRunning: () => Promise<boolean>;
+      isGameRunning: (game?: string) => Promise<boolean>;
+      killGame: (game?: string) => Promise<boolean>;
       onGameStateChanged: (callback: (data: any) => void) => () => void;
       fetchPsa: (game: string) => Promise<any>;
       fetchNews: (game?: string) => Promise<any[]>;
@@ -94,6 +96,16 @@ declare global {
       repairDesktopShortcuts: () => Promise<{ success: boolean; error?: string }>;
       openFolder: (folderIdOrPath: string) => Promise<{ success: boolean; path: string; error?: string }>;
       getQuickFolders: () => Promise<any[]>;
+      getGpuInfo: () => Promise<any>;
+      getLogEntries: (limit?: number) => Promise<any[]>;
+      clearLogs: () => Promise<boolean>;
+      exportLogs: () => Promise<string>;
+      onLogEntry: (callback: (data: any) => void) => () => void;
+      onLogsCleared: (callback: () => void) => () => void;
+      getInstances: () => Promise<any[]>;
+      terminateInstance: (id: string) => Promise<boolean>;
+      terminateAllInstances: (game?: string) => Promise<boolean>;
+      onInstancesChanged: (callback: (instances: any[]) => void) => () => void;
     };
   }
 }
@@ -105,12 +117,15 @@ class JagexLauncherApp {
   private currentSettings: any = {};
   private selectedCharacterId: string | null = null;
   private isClientInstalled: boolean = false;
-  private isGameRunning: boolean = false;
+  private runningGames: Set<string> = new Set();
+  private get isCurrentGameRunning(): boolean {
+    return this.runningGames.has(this.activeGame);
+  }
   private featuredBannerUrl: string | null = null;
   private pendingUpdateResult: any = null;
   private isUpdateDownloaded: boolean = false;
   private isUpdateInstalled: boolean = false;
-  private selectedUpdaterFormat: 'deb' | 'appimage' = 'deb';
+  private selectedUpdaterFormat: 'deb' | 'appimage' | 'snap' = 'deb';
   private downloadedUpdatePath: string | null = null;
   private deckInfo: any = null;
   private gamepadNav: GamepadNavigator | null = null;
@@ -119,6 +134,11 @@ class JagexLauncherApp {
   private currentPingFilter: 'all' | 'us' | 'uk' | 'aus' = 'all';
   private currentResourceGame: 'rs3' | 'osrs' | 'dragonwilds' = 'rs3';
   private resourceSearchQuery: string = '';
+  private activeInstances: any[] = [];
+  private logEntries: any[] = [];
+  private logFilterSource: string = 'all';
+  private logFilterLevel: string = 'all';
+  private logSearchQuery: string = '';
 
   public async init() {
     this.setupWindowControls();
@@ -130,6 +150,8 @@ class JagexLauncherApp {
     this.setupGamepad();
     this.setupWorldPing();
     this.setupResourcesModal();
+    this.setupLiveLogger();
+    this.setupMultiInstanceManager();
     this.listenToIPC();
 
     await this.applyDeckAdaptations();
@@ -335,8 +357,9 @@ class JagexLauncherApp {
     }
 
     this.updatePlaySubtext();
-    // Non-blocking concurrent execution of client inspection, PSA banner, and news feed
+    // Non-blocking concurrent execution of client inspection, PSA banner, news feed, and running state sync
     Promise.allSettled([
+      this.syncRunningState(),
       this.checkGameClientStatus(),
       this.fetchPsaAndBanner(),
       this.fetchNewsFeed()
@@ -671,23 +694,44 @@ class JagexLauncherApp {
     if (this.activeGame === 'osrs') {
       const osrsResult = await window.jagexApi.checkOsrsStatus(this.selectedOsrsClient);
       const clientLabel = this.selectedOsrsClient === 'hdos' ? 'HDOS' : (this.selectedOsrsClient === 'official' ? 'Official Client' : 'RuneLite');
-      this.isClientInstalled = osrsResult.hasClient && osrsResult.hasJava;
 
-      if (osrsResult.hasClient && osrsResult.hasJava) {
-        if (statusDot) statusDot.className = 'status-pulse-dot';
-        if (statusText) statusText.textContent = `Ready to play (${clientLabel})`;
-        if (versionText) {
-          const modeTag = osrsResult.isSystemClient ? 'System Client' : 'Native Managed';
-          versionText.textContent = `${clientLabel} • ${modeTag}`;
+      if (this.selectedOsrsClient === 'official') {
+        const hasCustomRunner = Boolean(osrsResult.hasClient && osrsResult.isSystemClient);
+        if (hasCustomRunner) {
+          this.isClientInstalled = true;
+          if (statusDot) statusDot.className = 'status-pulse-dot';
+          if (statusText) statusText.textContent = 'Ready to play (Custom Runner)';
+          if (versionText) versionText.textContent = `Official Client • ${osrsResult.clientPath}`;
+        } else if (osrsResult.steamAvailable) {
+          this.isClientInstalled = true;
+          if (statusDot) statusDot.className = 'status-pulse-dot';
+          if (statusText) statusText.textContent = 'Steam / Proton Ready';
+          if (versionText) versionText.textContent = 'Official Client • Steam App ID 1343400';
+        } else {
+          this.isClientInstalled = false;
+          if (statusDot) statusDot.className = 'status-pulse-dot updating';
+          if (statusText) statusText.textContent = 'Setup Required (Steam/Proton)';
+          if (versionText) versionText.textContent = 'Click SETUP for guide or use RuneLite';
         }
-      } else if (!osrsResult.hasJava) {
-        if (statusDot) statusDot.className = 'status-pulse-dot updating';
-        if (statusText) statusText.textContent = 'Java 11+ required';
-        if (versionText) versionText.textContent = 'Please install OpenJDK (default-jre)';
       } else {
-        if (statusDot) statusDot.className = 'status-pulse-dot updating';
-        if (statusText) statusText.textContent = `${clientLabel} install required`;
-        if (versionText) versionText.textContent = 'Click INSTALL or PLAY to download';
+        this.isClientInstalled = osrsResult.hasClient && osrsResult.hasJava;
+
+        if (osrsResult.hasClient && osrsResult.hasJava) {
+          if (statusDot) statusDot.className = 'status-pulse-dot';
+          if (statusText) statusText.textContent = `Ready to play (${clientLabel})`;
+          if (versionText) {
+            const modeTag = osrsResult.isSystemClient ? 'System Client' : 'Native Managed';
+            versionText.textContent = `${clientLabel} • ${modeTag}`;
+          }
+        } else if (!osrsResult.hasJava) {
+          if (statusDot) statusDot.className = 'status-pulse-dot updating';
+          if (statusText) statusText.textContent = 'Java 11+ required';
+          if (versionText) versionText.textContent = 'Please install OpenJDK (default-jre)';
+        } else {
+          if (statusDot) statusDot.className = 'status-pulse-dot updating';
+          if (statusText) statusText.textContent = `${clientLabel} install required`;
+          if (versionText) versionText.textContent = 'Click INSTALL or PLAY to download';
+        }
       }
     } else {
       const result = await window.jagexApi.checkClientStatus();
@@ -712,28 +756,66 @@ class JagexLauncherApp {
   private updatePlayButtonState() {
     const btnPlay = document.getElementById('btn-play') as HTMLButtonElement | null;
     const playText = document.getElementById('play-text');
+    const playSubtext = document.getElementById('play-subtext');
     const activeAcc = this.getActiveAccount();
+    const allowMulti = this.currentSettings?.allowMultiInstance !== false;
 
     if (!btnPlay || !playText) return;
 
-    if (this.isGameRunning) {
-      btnPlay.disabled = true;
-      btnPlay.classList.add('playing');
-      playText.textContent = 'PLAYING';
+    // Check if the currently selected character is running
+    const isThisCharRunning = this.activeInstances.some((inst) =>
+      inst.game === this.activeGame &&
+      ((this.selectedCharacterId && inst.characterId === this.selectedCharacterId) ||
+       (inst.characterName && activeAcc?.characters?.find((c: any) => c.id === this.selectedCharacterId)?.displayName === inst.characterName))
+    );
+
+    if (this.isCurrentGameRunning) {
+      if (!allowMulti) {
+        btnPlay.disabled = false;
+        btnPlay.classList.add('playing');
+        playText.textContent = 'PLAYING';
+        btnPlay.title = 'Click to force stop or unlock launcher';
+        return;
+      }
+
+      // If multi-instance is enabled
+      if (isThisCharRunning) {
+        btnPlay.disabled = false;
+        btnPlay.classList.add('playing');
+        playText.textContent = 'PLAYING';
+        btnPlay.title = 'This character is currently active in-game. Click to launch an additional window or stop.';
+        return;
+      }
+
+      // Another character is running, but current character is not running yet
+      btnPlay.classList.remove('playing');
+      btnPlay.removeAttribute('title');
+      btnPlay.disabled = false;
+      playText.textContent = 'PLAY';
+      if (playSubtext) {
+        const count = this.activeInstances.filter((i) => i.game === this.activeGame).length;
+        playSubtext.textContent = count > 0 ? `Launch Client (+${count} Active)` : (this.activeGame === 'osrs' ? 'Old School' : 'RuneScape 3');
+      }
       return;
     }
 
     btnPlay.classList.remove('playing');
+    btnPlay.removeAttribute('title');
 
     if (!activeAcc && this.activeGame !== 'dragonwilds') {
       btnPlay.disabled = false;
       playText.textContent = 'LOG IN';
     } else if (!this.isClientInstalled) {
       btnPlay.disabled = false;
-      playText.textContent = 'INSTALL';
+      if (this.activeGame === 'osrs' && this.selectedOsrsClient === 'official') {
+        playText.textContent = 'SETUP';
+      } else {
+        playText.textContent = 'INSTALL';
+      }
     } else {
       btnPlay.disabled = false;
       playText.textContent = 'PLAY';
+      this.updatePlaySubtext();
     }
   }
 
@@ -741,12 +823,53 @@ class JagexLauncherApp {
     const btnPlay = document.getElementById('btn-play');
     btnPlay?.addEventListener('click', async () => {
       const activeAcc = this.getActiveAccount();
+      const allowMulti = this.currentSettings?.allowMultiInstance !== false;
+      const isThisCharRunning = this.activeInstances.some((inst) =>
+        inst.game === this.activeGame &&
+        ((this.selectedCharacterId && inst.characterId === this.selectedCharacterId) ||
+         (inst.characterName && activeAcc?.characters?.find((c: any) => c.id === this.selectedCharacterId)?.displayName === inst.characterName))
+      );
+
+      // If currently marked as playing and multi-instance is disabled: offer to unlock/stop
+      if (this.isCurrentGameRunning && !allowMulti) {
+        const stillRunning = await window.jagexApi?.isGameRunning(this.activeGame);
+        if (!stillRunning) {
+          this.runningGames.delete(this.activeGame);
+          this.updatePlayButtonState();
+          this.checkGameClientStatus();
+          return;
+        }
+
+        const gameName = this.activeGame === 'osrs' ? 'Old School RuneScape' : 'RuneScape 3';
+        if (confirm(`A ${gameName} session is active.\n\nForce stop the client and unlock the PLAY button?`)) {
+          if (window.jagexApi?.killGame) {
+            await window.jagexApi.killGame(this.activeGame);
+          }
+          this.runningGames.delete(this.activeGame);
+          this.updatePlayButtonState();
+          this.checkGameClientStatus();
+        }
+        return;
+      }
+
+      // If multi-instance is enabled and this specific character is already in-game:
+      if (this.isCurrentGameRunning && allowMulti && isThisCharRunning) {
+        const launchAnother = confirm(
+          `This character is already running in an active game client.\n\nClick OK to launch ANOTHER concurrent client window, or Cancel to manage running instances.`
+        );
+        if (!launchAnother) return;
+      }
+
       if (!activeAcc && this.activeGame !== 'dragonwilds') {
         await this.triggerLogin();
         return;
       }
 
       if (!this.isClientInstalled) {
+        if (this.activeGame === 'osrs' && this.selectedOsrsClient === 'official') {
+          this.openOfficialOsrsModal();
+          return;
+        }
         await this.installGameClient();
         return;
       }
@@ -814,12 +937,20 @@ class JagexLauncherApp {
       if (pctText) pctText.textContent = `${data.progress}%`;
     });
 
-    const isOsrs = targetGameOrClient === 'runelite' || targetGameOrClient === 'hdos' || (this.activeGame === 'osrs' && targetGameOrClient !== 'rs3');
+    const isOsrs = targetGameOrClient === 'runelite' || targetGameOrClient === 'hdos' || targetGameOrClient === 'official' || (this.activeGame === 'osrs' && targetGameOrClient !== 'rs3');
 
     if (isOsrs) {
-      const clientType = (targetGameOrClient === 'hdos' || targetGameOrClient === 'runelite')
+      const clientType = (targetGameOrClient === 'hdos' || targetGameOrClient === 'runelite' || targetGameOrClient === 'official')
         ? targetGameOrClient
-        : (this.selectedOsrsClient === 'hdos' ? 'hdos' : 'runelite');
+        : this.selectedOsrsClient;
+
+      if (clientType === 'official') {
+        overlay?.classList.add('hidden');
+        unsubscribe();
+        this.openOfficialOsrsModal();
+        return;
+      }
+
       const clientLabel = clientType === 'hdos' ? 'HDOS' : 'RuneLite';
 
       if (title) title.textContent = `Installing ${clientLabel}`;
@@ -874,7 +1005,7 @@ class JagexLauncherApp {
 
   private async launchGame() {
     try {
-      this.isGameRunning = true;
+      this.runningGames.add(this.activeGame);
       this.updatePlayButtonState();
 
       const statusDot = document.getElementById('status-dot');
@@ -889,7 +1020,7 @@ class JagexLauncherApp {
       });
     } catch (e: any) {
       alert(`Launch error: ${e.message}`);
-      this.isGameRunning = false;
+      this.runningGames.delete(this.activeGame);
       this.updatePlayButtonState();
       this.checkGameClientStatus();
     }
@@ -898,8 +1029,14 @@ class JagexLauncherApp {
   private listenToIPC() {
     if (!window.jagexApi) return;
     window.jagexApi.onGameStateChanged((data: any) => {
-      this.isGameRunning = data.isRunning;
+      const game = data.game || this.activeGame;
+      if (data.isRunning) {
+        this.runningGames.add(game);
+      } else {
+        this.runningGames.delete(game);
+      }
       this.updatePlayButtonState();
+      this.checkGameClientStatus();
     });
 
     if (window.jagexApi.onUpdateAvailable) {
@@ -907,6 +1044,71 @@ class JagexLauncherApp {
         this.displayUpdateAvailable(res);
       });
     }
+
+    if (window.jagexApi.onAuthCompleted) {
+      window.jagexApi.onAuthCompleted(async () => {
+        console.log('[App] Auth completed event received via deep link.');
+        try {
+          this.currentSessions = await window.jagexApi.getSessions();
+          this.updateAccountUI();
+          document.getElementById('modal-browser-login')?.classList.add('hidden');
+        } catch (e) {
+          console.warn('[App] Error updating session after deep link auth:', e);
+        }
+      });
+    }
+
+    if (window.jagexApi.onInstancesChanged) {
+      window.jagexApi.onInstancesChanged((instances: any[]) => {
+        this.activeInstances = instances || [];
+        this.renderInstancesTray();
+        this.updatePlayButtonState();
+      });
+    }
+
+    if (window.jagexApi.onLogEntry) {
+      window.jagexApi.onLogEntry((entry: any) => {
+        this.appendLogEntry(entry);
+      });
+    }
+
+    if (window.jagexApi.onLogsCleared) {
+      window.jagexApi.onLogsCleared(() => {
+        this.logEntries = [];
+        this.renderLogTerminal();
+      });
+    }
+
+    // Health check and process sync on focus, visibility change, and periodic poll
+    window.addEventListener('focus', () => {
+      this.syncRunningState();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.syncRunningState();
+      }
+    });
+    setInterval(() => {
+      if (this.runningGames.size > 0) {
+        this.syncRunningState();
+      }
+    }, 2000);
+  }
+
+  private async syncRunningState() {
+    if (!window.jagexApi?.isGameRunning) return;
+    try {
+      const rs3Running = await window.jagexApi.isGameRunning('rs3');
+      const osrsRunning = await window.jagexApi.isGameRunning('osrs');
+
+      if (rs3Running) this.runningGames.add('rs3');
+      else this.runningGames.delete('rs3');
+
+      if (osrsRunning) this.runningGames.add('osrs');
+      else this.runningGames.delete('osrs');
+
+      this.updatePlayButtonState();
+    } catch {}
   }
 
   private displayUpdateAvailable(res: any) {
@@ -915,6 +1117,11 @@ class JagexLauncherApp {
     const bannerText = document.getElementById('titlebar-update-text');
     if (banner) banner.classList.remove('hidden');
     if (bannerText) bannerText.textContent = `Update v${res.latestVersion} Available`;
+  }
+
+  private openOfficialOsrsModal() {
+    const modal = document.getElementById('modal-official-osrs');
+    modal?.classList.remove('hidden');
   }
 
   private openUpdateModal(result?: any) {
@@ -962,21 +1169,28 @@ class JagexLauncherApp {
 
     const hasDeb = Boolean(res.releaseInfo?.assets?.deb);
     const hasAppImage = Boolean(res.releaseInfo?.assets?.appImage);
+    const hasSnap = Boolean(res.releaseInfo?.assets?.snap);
 
     // Initial selected format
     if (res.packageFormat === 'appimage') {
       this.selectedUpdaterFormat = 'appimage';
+    } else if (res.packageFormat === 'snap') {
+      this.selectedUpdaterFormat = hasSnap ? 'snap' : (hasDeb ? 'deb' : 'appimage');
     } else if (res.packageFormat === 'deb' || res.systemFamily === 'debian') {
       this.selectedUpdaterFormat = hasDeb ? 'deb' : 'appimage';
     } else {
-      this.selectedUpdaterFormat = hasAppImage ? 'appimage' : 'deb';
+      this.selectedUpdaterFormat = hasAppImage ? 'appimage' : (hasDeb ? 'deb' : 'snap');
     }
 
     const updateFormatUI = () => {
       if (formatDesc) {
-        formatDesc.textContent = this.selectedUpdaterFormat === 'deb'
-          ? 'Package: Debian / Ubuntu (.deb via PolicyKit)'
-          : 'Package: AppImage (Portable Linux Binary)';
+        if (this.selectedUpdaterFormat === 'snap') {
+          formatDesc.textContent = 'Package: Canonical Snap (.snap package)';
+        } else if (this.selectedUpdaterFormat === 'deb') {
+          formatDesc.textContent = 'Package: Debian / Ubuntu (.deb via PolicyKit)';
+        } else {
+          formatDesc.textContent = 'Package: AppImage (Portable Linux Binary)';
+        }
       }
       if (btnDeb) {
         if (this.selectedUpdaterFormat === 'deb') btnDeb.classList.add('active');
@@ -986,17 +1200,26 @@ class JagexLauncherApp {
         if (this.selectedUpdaterFormat === 'appimage') btnAppImage.classList.add('active');
         else btnAppImage.classList.remove('active');
       }
+      const btnSnap = document.getElementById('btn-updater-fmt-snap');
+      if (btnSnap) {
+        if (this.selectedUpdaterFormat === 'snap') btnSnap.classList.add('active');
+        else btnSnap.classList.remove('active');
+      }
     };
 
-    if (hasDeb && hasAppImage) {
+    const availableFormatsCount = [hasDeb, hasAppImage, hasSnap].filter(Boolean).length;
+    if (availableFormatsCount > 1) {
       formatRow?.classList.remove('hidden');
       updateFormatUI();
 
       btnDeb?.replaceWith(btnDeb.cloneNode(true));
       btnAppImage?.replaceWith(btnAppImage.cloneNode(true));
+      const btnSnap = document.getElementById('btn-updater-fmt-snap');
+      btnSnap?.replaceWith(btnSnap.cloneNode(true));
 
       const newBtnDeb = document.getElementById('btn-updater-fmt-deb');
       const newBtnAppImage = document.getElementById('btn-updater-fmt-appimage');
+      const newBtnSnap = document.getElementById('btn-updater-fmt-snap');
 
       newBtnDeb?.addEventListener('click', () => {
         this.selectedUpdaterFormat = 'deb';
@@ -1004,6 +1227,10 @@ class JagexLauncherApp {
       });
       newBtnAppImage?.addEventListener('click', () => {
         this.selectedUpdaterFormat = 'appimage';
+        updateFormatUI();
+      });
+      newBtnSnap?.addEventListener('click', () => {
+        this.selectedUpdaterFormat = 'snap';
         updateFormatUI();
       });
     } else {
@@ -1355,16 +1582,44 @@ class JagexLauncherApp {
       const gameModeInput = document.getElementById('setting-use-gamemode') as HTMLInputElement;
       const mangoHudInput = document.getElementById('setting-use-mangohud') as HTMLInputElement;
       const lowSpecModeInput = document.getElementById('setting-low-spec-mode') as HTMLInputElement;
+      const allowMultiInstanceInput = document.getElementById('setting-allow-multi-instance') as HTMLInputElement;
+      const preferredGpuSelect = document.getElementById('setting-preferred-gpu') as HTMLSelectElement;
 
       if (closeOnLaunchInput) closeOnLaunchInput.checked = s.closeOnLaunch ?? false;
       if (minimizeInput) minimizeInput.checked = s.minimizeToTray ?? false;
       if (gameModeInput) gameModeInput.checked = s.useGameMode ?? false;
       if (mangoHudInput) mangoHudInput.checked = s.useMangoHud ?? false;
+      if (allowMultiInstanceInput) allowMultiInstanceInput.checked = s.allowMultiInstance !== false;
+      if (preferredGpuSelect) preferredGpuSelect.value = s.preferredGpu || 'auto';
+
       if (lowSpecModeInput) {
         lowSpecModeInput.checked = s.lowSpecMode ?? false;
         lowSpecModeInput.onchange = () => {
           this.applyLowSpecMode(lowSpecModeInput.checked);
         };
+      }
+
+      // Query graphics hardware info for Multi-GPU panel
+      if (window.jagexApi?.getGpuInfo) {
+        window.jagexApi.getGpuInfo().then((gpuInfo: any) => {
+          const badge = document.getElementById('gpu-detected-badge');
+          const list = document.getElementById('gpu-devices-list');
+          if (badge) {
+            badge.textContent = gpuInfo.hasMultipleGpus ? `${gpuInfo.gpus.length} GPUS DETECTED` : (gpuInfo.gpus.length === 1 ? '1 GPU DETECTED' : 'STANDARD GPU');
+          }
+          if (list) {
+            if (gpuInfo.gpus && gpuInfo.gpus.length > 0) {
+              list.innerHTML = gpuInfo.gpus.map((g: any) => `
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                  <span style="font-weight: 600; color: #f1f5f9;">🎮 ${this.escapeHtml(g.name)}</span>
+                  <span class="badge-member" style="font-size: 9px; padding: 1px 6px;">${g.type.toUpperCase()}</span>
+                </div>
+              `).join('');
+            } else {
+              list.innerHTML = '<span>System default graphics adapter active</span>';
+            }
+          }
+        }).catch(() => {});
       }
 
       // Software updates in General tab
@@ -1396,6 +1651,7 @@ class JagexLauncherApp {
 
       // OSRS settings
       const osrsDefaultClientSelect = document.getElementById('setting-osrs-default-client') as HTMLSelectElement;
+      const osrsUiScaleSelect = document.getElementById('setting-osrs-ui-scale') as HTMLSelectElement;
       const osrsJavaPathInput = document.getElementById('setting-osrs-java-path') as HTMLInputElement;
       const osrsCustomClientInput = document.getElementById('setting-osrs-custom-client') as HTMLInputElement;
       const osrsJvmArgsInput = document.getElementById('setting-osrs-jvm-args') as HTMLInputElement;
@@ -1403,6 +1659,7 @@ class JagexLauncherApp {
       const javaLabel = document.getElementById('setting-java-detected-label');
 
       if (osrsDefaultClientSelect) osrsDefaultClientSelect.value = s.selectedOsrsClient || 'runelite';
+      if (osrsUiScaleSelect) osrsUiScaleSelect.value = s.osrsUiScale || 'auto';
       if (osrsJavaPathInput) osrsJavaPathInput.value = s.customJavaPath || '';
       if (osrsCustomClientInput) osrsCustomClientInput.value = s.osrsCustomClientPath || '';
       if (osrsJvmArgsInput) osrsJvmArgsInput.value = s.osrsJvmArgs || '';
@@ -1480,8 +1737,11 @@ class JagexLauncherApp {
       const mangoHudInput = document.getElementById('setting-use-mangohud') as HTMLInputElement;
       const lowSpecModeInput = document.getElementById('setting-low-spec-mode') as HTMLInputElement;
       const autoCheckUpdatesInput = document.getElementById('setting-auto-check-updates') as HTMLInputElement;
+      const allowMultiInstanceInput = document.getElementById('setting-allow-multi-instance') as HTMLInputElement;
+      const preferredGpuSelect = document.getElementById('setting-preferred-gpu') as HTMLSelectElement;
 
       const osrsDefaultClientSelect = document.getElementById('setting-osrs-default-client') as HTMLSelectElement;
+      const osrsUiScaleSelect = document.getElementById('setting-osrs-ui-scale') as HTMLSelectElement;
       const osrsJavaPathInput = document.getElementById('setting-osrs-java-path') as HTMLInputElement;
       const osrsCustomClientInput = document.getElementById('setting-osrs-custom-client') as HTMLInputElement;
       const osrsJvmArgsInput = document.getElementById('setting-osrs-jvm-args') as HTMLInputElement;
@@ -1503,7 +1763,10 @@ class JagexLauncherApp {
         useMangoHud: mangoHudInput?.checked ?? false,
         lowSpecMode: lowSpecModeInput?.checked ?? false,
         autoCheckUpdates: autoCheckUpdatesInput?.checked ?? true,
+        allowMultiInstance: allowMultiInstanceInput?.checked ?? true,
+        preferredGpu: preferredGpuSelect?.value || 'auto',
         selectedOsrsClient: osrsDefaultClientSelect?.value || this.selectedOsrsClient,
+        osrsUiScale: osrsUiScaleSelect?.value || 'auto',
         customJavaPath: osrsJavaPathInput?.value.trim() || '',
         osrsCustomClientPath: osrsCustomClientInput?.value.trim() || '',
         osrsJvmArgs: osrsJvmArgsInput?.value.trim() || '',
@@ -2337,12 +2600,14 @@ class JagexLauncherApp {
       actionUpdaterBtn.setAttribute('disabled', 'true');
       actionUpdaterBtn.textContent = this.selectedUpdaterFormat === 'deb'
         ? 'Installing (Admin Prompt)...'
-        : 'Installing AppImage...';
+        : (this.selectedUpdaterFormat === 'snap' ? 'Installing Snap...' : 'Installing AppImage...');
 
       if (progressStatus) {
         progressStatus.textContent = this.selectedUpdaterFormat === 'deb'
           ? 'Prompting for root authentication to install .deb...'
-          : 'Configuring AppImage and updating desktop shortcuts...';
+          : (this.selectedUpdaterFormat === 'snap'
+            ? 'Prompting for root authentication to install snap...'
+            : 'Configuring AppImage and updating desktop shortcuts...');
       }
 
       const unsubInstall = window.jagexApi.onUpdateProgress((p: any) => {
@@ -2368,7 +2633,7 @@ class JagexLauncherApp {
             statusAlert.style.color = '#34d399';
             statusAlert.innerHTML = `
               <div style="font-weight: 700; margin-bottom: 2px;">🎉 ${installRes.message || 'Installation Successful!'}</div>
-              <div style="color: #94a3b8;">${this.selectedUpdaterFormat === 'deb' ? 'Package installed to /usr/bin/jagex-launcher.' : 'AppImage configured and desktop entries updated.'} Click below to restart.</div>
+              <div style="color: #94a3b8;">${this.selectedUpdaterFormat === 'deb' ? 'Package installed to /usr/bin/jagex-launcher.' : (this.selectedUpdaterFormat === 'snap' ? 'Snap installed to /snap/bin/linux-jagex-launcher.' : 'AppImage configured and desktop entries updated.')} Click below to restart.</div>
             `;
             statusAlert.classList.remove('hidden');
           }
@@ -2491,6 +2756,47 @@ class JagexLauncherApp {
       if (window.jagexApi?.openFolder) {
         await window.jagexApi.openFolder('launcher-config');
       }
+    });
+
+    // Official OSRS Client Helper Modal Wiring
+    const officialOsrsModal = document.getElementById('modal-official-osrs');
+    const closeOfficialOsrsBtn = document.getElementById('btn-close-official-osrs');
+    const switchToRuneliteBtn = document.getElementById('btn-switch-to-runelite');
+    const launchSteamOsrsBtn = document.getElementById('btn-launch-steam-osrs');
+    const configureCustomOsrsBtn = document.getElementById('btn-configure-custom-osrs');
+
+    closeOfficialOsrsBtn?.addEventListener('click', () => {
+      officialOsrsModal?.classList.add('hidden');
+    });
+
+    switchToRuneliteBtn?.addEventListener('click', async () => {
+      officialOsrsModal?.classList.add('hidden');
+      this.selectedOsrsClient = 'runelite';
+      this.currentSettings = await window.jagexApi.saveSettings({ selectedOsrsClient: 'runelite' });
+      this.updateClientSelectorUI();
+      this.updatePlaySubtext();
+      await this.checkGameClientStatus();
+      if (!this.isClientInstalled) {
+        await this.installGameClient('runelite');
+      }
+    });
+
+    launchSteamOsrsBtn?.addEventListener('click', async () => {
+      officialOsrsModal?.classList.add('hidden');
+      try {
+        await window.jagexApi.openExternal('steam://rungameid/1343400');
+      } catch (err: any) {
+        alert(`Failed to launch Steam: ${err?.message || err}`);
+      }
+    });
+
+    configureCustomOsrsBtn?.addEventListener('click', () => {
+      officialOsrsModal?.classList.add('hidden');
+      openSettings('tab-osrs');
+      setTimeout(() => {
+        const customInput = document.getElementById('setting-osrs-custom-client');
+        customInput?.focus();
+      }, 100);
     });
 
     // Close modals on overlay backdrop click (excluding progress overlay)
@@ -2875,6 +3181,305 @@ class JagexLauncherApp {
 
       grid.appendChild(card);
     });
+  }
+
+  private setupLiveLogger() {
+    const modal = document.getElementById('modal-live-logs');
+    const openBtn = document.getElementById('btn-live-logs');
+    const closeBtn = document.getElementById('btn-close-live-logs');
+    const copyBtn = document.getElementById('btn-logs-copy');
+    const clearBtn = document.getElementById('btn-logs-clear');
+    const openFolderBtn = document.getElementById('btn-logs-open-folder');
+    const sourceSelect = document.getElementById('log-filter-source') as HTMLSelectElement | null;
+    const levelSelect = document.getElementById('log-filter-level') as HTMLSelectElement | null;
+    const searchInput = document.getElementById('log-search-input') as HTMLInputElement | null;
+
+    openBtn?.addEventListener('click', async () => {
+      modal?.classList.remove('hidden');
+      if (window.jagexApi?.getLogEntries) {
+        try {
+          const entries = await window.jagexApi.getLogEntries(300);
+          this.logEntries = entries || [];
+          this.renderLogTerminal();
+        } catch (e) {
+          console.error('[LiveLogger] Failed to fetch log entries:', e);
+        }
+      }
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      modal?.classList.add('hidden');
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.exportLogs) return;
+      try {
+        const text = await window.jagexApi.exportLogs();
+        await navigator.clipboard.writeText(text);
+        const span = copyBtn.querySelector('span');
+        if (span) {
+          const orig = span.textContent;
+          span.textContent = 'Copied!';
+          setTimeout(() => { span.textContent = orig; }, 2000);
+        }
+      } catch (err: any) {
+        alert(`Failed to copy logs: ${err.message}`);
+      }
+    });
+
+    clearBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.clearLogs) return;
+      try {
+        await window.jagexApi.clearLogs();
+        this.logEntries = [];
+        this.renderLogTerminal();
+      } catch (err: any) {
+        alert(`Failed to clear logs: ${err.message}`);
+      }
+    });
+
+    openFolderBtn?.addEventListener('click', async () => {
+      if (window.jagexApi?.openFolder) {
+        await window.jagexApi.openFolder('launcher-config');
+      }
+    });
+
+    sourceSelect?.addEventListener('change', () => {
+      this.logFilterSource = sourceSelect?.value || 'all';
+      this.renderLogTerminal();
+    });
+
+    levelSelect?.addEventListener('change', () => {
+      this.logFilterLevel = levelSelect?.value || 'all';
+      this.renderLogTerminal();
+    });
+
+    searchInput?.addEventListener('input', () => {
+      this.logSearchQuery = searchInput?.value.trim().toLowerCase() || '';
+      this.renderLogTerminal();
+    });
+  }
+
+  private filterLogEntry(entry: any): boolean {
+    if (this.logFilterSource !== 'all') {
+      const src = (entry.source || '').toLowerCase();
+      if (this.logFilterSource === 'osrs' && src !== 'osrs') return false;
+      if (this.logFilterSource === 'rs3' && src !== 'rs3') return false;
+      if (this.logFilterSource === 'launcher' && src !== 'launcher') return false;
+    }
+
+    if (this.logFilterLevel !== 'all') {
+      const lvl = (entry.level || 'INFO').toUpperCase();
+      if (this.logFilterLevel === 'warn-error' && lvl !== 'WARN' && lvl !== 'ERROR') return false;
+      if (this.logFilterLevel === 'error' && lvl !== 'ERROR') return false;
+    }
+
+    if (this.logSearchQuery) {
+      const q = this.logSearchQuery;
+      const msg = (entry.message || '').toLowerCase();
+      const src = (entry.source || '').toLowerCase();
+      if (!msg.includes(q) && !src.includes(q)) return false;
+    }
+
+    return true;
+  }
+
+  private createLogLineElement(entry: any): HTMLElement {
+    const lineEl = document.createElement('div');
+    lineEl.className = `log-line log-level-${(entry.level || 'info').toLowerCase()}`;
+    lineEl.style.cssText = 'display: flex; gap: 8px; margin-bottom: 3px; font-family: monospace; font-size: 11px; align-items: flex-start;';
+
+    const timeStr = entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+
+    let sourceBg = 'rgba(245, 158, 11, 0.15)';
+    let sourceColor = '#fbbf24';
+    let sourceBorder = 'rgba(245, 158, 11, 0.3)';
+    if (entry.source === 'osrs') {
+      sourceBg = 'rgba(16, 185, 129, 0.15)';
+      sourceColor = '#34d399';
+      sourceBorder = 'rgba(16, 185, 129, 0.3)';
+    } else if (entry.source === 'rs3') {
+      sourceBg = 'rgba(59, 130, 246, 0.15)';
+      sourceColor = '#60a5fa';
+      sourceBorder = 'rgba(59, 130, 246, 0.3)';
+    }
+
+    let levelColor = '#94a3b8';
+    let textColor = '#cbd5e1';
+    const lvl = (entry.level || 'INFO').toUpperCase();
+    if (lvl === 'ERROR') {
+      levelColor = '#f87171';
+      textColor = '#fca5a5';
+    } else if (lvl === 'WARN') {
+      levelColor = '#fde047';
+      textColor = '#fef08a';
+    } else if (lvl === 'DEBUG') {
+      levelColor = '#64748b';
+      textColor = '#94a3b8';
+    }
+
+    lineEl.innerHTML = `
+      <span style="color: #64748b; flex-shrink: 0; user-select: none;">[${timeStr}]</span>
+      <span style="font-size: 9px; padding: 1px 5px; border-radius: 3px; background: ${sourceBg}; color: ${sourceColor}; border: 1px solid ${sourceBorder}; font-weight: 700; text-transform: uppercase; flex-shrink: 0; user-select: none;">${this.escapeHtml(entry.source || 'SYS')}</span>
+      <span style="color: ${levelColor}; font-weight: 700; flex-shrink: 0; width: 44px; text-transform: uppercase; font-size: 10px; user-select: none;">${this.escapeHtml(lvl)}</span>
+      <span style="color: ${textColor}; word-break: break-all; white-space: pre-wrap; flex: 1;">${this.escapeHtml(entry.message || '')}</span>
+    `;
+
+    return lineEl;
+  }
+
+  private renderLogTerminal() {
+    const terminal = document.getElementById('live-logs-terminal');
+    const countBadge = document.getElementById('log-entry-count');
+    const autoscroll = (document.getElementById('log-autoscroll-toggle') as HTMLInputElement | null)?.checked ?? true;
+    if (!terminal) return;
+
+    const filtered = this.logEntries.filter(e => this.filterLogEntry(e));
+
+    if (countBadge) {
+      countBadge.textContent = `${filtered.length} / ${this.logEntries.length} entries`;
+    }
+
+    if (filtered.length === 0) {
+      terminal.innerHTML = `
+        <div style="color: #64748b; font-style: italic; padding: 12px 0;">
+          ${this.logEntries.length === 0 ? 'No log entries recorded yet. Launch a game client to see real-time output.' : 'No entries match the active filters.'}
+        </div>
+      `;
+      return;
+    }
+
+    terminal.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    for (const entry of filtered) {
+      frag.appendChild(this.createLogLineElement(entry));
+    }
+    terminal.appendChild(frag);
+
+    if (autoscroll) {
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+  }
+
+  private appendLogEntry(entry: any) {
+    this.logEntries.push(entry);
+    if (this.logEntries.length > 2000) {
+      this.logEntries.shift();
+    }
+
+    const modal = document.getElementById('modal-live-logs');
+    if (modal && !modal.classList.contains('hidden')) {
+      if (this.filterLogEntry(entry)) {
+        const terminal = document.getElementById('live-logs-terminal');
+        const autoscroll = (document.getElementById('log-autoscroll-toggle') as HTMLInputElement | null)?.checked ?? true;
+        const countBadge = document.getElementById('log-entry-count');
+
+        if (terminal) {
+          const placeholder = document.getElementById('live-logs-placeholder');
+          if (placeholder) placeholder.remove();
+
+          terminal.appendChild(this.createLogLineElement(entry));
+          if (autoscroll) {
+            terminal.scrollTop = terminal.scrollHeight;
+          }
+        }
+
+        if (countBadge) {
+          const visibleCount = terminal ? terminal.querySelectorAll('.log-line').length : 0;
+          countBadge.textContent = `${visibleCount} / ${this.logEntries.length} entries`;
+        }
+      }
+    }
+  }
+
+  private setupMultiInstanceManager() {
+    const killAllBtn = document.getElementById('btn-instances-kill-all');
+    killAllBtn?.addEventListener('click', async () => {
+      if (!window.jagexApi?.terminateAllInstances) return;
+      if (confirm('Terminate all active game client instances?')) {
+        try {
+          await window.jagexApi.terminateAllInstances();
+          this.activeInstances = [];
+          this.renderInstancesTray();
+          this.updatePlayButtonState();
+        } catch (err: any) {
+          alert(`Failed to stop instances: ${err.message}`);
+        }
+      }
+    });
+
+    if (window.jagexApi?.getInstances) {
+      window.jagexApi.getInstances().then((instances: any[]) => {
+        this.activeInstances = instances || [];
+        this.renderInstancesTray();
+        this.updatePlayButtonState();
+      }).catch(() => {});
+    }
+  }
+
+  private renderInstancesTray() {
+    const tray = document.getElementById('active-instances-tray');
+    const list = document.getElementById('active-instances-list');
+    const badge = document.getElementById('active-instances-count-badge');
+
+    if (!tray || !list) return;
+
+    if (this.activeInstances.length === 0) {
+      tray.classList.add('hidden');
+      return;
+    }
+
+    tray.classList.remove('hidden');
+
+    if (badge) {
+      badge.textContent = `${this.activeInstances.length} ACTIVE`;
+    }
+
+    list.innerHTML = '';
+    for (const inst of this.activeInstances) {
+      const card = document.createElement('div');
+      card.className = 'instance-card';
+
+      const gameLabel = inst.game === 'osrs'
+        ? `OSRS (${(inst.clientType || 'RuneLite').toUpperCase()})`
+        : 'RuneScape 3';
+
+      const charName = inst.characterName || 'Player';
+      const pidText = inst.pid ? `PID: ${inst.pid}` : 'Launching...';
+      const timeStr = inst.startTime ? new Date(inst.startTime).toLocaleTimeString() : 'Just now';
+
+      card.innerHTML = `
+        <div class="instance-info">
+          <div class="instance-char-name">⚔️ ${this.escapeHtml(charName)}</div>
+          <div class="instance-meta-row">
+            <span style="font-weight: 600; color: #cbd5e1;">${gameLabel}</span>
+            <span>•</span>
+            <span class="instance-pid-badge">${pidText}</span>
+            <span>•</span>
+            <span>${timeStr}</span>
+          </div>
+        </div>
+        <div class="instance-actions">
+          <button class="btn-instance-stop" data-id="${this.escapeHtml(inst.id)}" title="Close this game instance">Stop</button>
+        </div>
+      `;
+
+      const stopBtn = card.querySelector('.btn-instance-stop') as HTMLButtonElement | null;
+      stopBtn?.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        stopBtn.disabled = true;
+        stopBtn.textContent = 'Stopping...';
+        try {
+          await window.jagexApi.terminateInstance(inst.id);
+        } catch (err: any) {
+          alert(`Failed to stop instance: ${err.message}`);
+          stopBtn.disabled = false;
+          stopBtn.textContent = 'Stop';
+        }
+      });
+
+      list.appendChild(card);
+    }
   }
 }
 

@@ -18,6 +18,11 @@ export const api = {
   getSessions: () => ipcRenderer.invoke('auth:getSessions'),
   getActiveAccount: () => ipcRenderer.invoke('auth:getActiveAccount'),
   syncCharacters: (sub?: string) => ipcRenderer.invoke('auth:syncCharacters', sub),
+  onAuthCompleted: (callback: () => void) => {
+    const sub = () => callback();
+    ipcRenderer.on('auth:completed', sub);
+    return () => ipcRenderer.removeListener('auth:completed', sub);
+  },
 
   // Settings
   getSettings: () => ipcRenderer.invoke('settings:get'),
@@ -34,7 +39,8 @@ export const api = {
 
   // Launcher
   launchGame: (options?: any) => ipcRenderer.invoke('launcher:launch', options),
-  isGameRunning: () => ipcRenderer.invoke('launcher:isRunning'),
+  isGameRunning: (game?: string) => ipcRenderer.invoke('launcher:isRunning', game),
+  killGame: (game?: string) => ipcRenderer.invoke('launcher:killGame', game),
   onGameStateChanged: (callback: (data: any) => void) => {
     const sub = (_: any, val: any) => callback(val);
     ipcRenderer.on('game-state-changed', sub);
@@ -102,6 +108,34 @@ export const api = {
   // Quick Folders Hub
   openFolder: (folderIdOrPath: string) => ipcRenderer.invoke('utils:openFolder', folderIdOrPath),
   getQuickFolders: () => ipcRenderer.invoke('utils:getQuickFolders'),
+
+  // Multi-GPU / Dedicated GPU
+  getGpuInfo: () => ipcRenderer.invoke('gpu:getInfo'),
+
+  // Live Client Logger
+  getLogEntries: (limit?: number) => ipcRenderer.invoke('logger:getEntries', limit),
+  clearLogs: () => ipcRenderer.invoke('logger:clear'),
+  exportLogs: () => ipcRenderer.invoke('logger:export'),
+  onLogEntry: (callback: (data: any) => void) => {
+    const sub = (_: any, val: any) => callback(val);
+    ipcRenderer.on('logger:entry', sub);
+    return () => ipcRenderer.removeListener('logger:entry', sub);
+  },
+  onLogsCleared: (callback: () => void) => {
+    const sub = () => callback();
+    ipcRenderer.on('logger:cleared', sub);
+    return () => ipcRenderer.removeListener('logger:cleared', sub);
+  },
+
+  // Multi-Instance Client Manager
+  getInstances: () => ipcRenderer.invoke('instances:list'),
+  terminateInstance: (id: string) => ipcRenderer.invoke('instances:terminate', id),
+  terminateAllInstances: (game?: string) => ipcRenderer.invoke('instances:terminateAll', game),
+  onInstancesChanged: (callback: (instances: any[]) => void) => {
+    const sub = (_: any, val: any) => callback(val);
+    ipcRenderer.on('instances:changed', sub);
+    return () => ipcRenderer.removeListener('instances:changed', sub);
+  },
 };
 
 contextBridge.exposeInMainWorld('jagexApi', api);

@@ -5,6 +5,42 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] - 2026-10-01
+
+### Added
+- **HiDPI Display Scaling Controls for OSRS**: Configurable UI scaling (`1.0x` to `3.0x`) passing JVM `-Dsun.java2d.uiScale` and FlatLaf UI font scaling parameters, providing crisp high-resolution rendering on 4K, 1440p, and high-density laptop displays.
+- **Multi-Instance Client Manager**: Live tracking and managing multiple concurrent RuneLite, HDOS, and RS3 game clients with live process heartbeats and individual force-stop/kill controls.
+- **In-App Live Client Log Viewer**: Dedicated real-time terminal modal with ring-buffered streaming, level coloring, log source filters, token sanitization, and text export.
+- **Multi-GPU & Dedicated GPU Selector**: Automatic hardware detection of integrated and discrete GPUs with one-click Mesa DRI PRIME (`DRI_PRIME=1`) and NVIDIA PRIME Render Offload (`__NV_PRIME_RENDER_OFFLOAD=1`).
+- **Deep Link OAuth Protocol Handling**: Seamless authentication callback interception for `jagex://` and `jagex-launcher://` URLs on running instances (`second-instance`) and cold start.
+
+### Fixed
+- **Custom Launch Command Template Expansion**: Corrected argument tokenization in `%command%` templates in `launcher.ts` and `osrs.ts`, preventing monolithic argument strings that caused spawn `ENOENT` failures when running tools like `gamemoderun`, `mangohud`, or `gamescope`.
+- **Process Lifecycle & PID Recycling Safeguards**: Linux `/proc/${pid}/comm` verification in `instance-manager.ts` preventing accidental collateral signals and safely pruning dead instances with non-positive PIDs.
+- **Harmless Desktop Warning Classification**: Automatically categorized non-fatal desktop subsystem notices (`canberra-gtk-module`, `pk-gtk-module`, `ALSA`, `LWJGL`, `WARNING:`) as warnings rather than red errors.
+- **Network Resilience Timeouts**: Added `AbortSignal.timeout` across all authentication, update checking, and client download network operations to prevent UI hangs on stalled connections.
+- **Steam Shortcut Key Indexing**: Fixed sequential key generation in `shortcuts.vdf` to prevent key collisions with existing non-Steam shortcuts.
+- **Release Parity**: Synchronized all packaging formats across AppImage, Flatpak, Snap, Debian PPA, and AUR to v1.4.3.
+
+## [1.4.2] - 2026-09-30
+
+### Fixed
+- **AppImage Child Environment Sanitization & RuneLite Launch Loop**: Stripped `APPIMAGE`, `APPDIR`, `OWD`, and `ARGV0` and cleaned `.mount_` paths from `LD_LIBRARY_PATH` when spawning native game clients (`src/main/osrs.ts` and `src/main/launcher.ts`). When running from inside an AppImage, RuneLite's launcher checked `System.getenv("APPIMAGE")`, mistakenly assumed the Jagex Launcher AppImage was RuneLite's own AppImage, and attempted to re-exec the Jagex Launcher binary in fork mode, causing RuneLite to immediately exit after hash verification.
+- **RuneLite & OSRS Process Lifecycle Tracking**: Prioritized the actual game client (`net.runelite.client.RuneLite`) over the bootstrap jar (`RuneLite.jar`) in `findOsrsPid()`. Added successor process migration in `startMonitoring()` so when the bootstrap jar cleanly terminates after spawning the client, process monitoring smoothly shifts to the client PID instead of resetting game state. Extended JVM fork detection grace period to 15 seconds.
+- **OpenJDK 24+ ZGC Compatibility**: Automatically detect and filter out `-XX:+ZGenerational` on OpenJDK 24+ where Generational ZGC is enabled by default and the JVM argument was removed.
+- **AppImage FUSE2-Free Static Runtime**: Added AppImage toolset 1.0.3 static runtime configuration in `electron-builder.json` to run seamlessly on Ubuntu 24.04 and 26.04 without requiring legacy `libfuse.so.2`.
+- **Application Menu Launching & Stale Desktop Override Resolution**: Fixed desktop integration in `src/main/desktop.ts` to properly resolve the application root directory rather than relying on current working directory. Cleaned up stale or broken user desktop overrides that previously shadowed system-installed launcher binaries.
+- **Single-Instance Lock & Window Focus**: Enforced Chromium single-instance lock in `src/main/index.ts` with `app.requestSingleInstanceLock()`. Clicking the launcher from the application menu or dock now smoothly restores and focuses existing launcher windows instead of spawning duplicate competing processes.
+- **Wayland Window Presentation Fallbacks**: Added secondary presentation fallbacks (`did-finish-load` and timeout) to ensure the main window displays reliably under Wayland and X11 compositors even if hardware acceleration frames are delayed.
+- **Linux Wayland / Vulkan Compatibility**: Added `--disable-features=Vulkan` command line switch on Linux to prevent Chromium Ozone Wayland surface initialization conflicts.
+- **Application Menu Category Conformance**: Corrected desktop entry categories in `electron-builder.json` to standard `Game;` ensuring consistent placement across GNOME, KDE Plasma, and XFCE application menus.
+
+### Added
+- **Canonical Snap Release Pipeline**: Added full Snap package build and distribution support (`packaging/snap/snapcraft.yaml`, `snap/snapcraft.yaml`, and `npm run dist:snap`) targeting `core24` with strict confinement. Includes full interface plugs (`removable-media`, `joystick`, `process-control`, `network-bind`, `opengl`, `audio-playback`) and data persistence in `SNAP_USER_COMMON` across snap auto-refreshes.
+- **In-App Snap Format Detection**: Added `'snap'` package recognition to `AutoUpdater` and runtime paths in `folders.ts`, `installer.ts`, `store.ts`, `osrs.ts`, and `desktop.ts`.
+
+---
+
 ## [1.4.1] - 2026-09-30
 
 ### Fixed

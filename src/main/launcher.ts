@@ -8,6 +8,9 @@ import os from 'os';
 import { store } from './store.ts';
 import { installer } from './installer.ts';
 import { desktopIntegration } from './desktop.ts';
+import { gpuManager } from './gpu.ts';
+import { liveLogger } from './live-logger.ts';
+import { instanceManager } from './instance-manager.ts';
 
 export interface GameLaunchOptions {
   sessionId?: string;
@@ -46,6 +49,57 @@ export function sanitizeReportText(text: string): string {
   sanitized = sanitized.replace(/(JX_CHARACTER_ID=)[^\s&]+/gi, '$1[REDACTED]');
   sanitized = sanitized.replace(/(session_id|sessionId|token)=["']?[a-zA-Z0-9_\-.]+["']?/gi, '$1=[REDACTED]');
   return sanitized;
+}
+
+/**
+ * Safely parses and expands a custom launch command template containing %command%.
+ * Preserves quoted arguments and splits arguments cleanly without creating monolithic argv elements.
+ */
+export function expandCustomLaunchCommand(
+  customCommand: string,
+  baseCmd: string,
+  baseArgs: string[]
+): { cmd: string; args: string[] } {
+  if (!customCommand || !customCommand.trim()) {
+    return { cmd: baseCmd, args: baseArgs };
+  }
+
+  const tokenRegex = /[^\s"']+|"([^"]*)"|'([^']*)'/g;
+  const tokens: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = tokenRegex.exec(customCommand)) !== null) {
+    if (match[1] !== undefined) {
+      tokens.push(match[1]);
+    } else if (match[2] !== undefined) {
+      tokens.push(match[2]);
+    } else {
+      tokens.push(match[0]);
+    }
+  }
+
+  if (tokens.length === 0) {
+    return { cmd: baseCmd, args: baseArgs };
+  }
+
+  const result: string[] = [];
+  let expanded = false;
+  for (const token of tokens) {
+    if (token === '%command%') {
+      result.push(baseCmd, ...baseArgs);
+      expanded = true;
+    } else {
+      result.push(token);
+    }
+  }
+
+  if (!expanded) {
+    result.push(baseCmd, ...baseArgs);
+  }
+
+  return {
+    cmd: result[0] || baseCmd,
+    args: result.slice(1)
+  };
 }
 
 export function classifyCrash(
@@ -264,8 +318,14 @@ export class GameLauncher {
         console.log(`[Launcher] RuneScape client (PID ${pid}) exited.`);
         this.isRunning = false;
         this.gamePid = null;
+        if (this.activeProcess && !this.activeProcess.killed) {
+          try {
+            this.activeProcess.kill('SIGTERM');
+          } catch {}
+          this.activeProcess = null;
+        }
         if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('game-state-changed', { isRunning: false });
+          mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'rs3' });
           if (settings.minimizeToTray && !settings.closeOnLaunch) {
             mainWindow.show();
           }
@@ -275,6 +335,9 @@ export class GameLauncher {
   }
 
   public isGameRunning(): boolean {
+    if (instanceManager.getInstancesForGame('rs3').length > 0) {
+      return true;
+    }
     if (this.gamePid) {
       try {
         process.kill(this.gamePid, 0);
@@ -290,7 +353,15 @@ export class GameLauncher {
       this.isRunning = true;
       return true;
     }
-    return this.isRunning;
+    // Neither gamePid nor rs2client process exists; cleanup and ensure false
+    if (this.activeProcess && !this.activeProcess.killed) {
+      try {
+        this.activeProcess.kill('SIGTERM');
+      } catch {}
+      this.activeProcess = null;
+    }
+    this.isRunning = false;
+    return false;
   }
 
   public getLastCrash(): CrashReport | null {
@@ -313,24 +384,24 @@ export class GameLauncher {
   }
 
   public async launchRs3(mainWindow?: BrowserWindow, options?: GameLaunchOptions): Promise<void> {
+    const settings = store.getSettings();
     const existingPid = this.findRs2ClientPid();
-    if (existingPid) {
+    if (existingPid && !settings.allowMultiInstance) {
       console.log(`[Launcher] RuneScape 3 is already running (PID ${existingPid}). Adopting session.`);
       this.gamePid = existingPid;
       this.isRunning = true;
       this.monitorRs2Client(existingPid, mainWindow);
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('game-state-changed', { isRunning: true });
+        mainWindow.webContents.send('game-state-changed', { isRunning: true, game: 'rs3' });
       }
       return;
     }
 
-    if (this.isRunning) {
-      throw new Error('Game is already running');
+    if (this.isRunning && !settings.allowMultiInstance) {
+      throw new Error('Game is already running. Enable Multi-Instance Mode in Settings to launch additional concurrent clients.');
     }
 
     this.wasKilledByUser = false;
-    const settings = store.getSettings();
     const activeAccount = store.getActiveAccount();
 
     const sessionId = options?.sessionId || activeAccount?.sessionId;
@@ -351,7 +422,7 @@ export class GameLauncher {
       const msg = 'Notice: The game client binary is an official Linux x86_64 ELF executable and cannot run directly on macOS Darwin. To play, package or run this launcher on your Linux system.';
       console.warn(`[Launcher] ${msg}`);
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('game-state-changed', { isRunning: false, error: msg });
+        mainWindow.webContents.send('game-state-changed', { isRunning: false, error: msg, game: 'rs3' });
       }
       throw new Error(msg);
     }
@@ -362,7 +433,7 @@ export class GameLauncher {
     if (process.env.LD_LIBRARY_PATH) {
       const cleanParts = process.env.LD_LIBRARY_PATH
         .split(':')
-        .filter((p) => p && !p.includes('electron') && !p.includes('node_modules') && !p.includes('client/usr'));
+        .filter((p) => p && !p.includes('electron') && !p.includes('node_modules') && !p.includes('client/usr') && !p.includes('.mount_') && (process.env.APPDIR ? !p.startsWith(process.env.APPDIR) : true));
       if (cleanParts.length > 0) {
         ldLibraryPath = [compatLibDir, ...cleanParts].join(':');
       }
@@ -416,8 +487,17 @@ export class GameLauncher {
     delete env.NO_AT_BRIDGE;
     delete env.GTK_MODULES;
 
+    // Strip AppImage runtime variables so child processes do not inherit mount environment
+    delete env.APPIMAGE;
+    delete env.APPDIR;
+    delete env.OWD;
+    delete env.ARGV0;
+
     // Unset XMODIFIERS to prevent IBus / Fcitx GTK2 deadlocks during startup
     delete env.XMODIFIERS;
+
+    // Multi-GPU / Dedicated GPU Selection
+    gpuManager.applyGpuEnvironment(env, settings.preferredGpu);
 
     // GPU Workarounds for NVIDIA Wayland / "Loading Application Resources" freezes
     if (gpuWorkaround === 'zink') {
@@ -461,12 +541,10 @@ export class GameLauncher {
     let baseArgs = ['--configURI', configUri];
 
     // Handle GameMode, MangoHud or Custom Command Wrapper
-    if (settings.customLaunchCommand && settings.customLaunchCommand.includes('%command%')) {
-      const parts = settings.customLaunchCommand.split(' ');
-      const fullCmd = [binaryPath, ...baseArgs].join(' ');
-      const replaced = parts.map(p => p === '%command%' ? fullCmd : p);
-      baseCmd = replaced[0];
-      baseArgs = replaced.slice(1);
+    if (settings.customLaunchCommand && settings.customLaunchCommand.trim()) {
+      const expanded = expandCustomLaunchCommand(settings.customLaunchCommand, baseCmd, baseArgs);
+      baseCmd = expanded.cmd;
+      baseArgs = expanded.args;
     } else {
       if (settings.useGameMode && !isSafeMode) {
         if (commandExists('gamemoderun')) {
@@ -523,8 +601,21 @@ export class GameLauncher {
       this.activeProcess = child;
       this.isRunning = true;
 
+      const registeredInstance = instanceManager.registerInstance({
+        pid: child.pid || 0,
+        game: 'rs3',
+        clientType: 'rs3',
+        characterName: displayName,
+        characterId,
+        accountId: activeAccount?.sub
+      });
+
+      liveLogger.tailFile(outLogPath, 'rs3', 'info');
+      liveLogger.tailFile(errLogPath, 'rs3', 'error');
+      liveLogger.log('rs3', 'info', `Launching RuneScape 3: ${baseCmd} ${baseArgs.join(' ')}`);
+
       if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send('game-state-changed', { isRunning: true });
+        mainWindow.webContents.send('game-state-changed', { isRunning: true, game: 'rs3' });
       }
 
       // Concurrently poll for rs2client while wrapper is active
@@ -533,6 +624,7 @@ export class GameLauncher {
         if (detectedPid) {
           clearInterval(startupInterval);
           console.log(`[Launcher] Detected active rs2client (PID ${detectedPid}) while wrapper is active.`);
+          instanceManager.updateInstancePid(registeredInstance.id, detectedPid);
           this.gamePid = detectedPid;
           this.monitorRs2Client(detectedPid, mainWindow);
         }
@@ -541,27 +633,31 @@ export class GameLauncher {
       child.on('error', (err) => {
         clearInterval(startupInterval);
         console.error('[Launcher] Process error:', err);
+        liveLogger.log('rs3', 'error', `Process error: ${err.message}`);
+        instanceManager.removeInstance(registeredInstance.id);
         if (quitTimeout) {
           clearTimeout(quitTimeout);
           quitTimeout = null;
         }
-        this.isRunning = false;
+        this.isRunning = instanceManager.getInstancesForGame('rs3').length > 0;
         this.activeProcess = null;
         if (mainWindow && !mainWindow.isDestroyed()) {
           mainWindow.show();
-          mainWindow.webContents.send('game-state-changed', { isRunning: false, error: err.message });
+          mainWindow.webContents.send('game-state-changed', { isRunning: this.isRunning, error: err.message, game: 'rs3' });
         }
       });
 
       child.on('exit', async (code, signal) => {
         clearInterval(startupInterval);
         console.log(`[Launcher] RuneScape wrapper process terminated with code: ${code}, signal: ${signal}`);
+        liveLogger.log('rs3', code === 0 || code === null ? 'info' : 'warn', `Wrapper process exited (code: ${code}, signal: ${signal})`);
 
         // If rs2client was already discovered and is actively running, continue monitoring smoothly
         if (this.gamePid) {
           try {
             process.kill(this.gamePid, 0);
             console.log(`[Launcher] Wrapper process closed; game client (PID ${this.gamePid}) is actively running.`);
+            instanceManager.updateInstancePid(registeredInstance.id, this.gamePid);
             this.activeProcess = null;
             return;
           } catch {
@@ -581,13 +677,15 @@ export class GameLauncher {
 
         if (rs2Pid) {
           console.log(`[Launcher] RuneScape 3 client (rs2client) is actively running (PID ${rs2Pid}). Monitoring game session...`);
+          instanceManager.updateInstancePid(registeredInstance.id, rs2Pid);
           this.activeProcess = null;
           this.gamePid = rs2Pid;
           this.monitorRs2Client(rs2Pid, mainWindow);
           return;
         }
 
-        this.isRunning = false;
+        instanceManager.removeInstance(registeredInstance.id);
+        this.isRunning = instanceManager.getInstancesForGame('rs3').length > 0;
         this.activeProcess = null;
         this.gamePid = null;
 
@@ -644,12 +742,13 @@ export class GameLauncher {
             mainWindow.show();
             mainWindow.webContents.send('game-state-changed', {
               isRunning: false,
+              game: 'rs3',
               error: helpfulMsg,
               crashReport
             });
           }
         } else if (mainWindow && !mainWindow.isDestroyed()) {
-          mainWindow.webContents.send('game-state-changed', { isRunning: false });
+          mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'rs3' });
           if (settings.minimizeToTray && !settings.closeOnLaunch) {
             mainWindow.show();
           }
@@ -679,9 +778,12 @@ export class GameLauncher {
       clearInterval(this.monitorInterval);
       this.monitorInterval = null;
     }
-    if (this.gamePid) {
+    instanceManager.terminateAll('rs3');
+    const detected = this.findRs2ClientPid();
+    const pid = this.gamePid || detected;
+    if (pid) {
       try {
-        process.kill(this.gamePid, 'SIGTERM');
+        process.kill(pid, 'SIGTERM');
       } catch {}
       this.gamePid = null;
     }

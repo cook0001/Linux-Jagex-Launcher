@@ -6,8 +6,18 @@ import os from 'node:os';
 import { desktopIntegration } from '../src/main/desktop.ts';
 
 test('Desktop Integration & Linux Dock Icon Suite', async (t) => {
-  const appsDir = path.join(os.homedir(), '.local', 'share', 'applications');
-  const iconsBaseDir = path.join(os.homedir(), '.local', 'share', 'icons', 'hicolor');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'jagex-desktop-test-'));
+  const appsDir = path.join(tmpDir, 'applications');
+  const iconsBaseDir = path.join(tmpDir, 'icons', 'hicolor');
+
+  desktopIntegration.setDirectories(appsDir, iconsBaseDir);
+
+  t.after(() => {
+    desktopIntegration.resetDirectories();
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {}
+  });
 
   await t.test('DesktopIntegrationManager ensures directories', () => {
     desktopIntegration.ensureDirectories();
@@ -52,10 +62,15 @@ test('Desktop Integration & Linux Dock Icon Suite', async (t) => {
     const content1 = fs.readFileSync(rlDesktop1, 'utf8');
     assert.ok(content1.includes('StartupWMClass=net-runelite-client-RuneLite'));
     assert.ok(content1.includes('Icon=runelite'));
+    assert.ok(content1.includes('NoDisplay=true'), 'net.runelite.RuneLite.desktop alias must have NoDisplay=true');
 
     const content2 = fs.readFileSync(rlDesktop2, 'utf8');
     assert.ok(content2.includes('StartupWMClass=net.runelite.client.RuneLite'));
     assert.ok(content2.includes('Icon=runelite'));
+    assert.ok(!content2.includes('NoDisplay=true'), 'runelite.desktop primary entry must be visible in menu');
+
+    const content3 = fs.readFileSync(rlDesktop3, 'utf8');
+    assert.ok(content3.includes('NoDisplay=true'), 'net-runelite-client-RuneLite.desktop alias must have NoDisplay=true');
   });
 
   await t.test('RuneScape 3 desktop entry and icon integration exists', () => {
@@ -72,21 +87,32 @@ test('Desktop Integration & Linux Dock Icon Suite', async (t) => {
     const content1 = fs.readFileSync(rs3Desktop1, 'utf8');
     assert.ok(content1.includes('StartupWMClass=runescape'));
     assert.ok(content1.includes('Icon=runescape'));
+    assert.ok(!content1.includes('NoDisplay=true'), 'runescape.desktop primary entry must be visible in menu');
+
+    const content2 = fs.readFileSync(rs3Desktop2, 'utf8');
+    assert.ok(content2.includes('NoDisplay=true'), 'runescape-launcher.desktop alias must have NoDisplay=true');
 
     const content3 = fs.readFileSync(rs3Desktop3, 'utf8');
     assert.ok(content3.includes('StartupWMClass=rs2client'));
     assert.ok(content3.includes('Icon=runescape'));
+    assert.ok(content3.includes('NoDisplay=true'), 'rs2client.desktop alias must have NoDisplay=true');
   });
 
   await t.test('HDOS desktop entry integration exists', () => {
     desktopIntegration.installHdosIntegration();
 
     const hdosDesktop = path.join(appsDir, 'hdos.desktop');
+    const hdosDesktop2 = path.join(appsDir, 'com-hdos-client-Client.desktop');
     assert.ok(fs.existsSync(hdosDesktop), 'hdos.desktop must exist');
+    assert.ok(fs.existsSync(hdosDesktop2), 'com-hdos-client-Client.desktop must exist');
 
     const content = fs.readFileSync(hdosDesktop, 'utf8');
     assert.ok(content.includes('StartupWMClass=hdos'));
     assert.ok(content.includes('Icon=hdos'));
+    assert.ok(!content.includes('NoDisplay=true'), 'hdos.desktop primary entry must be visible in menu');
+
+    const content2 = fs.readFileSync(hdosDesktop2, 'utf8');
+    assert.ok(content2.includes('NoDisplay=true'), 'com-hdos-client-Client.desktop alias must have NoDisplay=true');
   });
 
   await t.test('Official OSRS desktop entry and icon integration exists', () => {
@@ -100,10 +126,12 @@ test('Desktop Integration & Linux Dock Icon Suite', async (t) => {
     const content1 = fs.readFileSync(osrsDesktop1, 'utf8');
     assert.ok(content1.includes('StartupWMClass=osrs'));
     assert.ok(content1.includes('Icon=osrs'));
+    assert.ok(!content1.includes('NoDisplay=true'), 'osrs.desktop primary entry must be visible in menu');
 
     const content2 = fs.readFileSync(osrsDesktop2, 'utf8');
     assert.ok(content2.includes('StartupWMClass=jagexapp.osrs'));
     assert.ok(content2.includes('Icon=osrs'));
+    assert.ok(content2.includes('NoDisplay=true'), 'jagexapp-osrs.desktop alias must have NoDisplay=true');
   });
 
   await t.test('desktopIntegration.ensureAll executes cleanly', () => {

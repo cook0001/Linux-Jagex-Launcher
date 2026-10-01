@@ -61,6 +61,7 @@ test('Repository and package configuration', async (t) => {
     assert.ok(content.includes('release/*.AppImage'), 'workflow must upload AppImage to release');
     assert.ok(content.includes('release/*.deb'), 'workflow must upload deb to release');
     assert.ok(content.includes('release/*.tar.gz'), 'workflow must upload tar.gz to release');
+    assert.ok(content.includes('release/*.snap'), 'workflow must upload snap to release');
     assert.ok(content.includes('SHA256SUMS.txt'), 'workflow must generate and upload SHA-256 checksums to release');
     assert.ok(content.includes('concurrency:'), 'workflow must configure concurrency');
     assert.ok(content.includes('cancel-in-progress: true'), 'workflow must cancel previous in-progress jobs');
@@ -155,5 +156,147 @@ test('Repository and package configuration', async (t) => {
     assert.ok(builderScript.includes('RETRY_DELAY=30'), 'Must define RETRY_DELAY of 30s for automatic retry loop');
     assert.ok(builderScript.includes('Initiating dput upload with automatic retry loop'), 'Must execute dput with retry loop');
   });
+
+  await t.test('Snap packaging specification and configuration', () => {
+    const snapDir = path.resolve(process.cwd(), 'packaging/snap');
+    const snapcraftYaml = path.join(snapDir, 'snapcraft.yaml');
+    const snapReadme = path.join(snapDir, 'README.md');
+    const rootSnapcraft = path.resolve(process.cwd(), 'snap/snapcraft.yaml');
+
+    assert.ok(fs.existsSync(snapcraftYaml), 'packaging/snap/snapcraft.yaml must exist');
+    assert.ok(fs.existsSync(snapReadme), 'packaging/snap/README.md must exist');
+    assert.ok(fs.existsSync(rootSnapcraft), 'snap/snapcraft.yaml must exist');
+
+    // Verify Snapcraft GUI desktop entry and icon assets
+    assert.ok(fs.existsSync(path.join(snapDir, 'gui/linux-jagex-launcher.desktop')), 'packaging/snap/gui desktop entry must exist');
+    assert.ok(fs.existsSync(path.join(snapDir, 'gui/icon.png')), 'packaging/snap/gui/icon.png must exist');
+    assert.ok(fs.existsSync(path.resolve(process.cwd(), 'snap/gui/linux-jagex-launcher.desktop')), 'snap/gui desktop entry must exist');
+    assert.ok(fs.existsSync(path.resolve(process.cwd(), 'snap/gui/icon.png')), 'snap/gui/icon.png must exist');
+    assert.ok(fs.existsSync(path.join(snapDir, 'generate-snap-banner.cjs')), 'packaging/snap/generate-snap-banner.cjs must exist');
+
+    const yamlContent = fs.readFileSync(snapcraftYaml, 'utf8');
+    assert.ok(yamlContent.includes('name: linux-jagex-launcher'), 'Snap name must be linux-jagex-launcher');
+    assert.ok(yamlContent.includes('confinement: strict'), 'Snap confinement must be strict');
+    assert.ok(yamlContent.includes('removable-media'), 'Must declare removable-media plug');
+    assert.ok(yamlContent.includes('joystick'), 'Must declare joystick plug');
+    assert.ok(yamlContent.includes('process-control'), 'Must declare process-control plug');
+    assert.ok(yamlContent.includes('network-bind'), 'Must declare network-bind plug');
+
+    const builderConfigPath = path.resolve(process.cwd(), 'electron-builder.json');
+    const builderConfig = JSON.parse(fs.readFileSync(builderConfigPath, 'utf8'));
+    assert.ok(builderConfig.snap, 'electron-builder.json must include snap configuration');
+    assert.strictEqual(builderConfig.snap.confinement, 'strict', 'electron-builder snap must use strict confinement');
+
+    // Verify documentation and website have Snap instructions
+    const readme = fs.readFileSync(path.resolve(process.cwd(), 'README.md'), 'utf8');
+    assert.ok(readme.includes('sudo snap install linux-jagex-launcher'), 'README.md must contain snap install command');
+    assert.ok(readme.includes('linux-jagex-launcher:joystick'), 'README.md must document snap joystick plug');
+
+    const websiteHtml = fs.readFileSync(path.resolve(process.cwd(), 'docs/index.html'), 'utf8');
+    assert.ok(websiteHtml.includes('id="tab-panel-snap"'), 'docs/index.html must contain Snap install tab panel');
+    assert.ok(websiteHtml.includes('sudo snap install linux-jagex-launcher'), 'docs/index.html must contain snap install command');
+    assert.ok(websiteHtml.includes('snap-store-banner'), 'docs/index.html must display snap store banner');
+  });
+
+  await t.test('Debian (.deb) packaging and repository configuration', () => {
+    const debDir = path.resolve(process.cwd(), 'packaging/deb');
+    assert.ok(fs.existsSync(debDir), 'packaging/deb directory must exist');
+    assert.ok(fs.existsSync(path.join(debDir, 'README.md')), 'packaging/deb/README.md must exist');
+    assert.ok(fs.existsSync(path.join(debDir, 'generate-apt-repo.js')), 'packaging/deb/generate-apt-repo.js must exist');
+    assert.ok(pkg.scripts['dist:deb'], 'package.json must define dist:deb script');
+
+    const builderConfigPath = path.resolve(process.cwd(), 'electron-builder.json');
+    const builderConfig = JSON.parse(fs.readFileSync(builderConfigPath, 'utf8'));
+    assert.ok(builderConfig.deb, 'electron-builder.json must include deb configuration');
+    assert.strictEqual(builderConfig.deb.packageName, 'jagex-launcher');
+    assert.ok(builderConfig.deb.depends.some((d: string) => d.includes('libgtk-3-0')));
+    assert.ok(builderConfig.deb.depends.some((d: string) => d.includes('libasound2')));
+  });
+
+  await t.test('Snap Store media and banner specifications', async () => {
+    const sharp = (await import('sharp')).default;
+    const snapDir = path.resolve(process.cwd(), 'packaging/snap');
+    const bannerPng = path.join(snapDir, 'snap-store-banner.png');
+    const bannerJpg = path.join(snapDir, 'snap-store-banner.jpg');
+    const bannerMaxJpg = path.join(snapDir, 'snap-store-banner-4320x1440.jpg');
+
+    assert.ok(fs.existsSync(bannerPng), 'snap-store-banner.png must exist');
+    assert.ok(fs.existsSync(bannerJpg), 'snap-store-banner.jpg must exist');
+    assert.ok(fs.existsSync(bannerMaxJpg), 'snap-store-banner-4320x1440.jpg must exist');
+
+    const banners = [bannerPng, bannerJpg, bannerMaxJpg];
+    for (const file of banners) {
+      const meta = await sharp(file).metadata();
+      const stat = fs.statSync(file);
+
+      // 1. Accepted image formats: JPEG & PNG
+      assert.ok(['png', 'jpeg'].includes(meta.format!), `Format must be png or jpeg, got ${meta.format}`);
+
+      // 2. Min resolution: 720 x 240 pixels
+      assert.ok(meta.width! >= 720, `Width ${meta.width} must be >= 720`);
+      assert.ok(meta.height! >= 240, `Height ${meta.height} must be >= 240`);
+
+      // 3. Max resolution: 4320 x 1440 pixels
+      assert.ok(meta.width! <= 4320, `Width ${meta.width} must be <= 4320`);
+      assert.ok(meta.height! <= 1440, `Height ${meta.height} must be <= 1440`);
+
+      // 4. Aspect ratio: exactly 3:1
+      const ratio = meta.width! / meta.height!;
+      assert.strictEqual(ratio.toFixed(2), '3.00', `Aspect ratio must be exactly 3:1, got ${ratio}`);
+
+      // 5. File size limit: 2MB (2,097,152 bytes)
+      assert.ok(stat.size < 2 * 1024 * 1024, `File size ${stat.size} bytes must be under 2MB`);
+    }
+  });
+
+  await t.test('Arch User Repository (AUR) packaging specification', () => {
+    const aurDir = path.resolve(process.cwd(), 'packaging/aur');
+    const pkgbuildPath = path.join(aurDir, 'PKGBUILD');
+    const srcinfoPath = path.join(aurDir, '.SRCINFO');
+
+    assert.ok(fs.existsSync(pkgbuildPath), 'PKGBUILD must exist');
+    assert.ok(fs.existsSync(srcinfoPath), '.SRCINFO must exist');
+
+    const pkgbuild = fs.readFileSync(pkgbuildPath, 'utf8');
+    const srcinfo = fs.readFileSync(srcinfoPath, 'utf8');
+
+    assert.ok(pkgbuild.includes(`pkgver=${pkg.version}`), `PKGBUILD must match package version ${pkg.version}`);
+    assert.ok(srcinfo.includes(`pkgver = ${pkg.version}`), `.SRCINFO must match package version ${pkg.version}`);
+    assert.ok(pkgbuild.includes('depends='), 'PKGBUILD must declare runtime dependencies');
+    assert.ok(pkgbuild.includes('optdepends='), 'PKGBUILD must declare optional dependencies');
+  });
+
+  await t.test('Steam Deck turnkey installer script specification', () => {
+    const deckInstallScript = path.resolve(process.cwd(), 'docs/deck-install.sh');
+    assert.ok(fs.existsSync(deckInstallScript), 'docs/deck-install.sh must exist');
+
+    const scriptContent = fs.readFileSync(deckInstallScript, 'utf8');
+    assert.ok(scriptContent.includes(`LATEST_TAG="v${pkg.version}"`), `deck-install.sh fallback tag must be v${pkg.version}`);
+    assert.ok(scriptContent.includes('shortcuts.vdf'), 'deck-install.sh must handle Steam shortcuts.vdf');
+    assert.ok(scriptContent.includes('shortcuts_file'), 'deck-install.sh must define shortcuts_file');
+  });
+
+  await t.test('Packaging release version parity across all formats', () => {
+    // 1. Flatpak metainfo has current release
+    const metainfoPath = path.resolve(process.cwd(), 'packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml');
+    const metainfo = fs.readFileSync(metainfoPath, 'utf8');
+    assert.ok(metainfo.includes(`<release version="${pkg.version}"`), `metainfo.xml must contain release version ${pkg.version}`);
+
+    // 2. Flatpak manifest has current tag
+    const flatpakManifestPath = path.resolve(process.cwd(), 'packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.yml');
+    const flatpakManifest = fs.readFileSync(flatpakManifestPath, 'utf8');
+    assert.ok(flatpakManifest.includes(`tag: v${pkg.version}`), `Flatpak manifest must reference tag v${pkg.version}`);
+
+    // 3. Debian PPA changelog has current version
+    const changelogPath = path.resolve(process.cwd(), 'packaging/ppa/debian/changelog');
+    const changelog = fs.readFileSync(changelogPath, 'utf8');
+    assert.ok(changelog.includes(`linux-jagex-launcher (${pkg.version}-`), `debian/changelog must contain version ${pkg.version}`);
+
+    // 4. Snapcraft configs have current version
+    const rootSnapPath = path.resolve(process.cwd(), 'snap/snapcraft.yaml');
+    const rootSnap = fs.readFileSync(rootSnapPath, 'utf8');
+    assert.ok(rootSnap.includes(`version: '${pkg.version}'`), `snap/snapcraft.yaml must contain version ${pkg.version}`);
+  });
 });
+
 

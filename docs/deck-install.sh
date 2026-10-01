@@ -47,7 +47,7 @@ mkdir -p "${LAUNCHER_DATA_DIR}/grid"
 echo "🔍 Checking latest release from GitHub..."
 LATEST_TAG=$(curl -sSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 if [ -z "$LATEST_TAG" ]; then
-  LATEST_TAG="v1.4.1"
+  LATEST_TAG="v1.4.3"
 fi
 VERSION="${LATEST_TAG#v}"
 

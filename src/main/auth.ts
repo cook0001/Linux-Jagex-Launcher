@@ -443,7 +443,8 @@ export class JagexAuthManager {
         'Accept': 'application/json',
         'User-Agent': CLEAN_USER_AGENT,
       },
-      body: body.toString()
+      body: body.toString(),
+      signal: AbortSignal.timeout(15000)
     });
 
     if (!res.ok) {
@@ -505,7 +506,8 @@ export class JagexAuthManager {
         'Accept': 'application/json',
         'User-Agent': CLEAN_USER_AGENT,
       },
-      body: JSON.stringify({ idToken })
+      body: JSON.stringify({ idToken }),
+      signal: AbortSignal.timeout(15000)
     });
 
     if (!res.ok) {
@@ -531,7 +533,8 @@ export class JagexAuthManager {
         'Authorization': `Bearer ${sessionId}`,
         'Accept': 'application/json',
         'User-Agent': CLEAN_USER_AGENT,
-      }
+      },
+      signal: AbortSignal.timeout(15000)
     });
 
     if (!res.ok) {
@@ -578,7 +581,8 @@ export class JagexAuthManager {
           'Accept': 'application/json',
           'User-Agent': CLEAN_USER_AGENT,
         },
-        body: body.toString()
+        body: body.toString(),
+        signal: AbortSignal.timeout(15000)
       });
 
       if (!res.ok) {

@@ -26,19 +26,37 @@ for arg in "$@"; do
   esac
 done
 
-PPA_TARGET="${POSITIONAL_ARGS[0]:-ppa:danielcook2016/linux-jagex-launcher}"
-RAW_SERIES="${POSITIONAL_ARGS[1]:-noble}"
-
-# Check for GPG key in positional arguments (e.g. if 3rd arg is provided and GPG_KEY not set via flag)
-if [[ -z "${GPG_KEY}" && ${#POSITIONAL_ARGS[@]} -ge 3 ]]; then
-  LAST_ARG="${POSITIONAL_ARGS[-1]}"
-  if [[ "${LAST_ARG}" =~ ^[0-9A-Fa-f]{8,40}$ ]]; then
-    GPG_KEY="${LAST_ARG}"
-  fi
-fi
-
-# Supported default series for 'all'
+DEFAULT_PPA_TARGET="ppa:danielcook2016/linux-jagex-launcher"
 DEFAULT_ALL_SERIES=("resolute" "noble" "jammy")
+
+# Extract GPG key from positional arguments if provided
+for arg in "${POSITIONAL_ARGS[@]}"; do
+  if [[ -z "${GPG_KEY}" && "${arg}" =~ ^[0-9A-Fa-f]{8,40}$ ]]; then
+    GPG_KEY="${arg}"
+  fi
+done
+
+# Filter out GPG key from positional arguments
+CLEAN_ARGS=()
+for arg in "${POSITIONAL_ARGS[@]}"; do
+  if [[ "${arg}" != "${GPG_KEY}" ]]; then
+    CLEAN_ARGS+=("${arg}")
+  fi
+done
+
+if [[ ${#CLEAN_ARGS[@]} -ge 1 ]]; then
+  if [[ "${CLEAN_ARGS[0]}" == ppa:* ]]; then
+    PPA_TARGET="${CLEAN_ARGS[0]}"
+    RAW_SERIES="${CLEAN_ARGS[*]:1}"
+    RAW_SERIES="${RAW_SERIES:-all}"
+  else
+    PPA_TARGET="${DEFAULT_PPA_TARGET}"
+    RAW_SERIES="${CLEAN_ARGS[*]}"
+  fi
+else
+  PPA_TARGET="${DEFAULT_PPA_TARGET}"
+  RAW_SERIES="all"
+fi
 
 # Parse target distribution series
 SERIES_LIST=()
@@ -46,20 +64,8 @@ if [[ "${RAW_SERIES}" == "all" ]]; then
   SERIES_LIST=("${DEFAULT_ALL_SERIES[@]}")
 elif [[ "${RAW_SERIES}" == *","* ]]; then
   IFS=',' read -ra SERIES_LIST <<< "${RAW_SERIES}"
-elif [[ "${RAW_SERIES}" == *" "* ]]; then
-  read -ra SERIES_LIST <<< "${RAW_SERIES}"
 else
-  SERIES_LIST=("${RAW_SERIES}")
-fi
-
-# Also append any additional positional arguments that are series names (if GPG_KEY was already set)
-if [[ ${#POSITIONAL_ARGS[@]} -gt 2 ]]; then
-  for ((idx=2; idx<${#POSITIONAL_ARGS[@]}; idx++)); do
-    candidate="${POSITIONAL_ARGS[idx]}"
-    if [[ "${candidate}" != "${GPG_KEY}" ]]; then
-      SERIES_LIST+=("${candidate}")
-    fi
-  done
+  read -ra SERIES_LIST <<< "${RAW_SERIES}"
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -68,6 +74,15 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 VERSION="$(node -p "require('${REPO_ROOT}/package.json').version")"
 PKG_NAME="linux-jagex-launcher"
 BUILD_DIR="$(mktemp -d -t ppa-build-XXXXXX)"
+chmod 0700 "${BUILD_DIR}"
+SIGN_WRAPPER="${BUILD_DIR}/gpg-sign-wrapper.sh"
+
+cleanup_secrets() {
+  if [[ -f "${SIGN_WRAPPER}" ]]; then
+    shred -u "${SIGN_WRAPPER}" 2>/dev/null || rm -f "${SIGN_WRAPPER}"
+  fi
+}
+trap cleanup_secrets EXIT INT TERM
 
 echo "=========================================================="
 echo " Packaging:   ${PKG_NAME} ${VERSION}"
@@ -124,7 +139,7 @@ if [[ -n "${GPG_KEY}" && -n "${PASS}" ]]; then
 P="${GPG_PASSPHRASE:-${LAUNCHPAD_GPG_PASSPHRASE:-}}"
 exec gpg --batch --yes --no-tty --pinentry-mode loopback --passphrase "${P}" "$@"
 EOF
-  chmod +x "${SIGN_WRAPPER}"
+  chmod 0700 "${SIGN_WRAPPER}"
 fi
 
 # 4. Loop across all target distribution series with 30s cooldown and automatic retry loop
@@ -162,7 +177,7 @@ for ((i=0; i<TOTAL_SERIES; i++)); do
   echo "==> Building Debian source package for ${CURRENT_SERIES}..."
   cd "${SOURCE_DIR}"
 
-  BUILD_ARGS=(-S -sa -d -nc)
+  BUILD_ARGS=(-S -sa -d)
   IS_SIGNED=false
 
   if [[ -n "${GPG_KEY}" ]]; then
@@ -187,7 +202,7 @@ for ((i=0; i<TOTAL_SERIES; i++)); do
     debuild "${BUILD_ARGS[@]}"
   elif command -v dpkg-buildpackage >/dev/null 2>&1; then
     echo "==> 'debuild' not found, using 'dpkg-buildpackage' directly..."
-    dpkg-buildpackage "${BUILD_ARGS[@]}" -d -nc
+    dpkg-buildpackage "${BUILD_ARGS[@]}"
   else
     echo "❌ Neither 'debuild' nor 'dpkg-buildpackage' found! Please install: sudo apt install -y devscripts debhelper"
     exit 1
@@ -205,6 +220,16 @@ for ((i=0; i<TOTAL_SERIES; i++)); do
 
   echo "==> Source package successfully built in ${BUILD_DIR}:"
   ls -la "${CHANGES_FILE}"
+
+  if [[ "${IS_SIGNED}" != "true" && -n "${GPG_KEY}" ]]; then
+    if command -v debsign >/dev/null 2>&1; then
+      echo "==> Signing .changes with debsign (key: ${GPG_KEY})..."
+      if debsign -k"${GPG_KEY}" "${CHANGES_FILE}"; then
+        IS_SIGNED=true
+        echo "==> Package signed successfully with debsign."
+      fi
+    fi
+  fi
 
   if [[ "${IS_SIGNED}" != "true" ]]; then
     echo "⚠️ Package is currently unsigned. Launchpad will reject unsigned packages."
@@ -267,6 +292,9 @@ for ((i=0; i<TOTAL_SERIES; i++)); do
     echo "   dput ${PPA_TARGET} ${CHANGES_FILE}"
   fi
 done
+
+cleanup_secrets
+unset PASS GPG_PASSPHRASE LAUNCHPAD_GPG_PASSPHRASE P 2>/dev/null || true
 
 echo ""
 echo "=========================================================="

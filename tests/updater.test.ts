@@ -26,6 +26,7 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
   await t.test('AutoUpdater provides format display labels for all packaging formats', () => {
     assert.strictEqual(updater.getFormatDisplayLabel('appimage'), 'AppImage (Direct In-App Updates)');
     assert.strictEqual(updater.getFormatDisplayLabel('flatpak'), 'Flatpak / Flathub');
+    assert.strictEqual(updater.getFormatDisplayLabel('snap'), 'Snap (Managed by Snapd)');
     assert.strictEqual(updater.getFormatDisplayLabel('deb'), 'Debian / Ubuntu (.deb)');
     assert.strictEqual(updater.getFormatDisplayLabel('aur'), 'Arch Linux (AUR)');
     assert.strictEqual(updater.getFormatDisplayLabel('tar'), 'Standalone Tarball');
@@ -34,7 +35,7 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
 
   await t.test('AutoUpdater detects package format and current version in testing environment', () => {
     const format = updater.getPackageFormat();
-    assert.ok(['appimage', 'flatpak', 'deb', 'aur', 'tar', 'dev'].includes(format));
+    assert.ok(['appimage', 'flatpak', 'snap', 'deb', 'aur', 'tar', 'dev'].includes(format));
 
     const version = updater.getCurrentVersion();
     assert.strictEqual(typeof version, 'string');
@@ -50,12 +51,16 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
     const res = await updater.installUpdate('/tmp/non-existent-jagex-package.deb', 'deb');
     assert.strictEqual(res.success, false);
     assert.ok(res.error && res.error.includes('found'));
+
+    const snapRes = await updater.installUpdate('/tmp/non-existent-jagex-package.snap', 'snap');
+    assert.strictEqual(snapRes.success, false);
+    assert.ok(snapRes.error && snapRes.error.includes('found'));
   });
 
   await t.test('AutoUpdater downloadUpdate validates release assets properly', async () => {
     const mockRelease: any = {
-      version: '1.4.1',
-      tagName: 'v1.4.1',
+      version: '1.4.3',
+      tagName: 'v1.4.3',
       releaseNotes: 'Mock notes',
       publishedAt: new Date().toISOString(),
       htmlUrl: 'https://github.com/cook0001/Linux-Jagex-Launcher/releases',
@@ -66,6 +71,10 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
     const dl = await updater.downloadUpdate(mockRelease, 'deb');
     assert.strictEqual(dl.success, false);
     assert.ok(dl.error && dl.error.includes('not found'));
+
+    const snapDl = await updater.downloadUpdate(mockRelease, 'snap');
+    assert.strictEqual(snapDl.success, false);
+    assert.ok(snapDl.error && snapDl.error.includes('not found'));
   });
 
   await t.test('StoreManager manages updater settings and state correctly', () => {

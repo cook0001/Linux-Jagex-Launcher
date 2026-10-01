@@ -22,12 +22,14 @@ finish-args:
   # Network (OAuth 2.0 PKCE, client updates, CDN feeds)
   - --share=network
 
-  # File Access for Launcher Data, RS3 Cache, and RuneLite Settings
+  # File Access for Launcher Data, RS3 Cache, and RuneLite/HDOS Settings
   - --filesystem=xdg-data/linux-jagex-launcher:create
   - --filesystem=xdg-config/linux-jagex-launcher:create
   - --filesystem=~/.runelite:create
+  - --filesystem=~/.hdos:create
   - --filesystem=~/.jagex_launcher:create
   - --filesystem=~/.jagex_cache_32:create
+  - --filesystem=~/Pictures/RuneScape:create
 
   # Desktop Integration, Feral GameMode & Notifications
   - --talk-name=org.freedesktop.portal.OpenURI
@@ -85,7 +87,7 @@ modules:
     sources:
       - type: git
         url: https://github.com/cook0001/Linux-Jagex-Launcher.git
-        tag: v1.0.0
+        tag: v1.4.3
         commit: HEAD
       # Flathub builds require offline npm dependencies generated with flatpak-node-generator:
       # - node-sources.json

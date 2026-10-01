@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
+import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 import * as electron from 'electron';
 const app = (electron as any)?.app || ((electron as any)?.default?.app) || undefined;
@@ -9,9 +10,39 @@ export class DesktopIntegrationManager {
   private appsDir: string;
   private iconsBaseDir: string;
 
-  constructor() {
+  constructor(appsDir?: string, iconsBaseDir?: string) {
+    this.appsDir = appsDir || path.join(os.homedir(), '.local', 'share', 'applications');
+    this.iconsBaseDir = iconsBaseDir || path.join(os.homedir(), '.local', 'share', 'icons', 'hicolor');
+  }
+
+  public setDirectories(appsDir: string, iconsBaseDir: string): void {
+    this.appsDir = appsDir;
+    this.iconsBaseDir = iconsBaseDir;
+  }
+
+  public resetDirectories(): void {
     this.appsDir = path.join(os.homedir(), '.local', 'share', 'applications');
     this.iconsBaseDir = path.join(os.homedir(), '.local', 'share', 'icons', 'hicolor');
+  }
+
+  public isDefaultAppsDir(): boolean {
+    return this.appsDir === path.join(os.homedir(), '.local', 'share', 'applications');
+  }
+
+  public getAppRootDir(): string {
+    if (app?.getAppPath) {
+      try {
+        const appPath = app.getAppPath();
+        if (appPath) return appPath;
+      } catch {}
+    }
+    try {
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      return path.resolve(__dirname, '../../');
+    } catch {
+      return process.cwd();
+    }
   }
 
   public ensureDirectories(): void {
@@ -38,13 +69,14 @@ export class DesktopIntegrationManager {
       this.ensureDirectories();
 
       // Find icons from resources or build
-      const rootDir = process.cwd();
+      const rootDir = this.getAppRootDir();
       const iconSizes = ['16x16', '32x32', '48x48', '64x64', '128x128', '256x256', '512x512', '1024x1024'];
       for (const size of iconSizes) {
         const candidates = [
           path.join(rootDir, 'resources', 'icons', `${size}.png`),
           path.join(rootDir, 'build', 'icons', `${size}.png`),
-          path.join(process.resourcesPath || '', 'resources', 'icons', `${size}.png`)
+          path.join(process.resourcesPath || '', 'resources', 'icons', `${size}.png`),
+          path.join(process.resourcesPath || '', 'icons', `${size}.png`)
         ];
         for (const src of candidates) {
           if (fs.existsSync(src)) {
@@ -64,7 +96,8 @@ export class DesktopIntegrationManager {
         path.join(rootDir, 'resources', 'icon.png'),
         path.join(rootDir, 'build', 'icon.png'),
         path.join(rootDir, 'src', 'renderer', 'assets', 'icon.png'),
-        path.join(process.resourcesPath || '', 'resources', 'icon.png')
+        path.join(process.resourcesPath || '', 'resources', 'icon.png'),
+        path.join(process.resourcesPath || '', 'icon.png')
       ];
       for (const src of masterCandidates) {
         if (fs.existsSync(src)) {
@@ -78,12 +111,30 @@ export class DesktopIntegrationManager {
 
       // Determine correct Exec command
       const isAppImage = Boolean(process.env.APPIMAGE);
-      let execCmd = `"${process.execPath}" %U`;
+      const isFlatpak = Boolean(process.env.FLATPAK_ID);
+      const isSnap = Boolean(process.env.SNAP);
+      let execCmd = 'linux-jagex-launcher %U';
+
       if (isAppImage) {
         execCmd = `"${process.env.APPIMAGE}" %U`;
+      } else if (isFlatpak) {
+        execCmd = `flatpak run ${process.env.FLATPAK_ID} %U`;
+      } else if (isSnap) {
+        execCmd = 'linux-jagex-launcher %U';
       } else if (!app?.isPackaged) {
+        const electronBin = path.join(rootDir, 'node_modules', 'electron', 'dist', 'electron');
         const mainScript = path.resolve(rootDir, 'dist/main/index.js');
-        execCmd = `"${process.execPath}" --no-sandbox "${mainScript}" %U`;
+        if (fs.existsSync(electronBin)) {
+          execCmd = `"${electronBin}" --no-sandbox "${mainScript}" %U`;
+        } else if (process.execPath && process.execPath.endsWith('electron')) {
+          execCmd = `"${process.execPath}" --no-sandbox "${mainScript}" %U`;
+        } else {
+          execCmd = 'linux-jagex-launcher %U';
+        }
+      } else if (fs.existsSync('/usr/bin/linux-jagex-launcher')) {
+        execCmd = 'linux-jagex-launcher %U';
+      } else if (process.execPath && !process.execPath.endsWith('node')) {
+        execCmd = `"${process.execPath}" %U`;
       }
 
       const desktopContent = `[Desktop Entry]
@@ -102,10 +153,28 @@ PrefersNonDefaultGPU=true
       const primaryDesktop = path.join(this.appsDir, 'linux-jagex-launcher.desktop');
       const flatpakCompatDesktop = path.join(this.appsDir, 'io.github.cook0001.LinuxJagexLauncher.desktop');
 
-      fs.writeFileSync(primaryDesktop, desktopContent, 'utf8');
-      fs.chmodSync(primaryDesktop, 0o755);
+      // If installed via system package (/usr/share/applications/linux-jagex-launcher.desktop) or Snap,
+      // clean up any stale dev/broken desktop overrides in ~/.local/share/applications/ that shadow it.
+      const hasSystemEntry = this.isDefaultAppsDir() && (fs.existsSync('/usr/share/applications/linux-jagex-launcher.desktop') || isSnap) && !isAppImage && !isFlatpak;
 
-      fs.writeFileSync(flatpakCompatDesktop, desktopContent, 'utf8');
+      if (hasSystemEntry) {
+        if (fs.existsSync(primaryDesktop)) {
+          try {
+            const existing = fs.readFileSync(primaryDesktop, 'utf8');
+            if (existing.includes('node_modules') || existing.includes('dist/main') || existing.includes('/usr/bin/node')) {
+              fs.unlinkSync(primaryDesktop);
+            }
+          } catch {}
+        }
+      } else {
+        const primaryContent = isFlatpak ? `${desktopContent}NoDisplay=true\n` : desktopContent;
+        fs.writeFileSync(primaryDesktop, primaryContent, 'utf8');
+        fs.chmodSync(primaryDesktop, 0o755);
+      }
+
+      // Flatpak alias: visible inside Flatpak, otherwise hidden with NoDisplay=true
+      const flatpakCompatContent = isFlatpak ? desktopContent : `${desktopContent}NoDisplay=true\n`;
+      fs.writeFileSync(flatpakCompatDesktop, flatpakCompatContent, 'utf8');
       fs.chmodSync(flatpakCompatDesktop, 0o755);
     } catch (e) {
       console.warn('[DesktopIntegration] Failed to install launcher desktop entry:', e);
@@ -155,7 +224,7 @@ PrefersNonDefaultGPU=true
         ? `${javaCmd} -jar "${runeliteJar}"`
         : 'runelite';
 
-      // 1. net.runelite.RuneLite.desktop (matches Flatpak and XWayland WM_CLASS hyphenated)
+      // 1. net.runelite.RuneLite.desktop (matches Flatpak and XWayland WM_CLASS hyphenated) - ALIAS
       const desktop1 = path.join(this.appsDir, 'net.runelite.RuneLite.desktop');
       const content1 = `[Desktop Entry]
 Name=RuneLite
@@ -166,11 +235,12 @@ Terminal=false
 Type=Application
 Categories=Game;
 StartupWMClass=net-runelite-client-RuneLite
+NoDisplay=true
 `;
       fs.writeFileSync(desktop1, content1, 'utf8');
       fs.chmodSync(desktop1, 0o755);
 
-      // 2. runelite.desktop (matches standard launcher package and dotted class)
+      // 2. runelite.desktop (matches standard launcher package and dotted class) - PRIMARY VISIBLE
       const desktop2 = path.join(this.appsDir, 'runelite.desktop');
       const content2 = `[Desktop Entry]
 Name=RuneLite
@@ -185,7 +255,7 @@ StartupWMClass=net.runelite.client.RuneLite
       fs.writeFileSync(desktop2, content2, 'utf8');
       fs.chmodSync(desktop2, 0o755);
 
-      // 3. net-runelite-client-RuneLite.desktop (direct WM_CLASS matching)
+      // 3. net-runelite-client-RuneLite.desktop (direct WM_CLASS matching) - ALIAS
       const desktop3 = path.join(this.appsDir, 'net-runelite-client-RuneLite.desktop');
       fs.writeFileSync(desktop3, content1, 'utf8');
       fs.chmodSync(desktop3, 0o755);
@@ -229,7 +299,7 @@ StartupWMClass=net.runelite.client.RuneLite
 
       const execLine = fs.existsSync(rs3LauncherBin) ? `"${rs3LauncherBin}" %u` : 'runescape-launcher %u';
 
-      // 1. runescape.desktop
+      // 1. runescape.desktop - PRIMARY VISIBLE
       const desktop1 = path.join(this.appsDir, 'runescape.desktop');
       const content1 = `[Desktop Entry]
 Name=RuneScape
@@ -245,12 +315,23 @@ MimeType=x-scheme-handler/rs-launch;x-scheme-handler/rs-launchs;
       fs.writeFileSync(desktop1, content1, 'utf8');
       fs.chmodSync(desktop1, 0o755);
 
-      // 2. runescape-launcher.desktop
+      // 2. runescape-launcher.desktop - ALIAS
       const desktop2 = path.join(this.appsDir, 'runescape-launcher.desktop');
-      fs.writeFileSync(desktop2, content1, 'utf8');
+      const content2 = `[Desktop Entry]
+Name=RuneScape
+Comment=RuneScape - A Free MMORPG from Jagex Ltd.
+Exec=${execLine}
+Icon=runescape
+Terminal=false
+Type=Application
+Categories=Game;
+StartupWMClass=runescape
+NoDisplay=true
+`;
+      fs.writeFileSync(desktop2, content2, 'utf8');
       fs.chmodSync(desktop2, 0o755);
 
-      // 3. rs2client.desktop (matches the NXT native engine window class)
+      // 3. rs2client.desktop (matches the NXT native engine window class) - ALIAS
       const desktop3 = path.join(this.appsDir, 'rs2client.desktop');
       const content3 = `[Desktop Entry]
 Name=RuneScape
@@ -261,6 +342,7 @@ Terminal=false
 Type=Application
 Categories=Game;
 StartupWMClass=rs2client
+NoDisplay=true
 `;
       fs.writeFileSync(desktop3, content3, 'utf8');
       fs.chmodSync(desktop3, 0o755);
@@ -279,22 +361,30 @@ StartupWMClass=rs2client
       const execLine = fs.existsSync(hdosJar) ? `java -jar "${hdosJar}"` : 'hdos';
 
       // Deploy HDOS icon if present in resources
-      const rootDir = process.cwd();
-      const hdosIconSrc = path.join(rootDir, 'resources', 'icons', 'hdos.png');
-      if (fs.existsSync(hdosIconSrc)) {
-        const sizes = ['48x48', '64x64', '128x128', '256x256'];
-        for (const size of sizes) {
-          const names = ['hdos.png', 'dev.hdos.HDOS.png', 'com-hdos-client-Client.png'];
-          for (const name of names) {
-            const dest = path.join(this.iconsBaseDir, size, 'apps', name);
-            try {
-              fs.copyFileSync(hdosIconSrc, dest);
-            } catch {}
+      const rootDir = this.getAppRootDir();
+      const hdosCandidates = [
+        path.join(rootDir, 'resources', 'icons', 'hdos.png'),
+        path.join(rootDir, 'build', 'icons', 'hdos.png'),
+        path.join(process.resourcesPath || '', 'resources', 'icons', 'hdos.png'),
+        path.join(process.resourcesPath || '', 'icons', 'hdos.png')
+      ];
+      for (const hdosIconSrc of hdosCandidates) {
+        if (fs.existsSync(hdosIconSrc)) {
+          const sizes = ['48x48', '64x64', '128x128', '256x256'];
+          for (const size of sizes) {
+            const names = ['hdos.png', 'dev.hdos.HDOS.png', 'com-hdos-client-Client.png'];
+            for (const name of names) {
+              const dest = path.join(this.iconsBaseDir, size, 'apps', name);
+              try {
+                fs.copyFileSync(hdosIconSrc, dest);
+              } catch {}
+            }
           }
+          break;
         }
       }
 
-      // hdos.desktop
+      // hdos.desktop - PRIMARY VISIBLE
       const desktop1 = path.join(this.appsDir, 'hdos.desktop');
       const content1 = `[Desktop Entry]
 Name=HDOS
@@ -309,7 +399,7 @@ StartupWMClass=hdos
       fs.writeFileSync(desktop1, content1, 'utf8');
       fs.chmodSync(desktop1, 0o755);
 
-      // com-hdos-client-Client.desktop
+      // com-hdos-client-Client.desktop - ALIAS
       const desktop2 = path.join(this.appsDir, 'com-hdos-client-Client.desktop');
       const content2 = `[Desktop Entry]
 Name=HDOS
@@ -320,6 +410,7 @@ Terminal=false
 Type=Application
 Categories=Game;
 StartupWMClass=com-hdos-client-Client
+NoDisplay=true
 `;
       fs.writeFileSync(desktop2, content2, 'utf8');
       fs.chmodSync(desktop2, 0o755);
@@ -334,24 +425,32 @@ StartupWMClass=com-hdos-client-Client
       this.ensureDirectories();
 
       // Deploy Official OSRS icon if present in resources
-      const rootDir = process.cwd();
-      const osrsIconSrc = path.join(rootDir, 'resources', 'icons', 'osrs.png');
-      if (fs.existsSync(osrsIconSrc)) {
-        const sizes = ['48x48', '64x64', '128x128', '256x256', '512x512'];
-        for (const size of sizes) {
-          const names = ['osrs.png', 'jagexapp-osrs.png', 'oldschool.png'];
-          for (const name of names) {
-            const dest = path.join(this.iconsBaseDir, size, 'apps', name);
-            try {
-              fs.copyFileSync(osrsIconSrc, dest);
-            } catch {}
+      const rootDir = this.getAppRootDir();
+      const osrsCandidates = [
+        path.join(rootDir, 'resources', 'icons', 'osrs.png'),
+        path.join(rootDir, 'build', 'icons', 'osrs.png'),
+        path.join(process.resourcesPath || '', 'resources', 'icons', 'osrs.png'),
+        path.join(process.resourcesPath || '', 'icons', 'osrs.png')
+      ];
+      for (const osrsIconSrc of osrsCandidates) {
+        if (fs.existsSync(osrsIconSrc)) {
+          const sizes = ['48x48', '64x64', '128x128', '256x256', '512x512'];
+          for (const size of sizes) {
+            const names = ['osrs.png', 'jagexapp-osrs.png', 'oldschool.png'];
+            for (const name of names) {
+              const dest = path.join(this.iconsBaseDir, size, 'apps', name);
+              try {
+                fs.copyFileSync(osrsIconSrc, dest);
+              } catch {}
+            }
           }
+          break;
         }
       }
 
       const execLine = 'steam steam://rungameid/1343400';
 
-      // 1. osrs.desktop
+      // 1. osrs.desktop - PRIMARY VISIBLE
       const desktop1 = path.join(this.appsDir, 'osrs.desktop');
       const content1 = `[Desktop Entry]
 Name=Old School RuneScape
@@ -366,7 +465,7 @@ StartupWMClass=osrs
       fs.writeFileSync(desktop1, content1, 'utf8');
       fs.chmodSync(desktop1, 0o755);
 
-      // 2. jagexapp-osrs.desktop (matches official launcher steam runner WM_CLASS)
+      // 2. jagexapp-osrs.desktop (matches official launcher steam runner WM_CLASS) - ALIAS
       const desktop2 = path.join(this.appsDir, 'jagexapp-osrs.desktop');
       const content2 = `[Desktop Entry]
 Name=Old School RuneScape
@@ -377,11 +476,43 @@ Terminal=false
 Type=Application
 Categories=Game;
 StartupWMClass=jagexapp.osrs
+NoDisplay=true
 `;
       fs.writeFileSync(desktop2, content2, 'utf8');
       fs.chmodSync(desktop2, 0o755);
     } catch (e) {
       console.warn('[DesktopIntegration] Failed to install Official OSRS desktop entry:', e);
+    }
+  }
+
+  public cleanStaleLauncherEntries(): void {
+    if (process.platform !== 'linux') return;
+    try {
+      const primaryDesktop = path.join(this.appsDir, 'linux-jagex-launcher.desktop');
+      const flatpakDesktop = path.join(this.appsDir, 'io.github.cook0001.LinuxJagexLauncher.desktop');
+      const isFlatpak = Boolean(process.env.FLATPAK_ID);
+      const isAppImage = Boolean(process.env.APPIMAGE);
+
+      // If system deb package exists, remove redundant/stale user desktop file in ~/.local/share/applications/ so system entry is used cleanly
+      if (this.isDefaultAppsDir() && !isAppImage && !isFlatpak && fs.existsSync('/usr/share/applications/linux-jagex-launcher.desktop')) {
+        if (fs.existsSync(primaryDesktop)) {
+          try {
+            fs.unlinkSync(primaryDesktop);
+          } catch {}
+        }
+      }
+
+      // Ensure Flatpak alias is hidden from system app menu when running native
+      if (!isFlatpak && fs.existsSync(flatpakDesktop)) {
+        try {
+          const content = fs.readFileSync(flatpakDesktop, 'utf8');
+          if (!content.includes('NoDisplay=true')) {
+            fs.writeFileSync(flatpakDesktop, `${content.trim()}\nNoDisplay=true\n`, 'utf8');
+          }
+        } catch {}
+      }
+    } catch (e) {
+      console.warn('[DesktopIntegration] Failed to clean stale launcher entries:', e);
     }
   }
 
@@ -397,6 +528,7 @@ StartupWMClass=jagexapp.osrs
 
   public ensureAll(): void {
     if (process.platform !== 'linux') return;
+    this.cleanStaleLauncherEntries();
     this.installLauncherIntegration();
     this.installRuneliteIntegration();
     this.installRs3Integration();

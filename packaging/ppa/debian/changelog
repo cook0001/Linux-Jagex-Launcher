@@ -1,3 +1,29 @@
+linux-jagex-launcher (1.4.3-1ubuntu1~noble) noble; urgency=medium
+
+  * HiDPI and UI display scaling controls for Old School RuneScape clients.
+  * Multi-Instance client manager with live heartbeat and per-client process controls.
+  * In-app live client log viewer with ANSI styling, filtering, and token redaction.
+  * Multi-GPU and dedicated GPU selection with DRI PRIME and NVIDIA PRIME offload.
+  * Custom launch command template expansion and tokenization fixes.
+  * Deep link OAuth redirect completion on second instance and startup.
+  * PID recycling safeguards and non-fatal desktop subsystem warning classification.
+  * Network timeout resilience on all outbound API and update queries.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Thu, 01 Oct 2026 17:30:00 -0500
+
+linux-jagex-launcher (1.4.2-1ubuntu1~noble) noble; urgency=medium
+
+  * AppImage environment sanitization preventing RuneLite re-exec loops.
+  * RuneLite and OSRS process lifecycle tracking with successor process migration.
+  * OpenJDK 24+ ZGC compatibility fix (filtering deprecated -XX:+ZGenerational).
+  * FUSE2-free static runtime configuration for modern Ubuntu installations.
+  * Canonical Snap distribution pipeline with core24 strict confinement.
+  * Official Old School RuneScape client integration modal and warning flow.
+  * Single-instance window focus and Wayland presentation fallbacks.
+  * Interactive play state unlock and manual client process termination.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Wed, 30 Sep 2026 21:00:00 -0500
+
 linux-jagex-launcher (1.4.1-1ubuntu1~noble) noble; urgency=medium
 
   * Hotfix for Ubuntu 24.04 (noble) and 26.04 (resolute) t64 transitional dependencies.

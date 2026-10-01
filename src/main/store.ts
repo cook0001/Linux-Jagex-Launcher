@@ -18,6 +18,9 @@ export interface AppSettings {
   osrsJvmArgs: string;
   osrsClientArgs: string;
   osrsCustomClientPath: string;
+  osrsUiScale: 'auto' | '1.0' | '1.25' | '1.5' | '1.75' | '2.0' | '2.5' | '3.0';
+  preferredGpu: 'auto' | 'discrete' | 'integrated';
+  allowMultiInstance: boolean;
   rs3GpuWorkaround: 'none' | 'zink' | 'prime';
   rs3ForceX11: boolean;
   rs3AudioLatencyFix: boolean;
@@ -70,6 +73,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   osrsJvmArgs: '',
   osrsClientArgs: '',
   osrsCustomClientPath: '',
+  osrsUiScale: 'auto',
+  preferredGpu: 'auto',
+  allowMultiInstance: true,
   rs3GpuWorkaround: 'none',
   rs3ForceX11: true,
   rs3AudioLatencyFix: true,
@@ -89,7 +95,8 @@ export class StoreManager {
   private sessions: SessionData;
 
   constructor() {
-    this.configDir = path.join(os.homedir(), '.config', 'linux-jagex-launcher');
+    const configRoot = process.env.SNAP_USER_COMMON || os.homedir();
+    this.configDir = path.join(configRoot, '.config', 'linux-jagex-launcher');
     this.settingsFile = path.join(this.configDir, 'settings.json');
     this.sessionFile = path.join(this.configDir, 'session.json');
 

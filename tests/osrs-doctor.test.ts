@@ -199,4 +199,18 @@ java.io.FileNotFoundException: /home/user/.runelite/settings.properties (Permiss
     osrs.clearLastCrash();
     assert.strictEqual(osrs.getLastCrash(), null);
   });
+
+  await t.test('OSRS official client checks steam availability and rejects direct install with helpful guidance', async () => {
+    const status = osrs.checkClientStatus('official');
+    assert.strictEqual(status.clientType, 'official');
+    assert.strictEqual(typeof status.steamAvailable, 'boolean');
+
+    await assert.rejects(
+      async () => {
+        await osrs.installClient('official');
+      },
+      /Official OSRS C\+\+ Enhanced Client is a Windows application without a native Linux standalone installer/
+    );
+  });
 });
+

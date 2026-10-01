@@ -72,6 +72,14 @@ export class SteamShortcutManager {
     if (process.env.FLATPAK_ID) {
       return `flatpak run ${process.env.FLATPAK_ID}`;
     }
+    if (process.env.SNAP) {
+      const snapBin = `/snap/bin/${process.env.SNAP_NAME || 'linux-jagex-launcher'}`;
+      if (fs.existsSync(snapBin)) return snapBin;
+      return 'linux-jagex-launcher';
+    }
+    if (fs.existsSync('/usr/bin/linux-jagex-launcher')) {
+      return '/usr/bin/linux-jagex-launcher';
+    }
     return process.execPath;
   }
 
@@ -158,8 +166,22 @@ export class SteamShortcutManager {
       }
     }
 
-    // Generate binary entry chunk
-    const chunk = this.createShortcutEntryBuffer(0, item);
+    // Determine next sequential entry index to avoid key collisions with existing non-Steam shortcuts
+    let nextIndex = 0;
+    if (existingBuffer && existingBuffer.length >= 10) {
+      const str = existingBuffer.toString('binary');
+      // eslint-disable-next-line no-control-regex
+      const matches = str.matchAll(/\x00(\d+)\x00/g);
+      for (const m of matches) {
+        const val = parseInt(m[1], 10);
+        if (!isNaN(val) && val >= nextIndex) {
+          nextIndex = val + 1;
+        }
+      }
+    }
+
+    // Generate binary entry chunk with sequential index
+    const chunk = this.createShortcutEntryBuffer(nextIndex, item);
 
     if (!existingBuffer || existingBuffer.length < 10) {
       // Create new shortcuts.vdf with header: \x00shortcuts\x00 ... \x08\x08

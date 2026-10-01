@@ -10,8 +10,8 @@ const BASE_CONTENT_URL = 'https://content.runescape.com/downloads/ubuntu/';
 
 // Canonical Ubuntu security archive package for OpenSSL 1.1 (libssl1.1)
 const LIBSSL_DEB_URLS = [
-  'http://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb',
-  'http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb'
+  'https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb',
+  'https://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb'
 ];
 const LIBSSL_DEB_SHA256 = '7cf39d70a639017d1dd7c8d36daa2258063608688e449fddf40ffdd46f992a78';
 
@@ -37,7 +37,8 @@ export class Rs3Installer {
   private metadataFile: string;
 
   constructor() {
-    this.baseDir = path.join(os.homedir(), '.local', 'share', 'linux-jagex-launcher');
+    const dataRoot = process.env.SNAP_USER_COMMON || os.homedir();
+    this.baseDir = path.join(dataRoot, '.local', 'share', 'linux-jagex-launcher');
     this.clientDir = path.join(this.baseDir, 'client');
     this.gameDataDir = path.join(this.baseDir, 'game-data');
     this.compatLibDir = path.join(this.baseDir, 'compat', 'lib64');
@@ -113,7 +114,7 @@ export class Rs3Installer {
 
     for (const url of LIBSSL_DEB_URLS) {
       try {
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: AbortSignal.timeout(25000) });
         if (!res.ok) continue;
         const arrayBuf = await res.arrayBuffer();
         debBuffer = Buffer.from(arrayBuf);
@@ -238,7 +239,7 @@ export class Rs3Installer {
   }
 
   public async checkLatestPackage(): Promise<PackageMetadata> {
-    const res = await fetch(PACKAGES_URL, { cache: 'no-store' });
+    const res = await fetch(PACKAGES_URL, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
     if (!res.ok) {
       throw new Error(`Failed to fetch Packages list: ${res.status} ${res.statusText}`);
     }
@@ -307,7 +308,7 @@ export class Rs3Installer {
     const debUrl = BASE_CONTENT_URL + meta.filename;
     notify('downloading', 0, `Downloading RuneScape client (${(meta.size / 1024 / 1024).toFixed(1)} MB)...`);
 
-    const res = await fetch(debUrl);
+    const res = await fetch(debUrl, { signal: AbortSignal.timeout(30000) });
     if (!res.ok) {
       throw new Error(`Failed to download .deb (${res.status}): ${res.statusText}`);
     }
@@ -407,6 +408,9 @@ export class Rs3Installer {
       const name = header.subarray(0, 16).toString('ascii').trim().replace(/\/$/, '');
       const sizeStr = header.subarray(48, 58).toString('ascii').trim();
       const size = parseInt(sizeStr, 10);
+      if (isNaN(size) || size < 0 || offset + 60 + size > buffer.length) {
+        break;
+      }
 
       offset += 60;
       if (name.startsWith(targetPrefix)) {

@@ -17,6 +17,9 @@ import { worldPing } from './ping';
 import { desktopIntegration } from './desktop';
 import { trayManager } from './tray';
 import { quickFolders } from './folders';
+import { gpuManager } from './gpu';
+import { liveLogger } from './live-logger';
+import { instanceManager } from './instance-manager';
 
 app.name = 'linux-jagex-launcher';
 app.setName('linux-jagex-launcher');
@@ -63,6 +66,46 @@ if (process.platform === 'linux') {
   app.commandLine.appendSwitch('ignore-gpu-blocklist');
   app.commandLine.appendSwitch('enable-gpu-rasterization');
   app.commandLine.appendSwitch('enable-zero-copy');
+  app.commandLine.appendSwitch('disable-features', 'Vulkan');
+}
+
+// Single instance enforcement: focus existing window if user clicks app menu again
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  console.log('[App] Another instance of Linux Jagex Launcher is already running. Quitting duplicate instance.');
+  app.quit();
+} else {
+  app.on('second-instance', (_event, argv) => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      if (!mainWindow.isVisible()) mainWindow.show();
+      mainWindow.focus();
+    }
+    const deepLink = argv?.find((arg) =>
+      arg.startsWith('jagex:') ||
+      arg.startsWith('jagex-launcher:') ||
+      arg.includes('launcher-redirect') ||
+      (arg.includes('code=') && arg.includes('state='))
+    );
+    if (deepLink) {
+      handleDeepLinkUrl(deepLink);
+    }
+  });
+}
+
+let mainWindow: BrowserWindow | null = null;
+
+function handleDeepLinkUrl(urlStr: string) {
+  if (!urlStr) return;
+  console.log('[App] Processing deep link redirect:', urlStr);
+  auth.completeBrowserLogin(urlStr).then(() => {
+    console.log('[App] Deep link authentication completed successfully.');
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('auth:completed');
+    }
+  }).catch((err: any) => {
+    console.warn('[App] Deep link authentication error:', err?.message || err);
+  });
 }
 
 // Register custom protocol for Jagex launcher redirects
@@ -75,8 +118,6 @@ if (process.defaultApp) {
   app.setAsDefaultProtocolClient('jagex');
   app.setAsDefaultProtocolClient('jagex-launcher');
 }
-
-let mainWindow: BrowserWindow | null = null;
 
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 
@@ -104,6 +145,9 @@ function createWindow() {
     }
   });
 
+  liveLogger.setMainWindow(mainWindow);
+  instanceManager.setMainWindow(mainWindow);
+
   // Security: Prevent spawning untrusted windows and route external URLs to OS browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https://') || url.startsWith('http://')) {
@@ -122,9 +166,16 @@ function createWindow() {
     }
   });
 
-  mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-  });
+  const showWindow = () => {
+    if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  };
+
+  mainWindow.once('ready-to-show', showWindow);
+  mainWindow.webContents.once('did-finish-load', showWindow);
+  setTimeout(showWindow, 1200);
 
   if (isGameMode) {
     mainWindow.maximize();
@@ -150,6 +201,8 @@ function createWindow() {
   });
 
   mainWindow.on('closed', () => {
+    liveLogger.setMainWindow(null);
+    instanceManager.setMainWindow(null);
     mainWindow = null;
   });
 
@@ -205,6 +258,17 @@ app.whenReady().then(() => {
 
   // Gentle periodic update check every 12 hours
   setInterval(checkUpdatesInBackground, 12 * 60 * 60 * 1000);
+
+  // Check for cold-start deep link redirect URL in process.argv
+  const initialDeepLink = process.argv.find((arg) =>
+    arg.startsWith('jagex:') ||
+    arg.startsWith('jagex-launcher:') ||
+    arg.includes('launcher-redirect') ||
+    (arg.includes('code=') && arg.includes('state='))
+  );
+  if (initialDeepLink) {
+    setTimeout(() => handleDeepLinkUrl(initialDeepLink), 1500);
+  }
 });
 
 app.on('window-all-closed', () => {
@@ -350,8 +414,26 @@ ipcMain.handle('launcher:launchSafeMode', async (_, options?: any) => {
   return await launcher.launchRs3(mainWindow || undefined, { ...options, safeMode: true });
 });
 
-ipcMain.handle('launcher:isRunning', () => {
+ipcMain.handle('launcher:isRunning', (_, game?: string) => {
+  if (game === 'rs3') return launcher.isGameRunning();
+  if (game === 'osrs') return osrs.isGameRunning();
   return launcher.isGameRunning() || osrs.isGameRunning();
+});
+
+ipcMain.handle('launcher:killGame', async (_, game?: string) => {
+  if (!game || game === 'rs3') {
+    launcher.killGame();
+  }
+  if (!game || game === 'osrs') {
+    osrs.killGame();
+  }
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('game-state-changed', { isRunning: false, game: game || 'rs3' });
+    if (!game || game === 'osrs') {
+      mainWindow.webContents.send('game-state-changed', { isRunning: false, game: 'osrs' });
+    }
+  }
+  return true;
 });
 
 // IPC: OSRS Client Management
@@ -364,7 +446,7 @@ ipcMain.handle('osrs:getJavaInfo', () => {
   return { javaPath, hasJava: javaPath !== null };
 });
 
-ipcMain.handle('osrs:install', async (_, clientType?: 'runelite' | 'hdos') => {
+ipcMain.handle('osrs:install', async (_, clientType?: 'runelite' | 'hdos' | 'official') => {
   return await osrs.installClient(clientType, (progress) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send('install-progress', progress);
@@ -654,4 +736,38 @@ ipcMain.handle('ping:rs3-worlds', async (_, worldIds?: number[]) => {
 ipcMain.handle('ping:osrs-worlds', async (_, subIds?: number[]) => {
   return await worldPing.pingOsrsWorlds(subIds);
 });
+
+// IPC: Multi-GPU / Dedicated GPU
+ipcMain.handle('gpu:getInfo', () => {
+  return gpuManager.detectHardware();
+});
+
+// IPC: In-App Live Client Log Viewer
+ipcMain.handle('logger:getEntries', (_, limit?: number) => {
+  return liveLogger.getEntries(limit);
+});
+
+ipcMain.handle('logger:clear', () => {
+  liveLogger.clear();
+  return true;
+});
+
+ipcMain.handle('logger:export', () => {
+  return liveLogger.exportText();
+});
+
+// IPC: Multi-Instance Client Manager
+ipcMain.handle('instances:list', () => {
+  return instanceManager.getInstances();
+});
+
+ipcMain.handle('instances:terminate', (_, id: string) => {
+  return instanceManager.terminateInstance(id);
+});
+
+ipcMain.handle('instances:terminateAll', (_, game?: 'rs3' | 'osrs') => {
+  instanceManager.terminateAll(game);
+  return true;
+});
+
 export { launcher } from './launcher';

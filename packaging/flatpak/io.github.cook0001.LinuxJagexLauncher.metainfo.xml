@@ -61,6 +61,18 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.4.3" date="2026-10-01" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.3</url>
+      <description>
+        <p>HiDPI display scaling controls for OSRS (1.0x to 3.0x), multi-instance client manager with live heartbeat and stop controls, in-app live client log viewer with ANSI styling and token redaction, multi-GPU and dedicated GPU selection (DRI PRIME and NVIDIA offload), custom launch command template expansion fixes, deep link OAuth protocol callback completion, PID recycling process safeguards, and harmless desktop subsystem warning classifications.</p>
+      </description>
+    </release>
+    <release version="1.4.2" date="2026-09-30" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.2</url>
+      <description>
+        <p>AppImage child environment sanitization preventing RuneLite re-exec loops, enhanced RuneLite and OSRS process lifecycle tracking with successor process migration, OpenJDK 24+ ZGC compatibility, static FUSE2-free AppImage runtime for Ubuntu 24.04/26.04, single-instance window focus restoration, Wayland display presentation fallbacks, official Old School RuneScape client integration modal, interactive play state unlock, and official Canonical Snap distribution pipeline with 3:1 store banners.</p>
+      </description>
+    </release>
     <release version="1.4.1" date="2026-09-30" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.1</url>
       <description>

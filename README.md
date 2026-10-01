@@ -252,11 +252,11 @@ curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.1_amd64.deb
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.3_amd64.deb
 ```
 ```bash
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.4.1_amd64.deb
+sudo apt install ./jagex-launcher_1.4.3_amd64.deb
 ```
 
 ---
@@ -267,20 +267,45 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.1.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.3.AppImage
 ```
 ```bash
 # Make executable:
-chmod +x Jagex-Launcher-1.4.1.AppImage
+chmod +x Jagex-Launcher-1.4.3.AppImage
 ```
 ```bash
 # Run:
-./Jagex-Launcher-1.4.1.AppImage
+./Jagex-Launcher-1.4.3.AppImage
 ```
 
 ---
 
-### Option 4: Steam Deck & SteamOS (Automated Fast-Installer)
+### Option 4: Canonical Snap (`snapd`)
+
+Official Snap package built with `core24` strict confinement, automated background updates, and persistent game data storage in `$SNAP_USER_COMMON`:
+
+**1. Install from Snap Store:**
+```bash
+sudo snap install linux-jagex-launcher
+```
+
+**2. Optional permissions (controller & external storage):**
+```bash
+# Connect gamepad/joystick interface for handheld controllers and Steam Deck:
+sudo snap connect linux-jagex-launcher:joystick
+
+# Connect removable media interface for micro-SD cards and external drives:
+sudo snap connect linux-jagex-launcher:removable-media
+```
+
+**3. Launch:**
+```bash
+linux-jagex-launcher
+```
+
+---
+
+### Option 5: Steam Deck & SteamOS (Automated Fast-Installer)
 
 Installs 100% rootless in userspace without modifying read-only system partitions. Automatically registers as a Non-Steam Game with official high-res Steam Grid artwork:
 
@@ -293,7 +318,7 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 ---
 
-### Option 5: Arch Linux / Manjaro (AUR)
+### Option 6: Arch Linux / Manjaro (AUR)
 
 Install via any AUR helper:
 
@@ -308,24 +333,24 @@ paru -S linux-jagex-launcher-bin
 
 ---
 
-### Option 6: Fedora / RHEL
+### Option 7: Fedora / RHEL
 
 ```bash
 sudo dnf install -y fuse-libs
 ```
 ```bash
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.1.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.3.AppImage
 ```
 ```bash
-chmod +x Jagex-Launcher-1.4.1.AppImage
+chmod +x Jagex-Launcher-1.4.3.AppImage
 ```
 ```bash
-./Jagex-Launcher-1.4.1.AppImage
+./Jagex-Launcher-1.4.3.AppImage
 ```
 
 ---
 
-### Option 7: Build from Source
+### Option 8: Build from Source
 
 **Clone & Enter Repository:**
 ```bash
