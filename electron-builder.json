@@ -45,6 +45,11 @@
   "deb": {
     "packageName": "jagex-launcher",
     "artifactName": "jagex-launcher_${version}_${arch}.${ext}",
+    "fpm": [
+      "--replaces=linux-jagex-launcher",
+      "--conflicts=linux-jagex-launcher",
+      "--provides=linux-jagex-launcher"
+    ],
     "category": "games",
     "priority": "optional",
     "synopsis": "Authentic, native Jagex Launcher for Linux",

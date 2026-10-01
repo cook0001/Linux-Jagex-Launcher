@@ -27,6 +27,9 @@ Depends: ${shlibs:Depends},
          libgbm1,
          libdrm2
 Recommends: gamemode, mangohud, openjdk-21-jre | default-jre
+Provides: jagex-launcher
+Conflicts: jagex-launcher
+Replaces: jagex-launcher
 Description: Authentic, native Jagex Launcher for Linux
  Linux Jagex Launcher is an authentic, native desktop launcher built to
  replicate the 1:1 look, feel, and functionality of the official Windows
