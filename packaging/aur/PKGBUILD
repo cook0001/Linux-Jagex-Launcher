@@ -28,7 +28,7 @@ optdepends=(
 provides=('linux-jagex-launcher' 'jagex-launcher')
 conflicts=('linux-jagex-launcher' 'jagex-launcher')
 source=("https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
-sha256sums=('12509e3c7a1951e9ecb29c5b33faa3b7e30a5cdf84c7d0c00ca0215d12e103ed')
+sha256sums=('f248e64f47fb85837a129b94395a54ea424e8fb3b4e65f5c0c82188eb1cbf507')
 
 package() {
   # Extract the deb payload
@@ -36,7 +36,12 @@ package() {
 
   # Fix permissions
   find "${pkgdir}" -type d -exec chmod 755 {} +
-  chmod 755 "${pkgdir}/opt/jagex-launcher/${_pkgname}"
+  chmod 755 "${pkgdir}/opt/Jagex Launcher/linux-jagex-launcher"
+
+  # Symlink to /usr/bin for terminal execution
+  install -dm755 "${pkgdir}/usr/bin"
+  ln -sf "/opt/Jagex Launcher/linux-jagex-launcher" "${pkgdir}/usr/bin/linux-jagex-launcher"
+  ln -sf "/opt/Jagex Launcher/linux-jagex-launcher" "${pkgdir}/usr/bin/jagex-launcher"
 
   # Ensure license is installed to standard Arch license directory
   install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
