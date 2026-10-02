@@ -125,7 +125,7 @@ class JagexLauncherApp {
   private pendingUpdateResult: any = null;
   private isUpdateDownloaded: boolean = false;
   private isUpdateInstalled: boolean = false;
-  private selectedUpdaterFormat: 'deb' | 'appimage' | 'snap' = 'deb';
+  private selectedUpdaterFormat: 'deb' | 'appimage' | 'rpm' | 'pacman' | 'snap' | 'tar' = 'appimage';
   private downloadedUpdatePath: string | null = null;
   private deckInfo: any = null;
   private gamepadNav: GamepadNavigator | null = null;
@@ -1139,8 +1139,7 @@ class JagexLauncherApp {
     const progressSection = document.getElementById('modal-updater-progress-section');
     const statusAlert = document.getElementById('modal-updater-status-alert');
     const formatRow = document.getElementById('modal-updater-format-row');
-    const btnDeb = document.getElementById('btn-updater-fmt-deb');
-    const btnAppImage = document.getElementById('btn-updater-fmt-appimage');
+    const formatOptionsContainer = document.getElementById('modal-updater-format-options');
 
     const isSameVersion = res.currentVersion === res.latestVersion;
     if (versionTag) {
@@ -1167,75 +1166,122 @@ class JagexLauncherApp {
     this.isUpdateInstalled = false;
     this.downloadedUpdatePath = null;
 
-    const hasDeb = Boolean(res.releaseInfo?.assets?.deb);
-    const hasAppImage = Boolean(res.releaseInfo?.assets?.appImage);
-    const hasSnap = Boolean(res.releaseInfo?.assets?.snap);
+    const assets = res.releaseInfo?.assets || {};
+    const availableFormats: { format: 'deb' | 'appimage' | 'rpm' | 'pacman' | 'snap' | 'tar'; label: string; desc: string }[] = [];
 
-    // Initial selected format
-    if (res.packageFormat === 'appimage') {
-      this.selectedUpdaterFormat = 'appimage';
-    } else if (res.packageFormat === 'snap') {
-      this.selectedUpdaterFormat = hasSnap ? 'snap' : (hasDeb ? 'deb' : 'appimage');
-    } else if (res.packageFormat === 'deb' || res.systemFamily === 'debian') {
-      this.selectedUpdaterFormat = hasDeb ? 'deb' : 'appimage';
-    } else {
-      this.selectedUpdaterFormat = hasAppImage ? 'appimage' : (hasDeb ? 'deb' : 'snap');
+    if (assets.appImage) {
+      availableFormats.push({
+        format: 'appimage',
+        label: 'AppImage (Portable)',
+        desc: 'Package: AppImage (Portable Linux Binary — updates in-place)'
+      });
+    }
+    if (assets.deb) {
+      availableFormats.push({
+        format: 'deb',
+        label: 'Debian / Ubuntu (.deb)',
+        desc: 'Package: Debian / Ubuntu (.deb via PolicyKit)'
+      });
+    }
+    if (assets.rpm) {
+      availableFormats.push({
+        format: 'rpm',
+        label: 'Fedora / RHEL (.rpm)',
+        desc: 'Package: Red Hat / Fedora (.rpm via PolicyKit)'
+      });
+    }
+    if (assets.pacman) {
+      availableFormats.push({
+        format: 'pacman',
+        label: 'Arch Linux (.pacman)',
+        desc: 'Package: Arch Linux (.pacman via PolicyKit)'
+      });
+    }
+    if (assets.snap) {
+      availableFormats.push({
+        format: 'snap',
+        label: 'Snap (.snap)',
+        desc: 'Package: Canonical Snap (.snap package)'
+      });
+    }
+    if (assets.tar) {
+      availableFormats.push({
+        format: 'tar',
+        label: 'Tarball (.tar.gz)',
+        desc: 'Package: Standalone Tarball (.tar.gz)'
+      });
     }
 
-    const updateFormatUI = () => {
-      if (formatDesc) {
-        if (this.selectedUpdaterFormat === 'snap') {
-          formatDesc.textContent = 'Package: Canonical Snap (.snap package)';
-        } else if (this.selectedUpdaterFormat === 'deb') {
-          formatDesc.textContent = 'Package: Debian / Ubuntu (.deb via PolicyKit)';
-        } else {
-          formatDesc.textContent = 'Package: AppImage (Portable Linux Binary)';
-        }
-      }
-      if (btnDeb) {
-        if (this.selectedUpdaterFormat === 'deb') btnDeb.classList.add('active');
-        else btnDeb.classList.remove('active');
-      }
-      if (btnAppImage) {
-        if (this.selectedUpdaterFormat === 'appimage') btnAppImage.classList.add('active');
-        else btnAppImage.classList.remove('active');
-      }
-      const btnSnap = document.getElementById('btn-updater-fmt-snap');
-      if (btnSnap) {
-        if (this.selectedUpdaterFormat === 'snap') btnSnap.classList.add('active');
-        else btnSnap.classList.remove('active');
-      }
-    };
+    // Determine initial format selection based on running environment
+    if (res.packageFormat === 'appimage' && assets.appImage) {
+      this.selectedUpdaterFormat = 'appimage';
+    } else if ((res.packageFormat === 'deb' || res.systemFamily === 'debian') && assets.deb) {
+      this.selectedUpdaterFormat = 'deb';
+    } else if ((res.packageFormat === 'rpm' || res.systemFamily === 'fedora') && assets.rpm) {
+      this.selectedUpdaterFormat = 'rpm';
+    } else if ((res.packageFormat === 'pacman' || res.packageFormat === 'aur' || res.systemFamily === 'arch') && assets.pacman) {
+      this.selectedUpdaterFormat = 'pacman';
+    } else if (res.packageFormat === 'snap' && assets.snap) {
+      this.selectedUpdaterFormat = 'snap';
+    } else if (availableFormats.length > 0) {
+      this.selectedUpdaterFormat = availableFormats[0].format;
+    } else {
+      this.selectedUpdaterFormat = 'appimage';
+    }
 
-    const availableFormatsCount = [hasDeb, hasAppImage, hasSnap].filter(Boolean).length;
-    if (availableFormatsCount > 1) {
+    const currentFmtInfo = availableFormats.find(f => f.format === this.selectedUpdaterFormat);
+    if (formatDesc && currentFmtInfo) {
+      formatDesc.textContent = currentFmtInfo.desc;
+    }
+
+    if (formatOptionsContainer) {
+      formatOptionsContainer.innerHTML = '';
+      for (const fmt of availableFormats) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `updater-format-btn ${this.selectedUpdaterFormat === fmt.format ? 'active' : ''}`;
+        btn.dataset.format = fmt.format;
+        btn.style.padding = '4px 10px';
+        btn.style.fontSize = '11px';
+        btn.textContent = fmt.label;
+
+        btn.addEventListener('click', () => {
+          this.selectedUpdaterFormat = fmt.format;
+          this.isUpdateDownloaded = false;
+          this.isUpdateInstalled = false;
+          this.downloadedUpdatePath = null;
+
+          // Update active button state
+          formatOptionsContainer.querySelectorAll('.updater-format-btn').forEach(b => {
+            b.classList.toggle('active', (b as HTMLElement).dataset.format === fmt.format);
+          });
+
+          // Update format description
+          if (formatDesc) {
+            formatDesc.textContent = fmt.desc;
+          }
+
+          // Reset progress and statuses
+          progressSection?.classList.add('hidden');
+          statusAlert?.classList.add('hidden');
+          distroNotice?.classList.add('hidden');
+
+          if (actionBtn) {
+            actionBtn.removeAttribute('disabled');
+            actionBtn.textContent = isSameVersion ? 'Download & Reinstall' : 'Download & Install';
+            actionBtn.style.background = '';
+            actionBtn.style.borderColor = '';
+          }
+        });
+
+        formatOptionsContainer.appendChild(btn);
+      }
+    }
+
+    if (availableFormats.length > 1) {
       formatRow?.classList.remove('hidden');
-      updateFormatUI();
-
-      btnDeb?.replaceWith(btnDeb.cloneNode(true));
-      btnAppImage?.replaceWith(btnAppImage.cloneNode(true));
-      const btnSnap = document.getElementById('btn-updater-fmt-snap');
-      btnSnap?.replaceWith(btnSnap.cloneNode(true));
-
-      const newBtnDeb = document.getElementById('btn-updater-fmt-deb');
-      const newBtnAppImage = document.getElementById('btn-updater-fmt-appimage');
-      const newBtnSnap = document.getElementById('btn-updater-fmt-snap');
-
-      newBtnDeb?.addEventListener('click', () => {
-        this.selectedUpdaterFormat = 'deb';
-        updateFormatUI();
-      });
-      newBtnAppImage?.addEventListener('click', () => {
-        this.selectedUpdaterFormat = 'appimage';
-        updateFormatUI();
-      });
-      newBtnSnap?.addEventListener('click', () => {
-        this.selectedUpdaterFormat = 'snap';
-        updateFormatUI();
-      });
     } else {
       formatRow?.classList.add('hidden');
-      updateFormatUI();
     }
 
     if (actionBtn) {
@@ -2598,16 +2644,30 @@ class JagexLauncherApp {
 
       // Step 2: Installation phase
       actionUpdaterBtn.setAttribute('disabled', 'true');
-      actionUpdaterBtn.textContent = this.selectedUpdaterFormat === 'deb'
-        ? 'Installing (Admin Prompt)...'
-        : (this.selectedUpdaterFormat === 'snap' ? 'Installing Snap...' : 'Installing AppImage...');
+      const formatNames: Record<string, string> = {
+        deb: 'Debian / Ubuntu (.deb)...',
+        rpm: 'Fedora / RHEL (.rpm)...',
+        pacman: 'Arch Linux (.pacman)...',
+        snap: 'Snap package (.snap)...',
+        tar: 'Standalone Archive...',
+        appimage: 'AppImage...'
+      };
+      actionUpdaterBtn.textContent = `Installing ${formatNames[this.selectedUpdaterFormat] || 'Update...'}`;
 
       if (progressStatus) {
-        progressStatus.textContent = this.selectedUpdaterFormat === 'deb'
-          ? 'Prompting for root authentication to install .deb...'
-          : (this.selectedUpdaterFormat === 'snap'
-            ? 'Prompting for root authentication to install snap...'
-            : 'Configuring AppImage and updating desktop shortcuts...');
+        if (this.selectedUpdaterFormat === 'deb') {
+          progressStatus.textContent = 'Prompting for root authentication to install .deb package...';
+        } else if (this.selectedUpdaterFormat === 'rpm') {
+          progressStatus.textContent = 'Prompting for root authentication to install .rpm package...';
+        } else if (this.selectedUpdaterFormat === 'pacman') {
+          progressStatus.textContent = 'Prompting for root authentication to install .pacman package...';
+        } else if (this.selectedUpdaterFormat === 'snap') {
+          progressStatus.textContent = 'Prompting for root authentication to install snap...';
+        } else if (this.selectedUpdaterFormat === 'tar') {
+          progressStatus.textContent = 'Extracting standalone archive and configuring symlinks...';
+        } else {
+          progressStatus.textContent = 'Configuring AppImage and updating desktop shortcuts...';
+        }
       }
 
       const unsubInstall = window.jagexApi.onUpdateProgress((p: any) => {
@@ -2627,13 +2687,16 @@ class JagexLauncherApp {
           actionUpdaterBtn.style.background = 'linear-gradient(135deg, #059669 0%, #10b981 100%)';
           actionUpdaterBtn.style.borderColor = '#34d399';
 
+          titlebarUpdateBanner?.classList.add('hidden');
+
           if (statusAlert) {
             statusAlert.style.background = 'rgba(16, 185, 129, 0.15)';
             statusAlert.style.border = '1px solid rgba(52, 211, 153, 0.3)';
             statusAlert.style.color = '#34d399';
+            const locationMsg = installRes.installedPath ? ` Installed to: ${installRes.installedPath}.` : '';
             statusAlert.innerHTML = `
               <div style="font-weight: 700; margin-bottom: 2px;">🎉 ${installRes.message || 'Installation Successful!'}</div>
-              <div style="color: #94a3b8;">${this.selectedUpdaterFormat === 'deb' ? 'Package installed to /usr/bin/jagex-launcher.' : (this.selectedUpdaterFormat === 'snap' ? 'Snap installed to /snap/bin/linux-jagex-launcher.' : 'AppImage configured and desktop entries updated.')} Click below to restart.</div>
+              <div style="color: #94a3b8;">${locationMsg} Click below to restart into the updated version.</div>
             `;
             statusAlert.classList.remove('hidden');
           }
@@ -2643,17 +2706,24 @@ class JagexLauncherApp {
           actionUpdaterBtn.textContent = 'Try Install Again';
           if (distroNotice && distroText) {
             distroNotice.classList.remove('hidden');
+            const defaultCmd = this.selectedUpdaterFormat === 'deb'
+              ? `sudo apt install "${this.downloadedUpdatePath}"`
+              : (this.selectedUpdaterFormat === 'rpm'
+                ? `sudo dnf install "${this.downloadedUpdatePath}"`
+                : (this.selectedUpdaterFormat === 'pacman'
+                  ? `sudo pacman -U "${this.downloadedUpdatePath}"`
+                  : `sudo snap install --dangerous "${this.downloadedUpdatePath}"`));
+            const manualCmd = installRes.manualCommand || defaultCmd;
             distroText.innerHTML = `
               <div style="font-weight: 600; color: #facc15; margin-bottom: 4px;">⚠️ System authentication was cancelled</div>
               <div style="margin-bottom: 8px; color: #cbd5e1;">You can install the downloaded package manually in your terminal:</div>
               <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 4px; font-family: monospace; font-size: 11px;">
-                <span id="text-copy-deb-cmd">${installRes.manualCommand || `sudo apt install "${this.downloadedUpdatePath}"`}</span>
+                <span id="text-copy-deb-cmd">${manualCmd}</span>
                 <button type="button" id="btn-copy-install-cmd" class="btn-secondary" style="padding: 2px 8px; font-size: 10px; margin-left: 8px;">Copy</button>
               </div>
             `;
             document.getElementById('btn-copy-install-cmd')?.addEventListener('click', () => {
-              const cmd = installRes.manualCommand || `sudo apt install "${this.downloadedUpdatePath}"`;
-              navigator.clipboard.writeText(cmd);
+              navigator.clipboard.writeText(manualCmd);
               const btn = document.getElementById('btn-copy-install-cmd');
               if (btn) btn.textContent = 'Copied!';
             });

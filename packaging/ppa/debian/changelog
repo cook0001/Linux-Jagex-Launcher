@@ -1,3 +1,12 @@
+linux-jagex-launcher (1.4.5-1ubuntu1~noble) noble; urgency=medium
+
+  * Internal auto-updater overhaul with dynamic package format selection.
+  * Atomic in-place AppImage updates avoiding ETXTBSY file busy errors.
+  * Direct system installer support for RPM, Pacman, DEB, and Snap.
+  * Automated Canonical Snap Store publishing pipeline integration.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Fri, 02 Oct 2026 15:15:00 -0500
+
 linux-jagex-launcher (1.4.4-1ubuntu1~noble) noble; urgency=medium
 
   * Declare Replaces, Conflicts, and Provides between jagex-launcher and linux-jagex-launcher.

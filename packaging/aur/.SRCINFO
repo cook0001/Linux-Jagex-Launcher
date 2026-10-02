@@ -1,6 +1,6 @@
 pkgbase = linux-jagex-launcher-bin
 	pkgdesc = Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape
-	pkgver = 1.4.4
+	pkgver = 1.4.5
 	pkgrel = 1
 	url = https://cook0001.github.io/Linux-Jagex-Launcher/
 	arch = x86_64

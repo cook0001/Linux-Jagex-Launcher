@@ -1257,12 +1257,10 @@
           </div>
 
           <!-- Format Choice Selector (Shown when multiple package assets are available) -->
-          <div id="modal-updater-format-row" class="hidden" style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08);">
-            <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">Choose Format:</span>
-            <div style="display: flex; gap: 6px;" id="modal-updater-format-options">
-              <button type="button" class="updater-format-btn active" data-format="deb" id="btn-updater-fmt-deb" style="padding: 4px 10px; font-size: 11px;">Debian / Ubuntu (.deb)</button>
-              <button type="button" class="updater-format-btn" data-format="appimage" id="btn-updater-fmt-appimage" style="padding: 4px 10px; font-size: 11px;">AppImage (Portable)</button>
-              <button type="button" class="updater-format-btn" data-format="snap" id="btn-updater-fmt-snap" style="padding: 4px 10px; font-size: 11px;">Snap (.snap)</button>
+          <div id="modal-updater-format-row" class="hidden" style="margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.6); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); flex-wrap: wrap; gap: 8px;">
+            <span style="font-size: 11px; color: #94a3b8; font-weight: 600; white-space: nowrap;">Choose Format:</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;" id="modal-updater-format-options">
+              <!-- Dynamically populated package format buttons -->
             </div>
           </div>
 

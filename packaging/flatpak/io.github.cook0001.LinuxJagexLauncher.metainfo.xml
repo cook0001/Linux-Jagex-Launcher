@@ -61,6 +61,12 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.4.5" date="2026-10-02" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.5</url>
+      <description>
+        <p>Comprehensive internal auto-updater overhaul with dynamic package format selection, safe atomic in-place AppImage updates, native package manager integration for RPM, Pacman, DEB, and Snap, and automated Snap Store publishing pipeline.</p>
+      </description>
+    </release>
     <release version="1.4.4" date="2026-10-01" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.4</url>
       <description>

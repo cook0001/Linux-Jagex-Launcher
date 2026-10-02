@@ -1,5 +1,5 @@
 Name:           linux-jagex-launcher
-Version:        1.4.4
+Version:        1.4.5
 Release:        1%{?dist}
 Summary:        Authentic, native Jagex Launcher for Linux
 License:        MIT
@@ -107,5 +107,8 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/io.g
 %{_datadir}/icons/hicolor/*/apps/io.github.cook0001.LinuxJagexLauncher.png
 
 %changelog
+* Fri Oct 02 2026 Daniel Cook <danielcook2016@outlook.com> - 1.4.5-1
+- Release v1.4.5: Internal auto-updater overhaul, safe atomic in-place updates, and automated Snapcraft publishing
+
 * Wed Oct 01 2026 Daniel Cook <danielcook2016@outlook.com> - 1.4.4-1
 - Release v1.4.4: Version synchronization, AUR binary paths, and Debian package relationships
