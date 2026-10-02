@@ -47,7 +47,7 @@ npm run dist:snap
 
 The resulting package will be placed in `release/`:
 ```
-release/linux-jagex-launcher_1.4.3_amd64.snap
+release/linux-jagex-launcher_1.4.4_amd64.snap
 ```
 
 ### Method B: Native Snapcraft Build
@@ -70,7 +70,7 @@ snapcraft --destructive-mode
 Install the locally built snap with the `--dangerous` flag (required for unsigned local packages):
 
 ```bash
-sudo snap install --dangerous ./release/linux-jagex-launcher_1.4.3_amd64.snap
+sudo snap install --dangerous ./release/linux-jagex-launcher_1.4.4_amd64.snap
 ```
 
 ### Connect Plugs (Optional Interfaces)
@@ -115,12 +115,12 @@ To publish the snap to the Canonical Snap Store (`https://snapcraft.io`):
 
 3. **Upload and release to the stable channel:**
    ```bash
-   snapcraft upload ./release/linux-jagex-launcher_1.4.3_amd64.snap --release=stable
+   snapcraft upload ./release/linux-jagex-launcher_1.4.4_amd64.snap --release=stable
    ```
 
 4. **Or upload to the edge/candidate channel for beta testing:**
    ```bash
-   snapcraft upload ./release/linux-jagex-launcher_1.4.3_amd64.snap --release=candidate
+   snapcraft upload ./release/linux-jagex-launcher_1.4.4_amd64.snap --release=candidate
    ```
 
 ---

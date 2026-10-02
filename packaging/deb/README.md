@@ -25,7 +25,7 @@ npm run dist:deb
 
 The resulting package will be placed in `release/`:
 ```
-release/jagex-launcher_1.4.3_amd64.deb
+release/jagex-launcher_1.4.4_amd64.deb
 ```
 
 ---
@@ -54,12 +54,12 @@ Install the built `.deb` using `apt` (recommended, resolves dependencies automat
 
 ```bash
 sudo apt update
-sudo apt install ./release/jagex-launcher_1.4.3_amd64.deb
+sudo apt install ./release/jagex-launcher_1.4.4_amd64.deb
 ```
 
 Or using `dpkg`:
 ```bash
-sudo dpkg -i ./release/jagex-launcher_1.4.3_amd64.deb
+sudo dpkg -i ./release/jagex-launcher_1.4.4_amd64.deb
 sudo apt-get install -f  # Fix any missing dependencies
 ```
 

@@ -115,9 +115,9 @@ export class AutoUpdater {
 
   public getCurrentVersion(): string {
     if (typeof app !== 'undefined' && app && typeof app.getVersion === 'function') {
-      return app.getVersion() || '1.4.3';
+      return app.getVersion() || '1.4.4';
     }
-    return '1.4.3';
+    return '1.4.4';
   }
 
   public getFormatDisplayLabel(format?: PackageFormat): string {

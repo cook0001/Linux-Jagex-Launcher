@@ -252,11 +252,11 @@ curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.3_amd64.deb
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.4_amd64.deb
 ```
 ```bash
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.4.3_amd64.deb
+sudo apt install ./jagex-launcher_1.4.4_amd64.deb
 ```
 
 ---
@@ -267,15 +267,15 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.3.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage
 ```
 ```bash
 # Make executable:
-chmod +x Jagex-Launcher-1.4.3.AppImage
+chmod +x Jagex-Launcher-1.4.4.AppImage
 ```
 ```bash
 # Run:
-./Jagex-Launcher-1.4.3.AppImage
+./Jagex-Launcher-1.4.4.AppImage
 ```
 
 ---
@@ -339,13 +339,13 @@ paru -S linux-jagex-launcher-bin
 sudo dnf install -y fuse-libs
 ```
 ```bash
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.3.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage
 ```
 ```bash
-chmod +x Jagex-Launcher-1.4.3.AppImage
+chmod +x Jagex-Launcher-1.4.4.AppImage
 ```
 ```bash
-./Jagex-Launcher-1.4.3.AppImage
+./Jagex-Launcher-1.4.4.AppImage
 ```
 
 ---

@@ -1,6 +1,6 @@
 name: linux-jagex-launcher
 base: core24
-version: '1.4.3'
+version: '1.4.4'
 summary: Authentic, native Jagex Launcher for Linux
 description: |
   Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and

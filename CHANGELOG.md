@@ -5,6 +5,13 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.4] - 2026-10-01
+
+### Fixed
+- **Debian & PPA Package Relationships**: Declared explicit `Replaces: linux-jagex-launcher`, `Conflicts: linux-jagex-launcher`, and `Provides: linux-jagex-launcher` in `electron-builder.json`, along with corresponding declarations in `packaging/ppa/debian/control`, resolving dpkg file overwrite and upgrade collisions between `jagex-launcher` and `linux-jagex-launcher`.
+- **AUR Binary Execution & Symlink Paths**: Corrected target binary installation path in `packaging/aur/PKGBUILD` and added symlinks in `/usr/bin` for both `linux-jagex-launcher` and `jagex-launcher` for immediate command-line execution.
+- **Launchpad PPA Version Synchronization**: Bumped upstream release version to v1.4.4 to generate clean Debian source artifacts (`.orig.tar.gz`, `.dsc`, and `.changes`) and resolve Launchpad PPA rejection caused by re-uploading modified v1.4.3 source archives with differing checksums.
+
 ## [1.4.3] - 2026-10-01
 
 ### Added

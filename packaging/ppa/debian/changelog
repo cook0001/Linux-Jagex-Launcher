@@ -1,3 +1,11 @@
+linux-jagex-launcher (1.4.4-1ubuntu1~noble) noble; urgency=medium
+
+  * Declare Replaces, Conflicts, and Provides between jagex-launcher and linux-jagex-launcher.
+  * Correct Arch User Repository package binary paths and symlinks.
+  * Synchronize release version across all distributions and Launchpad PPA.
+
+ -- Daniel Cook <danielcook2016@outlook.com>  Thu, 01 Oct 2026 19:30:00 -0500
+
 linux-jagex-launcher (1.4.3-1ubuntu1~noble) noble; urgency=medium
 
   * HiDPI and UI display scaling controls for Old School RuneScape clients.

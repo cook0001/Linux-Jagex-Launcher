@@ -59,8 +59,8 @@ test('Auto Updater & Semantic Version Suite', async (t) => {
 
   await t.test('AutoUpdater downloadUpdate validates release assets properly', async () => {
     const mockRelease: any = {
-      version: '1.4.3',
-      tagName: 'v1.4.3',
+      version: '1.4.4',
+      tagName: 'v1.4.4',
       releaseNotes: 'Mock notes',
       publishedAt: new Date().toISOString(),
       htmlUrl: 'https://github.com/cook0001/Linux-Jagex-Launcher/releases',
