@@ -25,7 +25,8 @@
     "dist": "npm run build && electron-builder --linux",
     "dist:appimage": "npm run build && electron-builder --linux appimage",
     "dist:deb": "npm run build && electron-builder --linux deb",
-    "dist:snap": "npm run build && electron-builder --linux snap"
+    "dist:snap": "npm run build && electron-builder --linux snap",
+    "dist:rpm": "npm run build && electron-builder --linux rpm"
   },
   "keywords": [
     "runescape",
@@ -46,7 +47,7 @@
     "electron",
     "gaming-on-linux"
   ],
-  "author": "Daniel Cook",
+  "author": "Daniel Cook <danielcook2016@outlook.com>",
   "license": "MIT",
   "type": "module",
   "engines": {

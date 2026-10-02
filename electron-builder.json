@@ -97,5 +97,30 @@
       "joystick",
       "process-control"
     ]
+  },
+  "rpm": {
+    "packageName": "linux-jagex-launcher",
+    "artifactName": "linux-jagex-launcher-${version}.${arch}.${ext}",
+    "category": "Amusements/Games",
+    "synopsis": "Authentic, native Jagex Launcher for Linux",
+    "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape (RuneLite, HDOS, and Official client) with direct OAuth 2.0 PKCE authentication.",
+    "fpm": [
+      "--replaces=jagex-launcher",
+      "--conflicts=jagex-launcher",
+      "--provides=jagex-launcher"
+    ],
+    "depends": [
+      "gtk3",
+      "nss",
+      "libXScrnSaver",
+      "libXtst",
+      "xdg-utils",
+      "at-spi2-core",
+      "libdrm",
+      "mesa-libgbm",
+      "alsa-lib",
+      "tar",
+      "xz"
+    ]
   }
 }

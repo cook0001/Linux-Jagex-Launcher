@@ -333,20 +333,24 @@ paru -S linux-jagex-launcher-bin
 
 ---
 
-### Option 7: Fedora / RHEL
+### Option 7: Fedora / Red Hat / Nobara / Bazzite (Fedora Copr & Native RPM)
 
+**1. Enable the official Copr repository:**
 ```bash
-sudo dnf install -y fuse-libs
+sudo dnf copr enable cook0001/linux-jagex-launcher
 ```
+
+**2. Install Linux Jagex Launcher:**
 ```bash
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage
+sudo dnf install -y linux-jagex-launcher
 ```
+
+**3. Launch:**
 ```bash
-chmod +x Jagex-Launcher-1.4.4.AppImage
+linux-jagex-launcher
 ```
-```bash
-./Jagex-Launcher-1.4.4.AppImage
-```
+
+*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.4.4.x86_64.rpm`)*
 
 ---
 

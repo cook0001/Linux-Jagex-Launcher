@@ -289,6 +289,22 @@ test('Repository and package configuration', async (t) => {
     assert.ok(scriptContent.includes('shortcuts_file'), 'deck-install.sh must define shortcuts_file');
   });
 
+  await t.test('Fedora RPM & Copr packaging specification', () => {
+    const rpmDir = path.resolve(process.cwd(), 'packaging/rpm');
+    const specPath = path.join(rpmDir, 'linux-jagex-launcher.spec');
+    const readmePath = path.join(rpmDir, 'README.md');
+
+    assert.ok(fs.existsSync(rpmDir), 'packaging/rpm directory must exist');
+    assert.ok(fs.existsSync(specPath), 'packaging/rpm/linux-jagex-launcher.spec must exist');
+    assert.ok(fs.existsSync(readmePath), 'packaging/rpm/README.md must exist');
+
+    const specContent = fs.readFileSync(specPath, 'utf8');
+    assert.ok(specContent.includes(`Version:        ${pkg.version}`), `linux-jagex-launcher.spec must contain version ${pkg.version}`);
+    assert.ok(specContent.includes('Requires:'), 'specfile must declare runtime requirements');
+    assert.ok(specContent.includes('Provides:       jagex-launcher'), 'specfile must provide jagex-launcher alias');
+    assert.ok(specContent.includes('Conflicts:      jagex-launcher'), 'specfile must declare conflict with jagex-launcher');
+  });
+
   await t.test('Packaging release version parity across all formats', () => {
     // 1. Flatpak metainfo has current release
     const metainfoPath = path.resolve(process.cwd(), 'packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml');
@@ -309,6 +325,11 @@ test('Repository and package configuration', async (t) => {
     const rootSnapPath = path.resolve(process.cwd(), 'snap/snapcraft.yaml');
     const rootSnap = fs.readFileSync(rootSnapPath, 'utf8');
     assert.ok(rootSnap.includes(`version: '${pkg.version}'`), `snap/snapcraft.yaml must contain version ${pkg.version}`);
+
+    // 5. Fedora RPM specfile has current version
+    const specPath = path.resolve(process.cwd(), 'packaging/rpm/linux-jagex-launcher.spec');
+    const specContent = fs.readFileSync(specPath, 'utf8');
+    assert.ok(specContent.includes(`Version:        ${pkg.version}`), `linux-jagex-launcher.spec must contain version ${pkg.version}`);
   });
 });
 
