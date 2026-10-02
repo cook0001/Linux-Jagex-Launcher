@@ -288,7 +288,7 @@ test('Repository and package configuration', async (t) => {
 
     const websiteHtml = fs.readFileSync(path.resolve(process.cwd(), 'docs/index.html'), 'utf8');
     assert.ok(websiteHtml.includes('id="tab-panel-arch"'), 'docs/index.html must contain Arch install tab panel');
-    assert.ok(websiteHtml.includes(`linux-jagex-launcher-${pkg.version}.x86_64.pacman`), 'docs/index.html must offer standalone pacman download');
+    assert.ok(websiteHtml.includes(`linux-jagex-launcher-${pkg.version}.x64.pacman`), 'docs/index.html must offer standalone pacman download');
   });
 
   await t.test('Steam Deck turnkey installer script specification', () => {

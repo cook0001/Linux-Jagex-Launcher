@@ -42,7 +42,7 @@ npm run dist:pacman
 
 The resulting package will be placed in `release/`:
 ```
-release/linux-jagex-launcher-1.4.4.x86_64.pacman
+release/linux-jagex-launcher-1.4.4.x64.pacman
 ```
 
 ### Method B: Standalone Build with `makepkg` (Arch / SteamOS)
@@ -115,10 +115,10 @@ Users without an AUR helper can download the standalone package directly from [G
 
 ```bash
 # 1. Download the latest standalone package:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.pacman
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x64.pacman
 
 # 2. Install with Pacman (resolves required dependencies automatically):
-sudo pacman -U ./linux-jagex-launcher-1.4.4.x86_64.pacman
+sudo pacman -U ./linux-jagex-launcher-1.4.4.x64.pacman
 
 # 3. Launch:
 linux-jagex-launcher
