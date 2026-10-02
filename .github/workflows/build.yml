@@ -97,7 +97,7 @@ jobs:
 
       - name: Build Linux packages with Electron Builder
         run: |
-          npx electron-builder --linux AppImage deb tar.gz snap rpm --publish never
+          npx electron-builder --linux AppImage deb tar.gz snap rpm pacman --publish never
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -105,7 +105,7 @@ jobs:
         working-directory: release
         run: |
           shopt -s nullglob
-          sha256sum *.AppImage *.deb *.tar.gz *.snap *.rpm > SHA256SUMS.txt
+          sha256sum *.AppImage *.deb *.tar.gz *.snap *.rpm *.pacman > SHA256SUMS.txt
           cat SHA256SUMS.txt
 
       - name: Upload Build Artifacts to Actions Run
@@ -118,6 +118,7 @@ jobs:
             release/*.tar.gz
             release/*.snap
             release/*.rpm
+            release/*.pacman
             release/SHA256SUMS.txt
           retention-days: 14
 
@@ -149,6 +150,7 @@ jobs:
             release/*.tar.gz
             release/*.snap
             release/*.rpm
+            release/*.pacman
             release/SHA256SUMS.txt
           generate_release_notes: true
           draft: ${{ github.event_name == 'workflow_dispatch' && inputs.draft || false }}

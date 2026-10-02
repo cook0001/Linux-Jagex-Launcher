@@ -318,15 +318,22 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 ---
 
-### Option 6: Arch Linux / Manjaro (AUR)
+### Option 6: Arch Linux / Manjaro / EndeavourOS (AUR & Standalone Pacman)
 
-Install via any AUR helper:
+**Method A: Standalone Pacman Package (No AUR helper needed):**
+```bash
+# 1. Download standalone package from GitHub Releases:
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.pacman
 
+# 2. Install with pacman:
+sudo pacman -U ./linux-jagex-launcher-1.4.4.x86_64.pacman
+```
+
+**Method B: Install via AUR Helper:**
 ```bash
 # Using yay:
 yay -S linux-jagex-launcher-bin
-```
-```bash
+
 # Using paru:
 paru -S linux-jagex-launcher-bin
 ```

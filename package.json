@@ -26,7 +26,8 @@
     "dist:appimage": "npm run build && electron-builder --linux appimage",
     "dist:deb": "npm run build && electron-builder --linux deb",
     "dist:snap": "npm run build && electron-builder --linux snap",
-    "dist:rpm": "npm run build && electron-builder --linux rpm"
+    "dist:rpm": "npm run build && electron-builder --linux rpm",
+    "dist:pacman": "npm run build && electron-builder --linux pacman"
   },
   "keywords": [
     "runescape",

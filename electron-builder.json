@@ -26,7 +26,9 @@
     "target": [
       "AppImage",
       "deb",
-      "tar.gz"
+      "tar.gz",
+      "rpm",
+      "pacman"
     ],
     "category": "Game",
     "icon": "resources/icon.png",
@@ -118,6 +120,29 @@
       "at-spi2-core",
       "libdrm",
       "mesa-libgbm",
+      "alsa-lib",
+      "tar",
+      "xz"
+    ]
+  },
+  "pacman": {
+    "packageName": "linux-jagex-launcher",
+    "artifactName": "linux-jagex-launcher-${version}.${arch}.${ext}",
+    "compression": "xz",
+    "fpm": [
+      "--replaces=jagex-launcher",
+      "--conflicts=jagex-launcher",
+      "--provides=jagex-launcher"
+    ],
+    "depends": [
+      "gtk3",
+      "nss",
+      "libxss",
+      "libxtst",
+      "xdg-utils",
+      "at-spi2-core",
+      "libdrm",
+      "mesa",
       "alsa-lib",
       "tar",
       "xz"

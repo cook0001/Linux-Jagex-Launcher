@@ -266,17 +266,23 @@ test('Repository and package configuration', async (t) => {
     const aurDir = path.resolve(process.cwd(), 'packaging/aur');
     const pkgbuildPath = path.join(aurDir, 'PKGBUILD');
     const srcinfoPath = path.join(aurDir, '.SRCINFO');
+    const buildScriptPath = path.join(aurDir, 'build-aur-package.sh');
+    const readmePath = path.join(aurDir, 'README.md');
 
     assert.ok(fs.existsSync(pkgbuildPath), 'PKGBUILD must exist');
     assert.ok(fs.existsSync(srcinfoPath), '.SRCINFO must exist');
+    assert.ok(fs.existsSync(buildScriptPath), 'build-aur-package.sh must exist');
+    assert.ok(fs.existsSync(readmePath), 'packaging/aur/README.md must exist');
 
     const pkgbuild = fs.readFileSync(pkgbuildPath, 'utf8');
     const srcinfo = fs.readFileSync(srcinfoPath, 'utf8');
+    const readme = fs.readFileSync(readmePath, 'utf8');
 
     assert.ok(pkgbuild.includes(`pkgver=${pkg.version}`), `PKGBUILD must match package version ${pkg.version}`);
     assert.ok(srcinfo.includes(`pkgver = ${pkg.version}`), `.SRCINFO must match package version ${pkg.version}`);
     assert.ok(pkgbuild.includes('depends='), 'PKGBUILD must declare runtime dependencies');
     assert.ok(pkgbuild.includes('optdepends='), 'PKGBUILD must declare optional dependencies');
+    assert.ok(readme.includes('pacman -U'), 'README must document standalone pacman installation');
   });
 
   await t.test('Steam Deck turnkey installer script specification', () => {
