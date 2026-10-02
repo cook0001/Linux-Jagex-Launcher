@@ -191,8 +191,8 @@ test('Repository and package configuration', async (t) => {
     const builderConfig = JSON.parse(fs.readFileSync(builderConfigPath, 'utf8'));
     assert.strictEqual(builderConfig.snap, undefined, 'electron-builder.json must not include deprecated snap key');
     assert.ok(builderConfig.snapcraft, 'electron-builder.json must include snapcraft configuration');
-    assert.strictEqual(builderConfig.snapcraft.base, 'core24', 'electron-builder snapcraft must target core24 base');
-    assert.strictEqual(builderConfig.snapcraft.core24.confinement, 'strict', 'electron-builder snapcraft core24 must use strict confinement');
+    assert.strictEqual(builderConfig.snapcraft.base, 'core22', 'electron-builder snapcraft must target core22 base');
+    assert.strictEqual(builderConfig.snapcraft.core22.confinement, 'strict', 'electron-builder snapcraft core22 must use strict confinement');
 
     // Verify documentation and website have Snap instructions
     const readme = fs.readFileSync(path.resolve(process.cwd(), 'README.md'), 'utf8');
@@ -285,6 +285,10 @@ test('Repository and package configuration', async (t) => {
     assert.ok(pkgbuild.includes('depends='), 'PKGBUILD must declare runtime dependencies');
     assert.ok(pkgbuild.includes('optdepends='), 'PKGBUILD must declare optional dependencies');
     assert.ok(readme.includes('pacman -U'), 'README must document standalone pacman installation');
+
+    const websiteHtml = fs.readFileSync(path.resolve(process.cwd(), 'docs/index.html'), 'utf8');
+    assert.ok(websiteHtml.includes('id="tab-panel-arch"'), 'docs/index.html must contain Arch install tab panel');
+    assert.ok(websiteHtml.includes(`linux-jagex-launcher-${pkg.version}.x86_64.pacman`), 'docs/index.html must offer standalone pacman download');
   });
 
   await t.test('Steam Deck turnkey installer script specification', () => {
@@ -311,6 +315,11 @@ test('Repository and package configuration', async (t) => {
     assert.ok(specContent.includes('Requires:'), 'specfile must declare runtime requirements');
     assert.ok(specContent.includes('Provides:       jagex-launcher'), 'specfile must provide jagex-launcher alias');
     assert.ok(specContent.includes('Conflicts:      jagex-launcher'), 'specfile must declare conflict with jagex-launcher');
+
+    const websiteHtml = fs.readFileSync(path.resolve(process.cwd(), 'docs/index.html'), 'utf8');
+    assert.ok(websiteHtml.includes('id="tab-panel-fedora"'), 'docs/index.html must contain Fedora install tab panel');
+    assert.ok(websiteHtml.includes('sudo dnf copr enable'), 'docs/index.html must document Copr enablement');
+    assert.ok(websiteHtml.includes(`linux-jagex-launcher-${pkg.version}.x86_64.rpm`), 'docs/index.html must offer standalone rpm download');
   });
 
   await t.test('Packaging release version parity across all formats', () => {

@@ -77,8 +77,8 @@
     ]
   },
   "snapcraft": {
-    "base": "core24",
-    "core24": {
+    "base": "core22",
+    "core22": {
       "artifactName": "linux-jagex-launcher_${version}_${arch}.${ext}",
       "grade": "stable",
       "confinement": "strict",

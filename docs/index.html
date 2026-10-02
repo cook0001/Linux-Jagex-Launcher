@@ -119,6 +119,23 @@
           <span>Download .deb (v1.4.4)</span>
         </a>
 
+        <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.rpm" class="btn-secondary" download>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download .rpm (Fedora)</span>
+        </a>
+
+        <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.pacman" class="btn-secondary" download>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+          <span>Download .pacman (Arch)</span>
+        </a>
+
         <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage" class="btn-secondary" download>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
@@ -491,6 +508,22 @@
             <span>Ubuntu / Debian / Mint</span>
           </button>
 
+          <button id="tab-btn-fedora" class="install-tab-btn" onclick="switchInstallTab('fedora', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M12 6v6l4 2"></path>
+            </svg>
+            <span>Fedora &amp; RHEL (Copr / RPM)</span>
+          </button>
+
+          <button id="tab-btn-arch" class="install-tab-btn" onclick="switchInstallTab('arch', this)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Arch Linux (Pacman / AUR)</span>
+          </button>
+
           <button id="tab-btn-deck" class="install-tab-btn" onclick="switchInstallTab('deck', this)">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="6" width="20" height="12" rx="4"></rect>
@@ -510,14 +543,6 @@
               <path d="m2 12 10 5 10-5"></path>
             </svg>
             <span>Canonical Snap (Snapd)</span>
-          </button>
-
-          <button id="tab-btn-arch" class="install-tab-btn" onclick="switchInstallTab('arch', this)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="4 17 10 11 4 5"></polyline>
-              <line x1="12" y1="19" x2="20" y2="19"></line>
-            </svg>
-            <span>Arch Linux &amp; Manjaro</span>
           </button>
 
           <button id="tab-btn-universal" class="install-tab-btn" onclick="switchInstallTab('universal', this)">
@@ -611,7 +636,80 @@
           </details>
         </div>
 
-        <!-- Tab 2: Steam Deck & SteamOS -->
+        <!-- Tab 2: Fedora & RHEL (Copr & Native RPM) -->
+        <div id="tab-panel-fedora" class="install-panel">
+          <div class="install-panel-header">
+            <div class="panel-badge-group">
+              <span class="badge gold">Fedora Copr</span>
+              <span class="badge green">Automatic Updates via DNF</span>
+              <span class="badge subtle">Fedora 40, 41, 42 &amp; RHEL / CentOS Stream</span>
+            </div>
+            <p class="panel-intro">
+              The official <strong>Fedora Copr repository</strong> provides packages built natively in Fedora's build infrastructure. Updates are delivered seamlessly with <code>sudo dnf upgrade</code>, or you can install the standalone <code>.rpm</code> directly.
+            </p>
+          </div>
+
+          <div class="install-steps">
+            <div class="step-item">
+              <span class="step-num">1</span>
+              <div class="step-content">
+                <span class="step-text">Enable the official Fedora Copr repository:</span>
+                <div class="code-wrapper">
+                  <pre class="code-block"><code>sudo dnf copr enable -y danielcook2016/linux-jagex-launcher</code></pre>
+                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <span class="step-num">2</span>
+              <div class="step-content">
+                <span class="step-text">Install the launcher package:</span>
+                <div class="code-wrapper">
+                  <pre class="code-block"><code>sudo dnf install -y linux-jagex-launcher</code></pre>
+                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <span class="step-num">3</span>
+              <div class="step-content">
+                <span class="step-text">Launch from your application menu or terminal:</span>
+                <div class="code-wrapper">
+                  <pre class="code-block"><code>linux-jagex-launcher</code></pre>
+                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Direct .rpm fallback accordion -->
+          <details class="sub-accordion">
+            <summary>Prefer direct standalone .rpm installation? Click to expand</summary>
+            <div class="sub-accordion-content">
+              <p>Download and install the standalone <code>.rpm</code> package directly with DNF:</p>
+              <div class="code-wrapper">
+                <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.rpm && sudo dnf install -y ./linux-jagex-launcher-1.4.4.x86_64.rpm</code></pre>
+                <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Tab 3: Steam Deck & SteamOS -->
         <div id="tab-panel-deck" class="install-panel">
           <div class="install-panel-header">
             <div class="panel-badge-group">
@@ -731,15 +829,16 @@
           </div>
         </div>
 
-        <!-- Tab 4: Arch Linux & Manjaro -->
+        <!-- Tab: Arch Linux & Manjaro (Pacman & AUR) -->
         <div id="tab-panel-arch" class="install-panel">
           <div class="install-panel-header">
             <div class="panel-badge-group">
-              <span class="badge gold">Arch User Repository</span>
-              <span class="badge subtle">Maintained PKGBUILD</span>
+              <span class="badge gold">Standalone Pacman &amp; AUR</span>
+              <span class="badge green">Arch Linux, Manjaro &amp; EndeavourOS</span>
+              <span class="badge subtle">Direct Offline or AUR Install</span>
             </div>
             <p class="panel-intro">
-              Install using your favorite AUR helper or compile manually with <code>makepkg</code>:
+              Install via standalone native <code>.pacman</code> binary package for instant offline setup, through an AUR helper, or with the local <code>makepkg</code> script:
             </p>
           </div>
 
@@ -747,7 +846,21 @@
             <div class="step-item">
               <span class="step-num">1</span>
               <div class="step-content">
-                <span class="step-text">Using <strong>yay</strong>:</span>
+                <span class="step-text"><strong>Standalone Pacman Binary Package</strong> (fastest direct install):</span>
+                <div class="code-wrapper">
+                  <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.pacman && sudo pacman -U ./linux-jagex-launcher-1.4.4.x86_64.pacman</code></pre>
+                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <span class="step-num">2</span>
+              <div class="step-content">
+                <span class="step-text">Using <strong>yay</strong> (AUR helper):</span>
                 <div class="code-wrapper">
                   <pre class="code-block"><code>yay -S linux-jagex-launcher-bin</code></pre>
                   <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
@@ -759,11 +872,25 @@
             </div>
 
             <div class="step-item">
-              <span class="step-num">2</span>
+              <span class="step-num">3</span>
               <div class="step-content">
-                <span class="step-text">Using <strong>paru</strong>:</span>
+                <span class="step-text">Using <strong>paru</strong> (Rust AUR helper):</span>
                 <div class="code-wrapper">
                   <pre class="code-block"><code>paru -S linux-jagex-launcher-bin</code></pre>
+                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-item">
+              <span class="step-num">4</span>
+              <div class="step-content">
+                <span class="step-text">Local PKGBUILD build helper script:</span>
+                <div class="code-wrapper">
+                  <pre class="code-block"><code>./packaging/aur/build-aur-package.sh</code></pre>
                   <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     <span>Copy</span>
@@ -774,15 +901,15 @@
           </div>
         </div>
 
-        <!-- Tab 5: Universal Linux & Others -->
+        <!-- Tab: Universal Linux & Others -->
         <div id="tab-panel-universal" class="install-panel">
           <div class="install-panel-header">
             <div class="panel-badge-group">
               <span class="badge gold">Universal Standalone</span>
-              <span class="badge subtle">Fedora, openSUSE, RHEL &amp; Others</span>
+              <span class="badge subtle">AppImage, RPM, Pacman, DEB, tar.gz</span>
             </div>
             <p class="panel-intro">
-              Runs on virtually any modern 64-bit Linux distribution with FUSE support:
+              Download native packages and standalone binaries for any Linux distribution:
             </p>
           </div>
 
@@ -790,9 +917,9 @@
             <div class="step-item">
               <span class="step-num">1</span>
               <div class="step-content">
-                <span class="step-text">Download the latest AppImage:</span>
+                <span class="step-text"><strong>Universal AppImage</strong> (runs on all modern x86_64 distributions):</span>
                 <div class="code-wrapper">
-                  <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage</code></pre>
+                  <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage && chmod +x Jagex-Launcher-1.4.4.AppImage && ./Jagex-Launcher-1.4.4.AppImage</code></pre>
                   <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                     <span>Copy</span>
@@ -804,13 +931,13 @@
             <div class="step-item">
               <span class="step-num">2</span>
               <div class="step-content">
-                <span class="step-text">Make executable and run:</span>
-                <div class="code-wrapper">
-                  <pre class="code-block"><code>chmod +x Jagex-Launcher-1.4.4.AppImage && ./Jagex-Launcher-1.4.4.AppImage</code></pre>
-                  <button class="btn-copy-code" title="Copy command" onclick="copyCode(this)">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                    <span>Copy</span>
-                  </button>
+                <span class="step-text"><strong>Direct Package Downloads</strong> (v1.4.4):</span>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.75rem;">
+                  <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.4.AppImage" class="btn-secondary" download style="padding: 0.6rem 1rem; font-size: 0.85rem;">AppImage (x86_64)</a>
+                  <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.4_amd64.deb" class="btn-secondary" download style="padding: 0.6rem 1rem; font-size: 0.85rem;">DEB (Debian/Ubuntu)</a>
+                  <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.rpm" class="btn-secondary" download style="padding: 0.6rem 1rem; font-size: 0.85rem;">RPM (Fedora/RHEL)</a>
+                  <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.x86_64.pacman" class="btn-secondary" download style="padding: 0.6rem 1rem; font-size: 0.85rem;">Pacman (Arch)</a>
+                  <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.4.tar.gz" class="btn-secondary" download style="padding: 0.6rem 1rem; font-size: 0.85rem;">Tarball (.tar.gz)</a>
                 </div>
               </div>
             </div>
