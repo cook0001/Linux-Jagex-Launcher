@@ -189,8 +189,10 @@ test('Repository and package configuration', async (t) => {
 
     const builderConfigPath = path.resolve(process.cwd(), 'electron-builder.json');
     const builderConfig = JSON.parse(fs.readFileSync(builderConfigPath, 'utf8'));
-    assert.ok(builderConfig.snap, 'electron-builder.json must include snap configuration');
-    assert.strictEqual(builderConfig.snap.confinement, 'strict', 'electron-builder snap must use strict confinement');
+    assert.strictEqual(builderConfig.snap, undefined, 'electron-builder.json must not include deprecated snap key');
+    assert.ok(builderConfig.snapcraft, 'electron-builder.json must include snapcraft configuration');
+    assert.strictEqual(builderConfig.snapcraft.base, 'core24', 'electron-builder snapcraft must target core24 base');
+    assert.strictEqual(builderConfig.snapcraft.core24.confinement, 'strict', 'electron-builder snapcraft core24 must use strict confinement');
 
     // Verify documentation and website have Snap instructions
     const readme = fs.readFileSync(path.resolve(process.cwd(), 'README.md'), 'utf8');

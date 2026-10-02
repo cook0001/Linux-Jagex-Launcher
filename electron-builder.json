@@ -76,29 +76,32 @@
       "gamemode"
     ]
   },
-  "snap": {
-    "artifactName": "linux-jagex-launcher_${version}_${arch}.${ext}",
-    "grade": "stable",
-    "confinement": "strict",
-    "summary": "Authentic, native Jagex Launcher for Linux",
-    "plugs": [
-      "desktop",
-      "desktop-legacy",
-      "home",
-      "x11",
-      "wayland",
-      "unity7",
-      "browser-support",
-      "network",
-      "network-bind",
-      "gsettings",
-      "audio-playback",
-      "pulseaudio",
-      "opengl",
-      "removable-media",
-      "joystick",
-      "process-control"
-    ]
+  "snapcraft": {
+    "base": "core24",
+    "core24": {
+      "artifactName": "linux-jagex-launcher_${version}_${arch}.${ext}",
+      "grade": "stable",
+      "confinement": "strict",
+      "summary": "Authentic, native Jagex Launcher for Linux",
+      "plugs": [
+        "desktop",
+        "desktop-legacy",
+        "home",
+        "x11",
+        "wayland",
+        "unity7",
+        "browser-support",
+        "network",
+        "network-bind",
+        "gsettings",
+        "audio-playback",
+        "pulseaudio",
+        "opengl",
+        "removable-media",
+        "joystick",
+        "process-control"
+      ]
+    }
   },
   "rpm": {
     "packageName": "linux-jagex-launcher",
