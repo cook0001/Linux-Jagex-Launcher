@@ -1,0 +1,165 @@
+# Changelog
+
+All notable changes to the **Linux Jagex Launcher** project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.4.8] - 2026-11-12
+
+### Added
+- **Legacy Jagex APT Repository Detection & One-Click Remediation**: Added automatic inspection (`inspectLegacyJagexAptSources`) and PolicyKit (`pkexec`) cleanup (`removeLegacyJagexAptSources`) for Jagex's deprecated Ubuntu 14.04 (`trusty`) repository (`content.runescape.com/downloads/ubuntu`), resolving `NO_PUBKEY 7373B12CE03BEB4B` and `InRelease is not signed` APT errors on Ubuntu 24.04 LTS and Ubuntu 26.04 LTS ("Resolute Raccoon") in RS3 Doctor, OSRS Doctor, Issue Reporter, and `install.sh`.
+
+### Fixed
+- **Ubuntu 24.04 & 26.04 (`resolute`) `t64` Package Resolution**: Updated RS3 Doctor, OSRS Doctor, and Debian repository metadata to resolve modern 64-bit `time_t` library names (`libgtk2.0-0t64`, `libasound2t64`, `libgtk-3-0t64`) on Ubuntu 24.04+, Ubuntu 26.04 LTS, Linux Mint 22+, Pop!_OS 24.04+, and Debian 13+, while retaining pre-`t64` package names on Ubuntu 22.04 and Debian 12.
+- **RS3 CDN Diagnostic Probe Endpoint**: Updated `Rs3Doctor.probeNetwork()` to query the active `dists/trusty/non-free/binary-amd64/Packages` index instead of a legacy `404` URL, and fixed `~` path expansion in `OsrsDoctor.repairPermissions()`.
+- **Standalone Debian Installer Resiliency (`install.sh`)**: Prevented broken third-party APT repositories from aborting local `.deb` package installation and enabled fast HTTP error detection (`curl -f`) on release downloads.
+- **Official Website UI, Responsive Layout & Accessibility Overhaul**: Removed the redundant macOS traffic-light titlebar stacked above the launcher's native Linux window frame, added a responsive mobile navigation popover menu, implemented accessible WAI-ARIA / `focusgroup` installation tabs with `hidden="until-found"` find-in-page auto-switching and scroll-edge fades, fixed flexbox code-block horizontal overflow and copy-button race conditions, corrected the Fedora Copr repository command (`cook0001/linux-jagex-launcher`), and added explicit image dimensions + LCP priority hints to eliminate layout shift.
+
+---
+
+## [1.4.7] - 2026-10-06
+
+### Added
+- **RuneScape API Plugins Beta Support (World 204)**: Added first-class integration for the official RuneScape Lua API Plugins Beta. Includes deep link parsing for `jagex:launch=runescape,args=[configURI=...]` and `rs-launch://` protocols, dynamic environment switching between Live NXT and API Beta directly on the launch dock, and one-click configuration presets in RS3 settings.
+
+### Changed
+- **Codebase Optimization & Architecture Refinement**: Centralized system query helpers (`commandExists`, `resolveExecutable`, `findLibraryInPaths`) into a unified `system.ts` module, simplified Buffer conversions using native Node.js `base64url` codecs, and eliminated redundant defensive type guards.
+- **Cache Inspector & Diagnostics Performance**: Hoisted static diagnostic distro definitions to module scope and consolidated repetitive multi-client cache clearing logic into a single lookup table.
+- **Documentation & UI Parity**: Cleaned shell script output formatting across Steam Deck and standalone installers, removed visual ASCII banner noise, and updated distribution specifications across all packaging formats.
+
+## [1.4.6] - 2026-10-04
+
+### Added
+- **Cache Size Inspector**: Live disk usage calculation and selective safe cache clearing across RuneScape 3 NXT (`~/.local/share/Jagex`), RuneLite (`~/.runelite/repository2`), HDOS (`~/.hdos`), and launcher application logs with confirmation safeguards.
+- **In-App Issue Reporter & Diagnostics**: Built-in system environment collector and issue generator with sanitized hardware/distro diagnostics, pre-filled GitHub issue templates, and 4-point in-app discoverability (sidebar rail "Issues" button, General Settings hub, RS3 diagnostics card, and OSRS diagnostics card).
+- **GitHub Actions Workflows**: Added CodeQL security analysis, Flatpak manifest linting, automated Dependabot pull request auto-merge, GitHub Release Drafter, PR labeler, and markdown documentation link checker.
+
+### Fixed
+- **Character Membership Detection**: Corrected Jagex Account character membership status evaluation and badge indicators in profile cards and quick switcher.
+- **Release Parity**: Synchronized all distribution specifications (AppImage, Flatpak, Snap, Debian PPA, Fedora RPM/Copr, Arch AUR/Pacman, and Steam Deck turnkey installer) to v1.4.6.
+
+---
+
+## [1.4.5] - 2026-10-02
+
+### Added
+- **In-Place Atomic Auto-Updater**: Overhauled auto-updater engine with safe atomic file replacement, SHA-256 integrity verification, permission preservation, and live in-app download progress.
+- **Automated Snapcraft Publishing**: Added automated CI deployment for Canonical Snap Store publishing targeting `core24`.
+
+### Changed
+- Refactored updater UI modal with distinct distribution format detection and package-specific update instructions.
+
+---
+
+## [1.4.4] - 2026-10-01
+
+### Fixed
+- **Debian & PPA Package Relationships**: Declared explicit `Replaces: linux-jagex-launcher`, `Conflicts: linux-jagex-launcher`, and `Provides: linux-jagex-launcher` in `electron-builder.json`, along with corresponding declarations in `packaging/ppa/debian/control`, resolving dpkg file overwrite and upgrade collisions between `jagex-launcher` and `linux-jagex-launcher`.
+- **AUR Binary Execution & Symlink Paths**: Corrected target binary installation path in `packaging/aur/PKGBUILD` and added symlinks in `/usr/bin` for both `linux-jagex-launcher` and `jagex-launcher` for immediate command-line execution.
+- **Launchpad PPA Version Synchronization**: Bumped upstream release version to v1.4.4 to generate clean Debian source artifacts (`.orig.tar.gz`, `.dsc`, and `.changes`) and resolve Launchpad PPA rejection caused by re-uploading modified v1.4.3 source archives with differing checksums.
+
+## [1.4.3] - 2026-10-01
+
+### Added
+- **HiDPI Display Scaling Controls for OSRS**: Configurable UI scaling (`1.0x` to `3.0x`) passing JVM `-Dsun.java2d.uiScale` and FlatLaf UI font scaling parameters, providing crisp high-resolution rendering on 4K, 1440p, and high-density laptop displays.
+- **Multi-Instance Client Manager**: Live tracking and managing multiple concurrent RuneLite, HDOS, and RS3 game clients with live process heartbeats and individual force-stop/kill controls.
+- **In-App Live Client Log Viewer**: Dedicated real-time terminal modal with ring-buffered streaming, level coloring, log source filters, token sanitization, and text export.
+- **Multi-GPU & Dedicated GPU Selector**: Automatic hardware detection of integrated and discrete GPUs with one-click Mesa DRI PRIME (`DRI_PRIME=1`) and NVIDIA PRIME Render Offload (`__NV_PRIME_RENDER_OFFLOAD=1`).
+- **Deep Link OAuth Protocol Handling**: Seamless authentication callback interception for `jagex://` and `jagex-launcher://` URLs on running instances (`second-instance`) and cold start.
+
+### Fixed
+- **Custom Launch Command Template Expansion**: Corrected argument tokenization in `%command%` templates in `launcher.ts` and `osrs.ts`, preventing monolithic argument strings that caused spawn `ENOENT` failures when running tools like `gamemoderun`, `mangohud`, or `gamescope`.
+- **Process Lifecycle & PID Recycling Safeguards**: Linux `/proc/${pid}/comm` verification in `instance-manager.ts` preventing accidental collateral signals and safely pruning dead instances with non-positive PIDs.
+- **Harmless Desktop Warning Classification**: Automatically categorized non-fatal desktop subsystem notices (`canberra-gtk-module`, `pk-gtk-module`, `ALSA`, `LWJGL`, `WARNING:`) as warnings rather than red errors.
+- **Network Resilience Timeouts**: Added `AbortSignal.timeout` across all authentication, update checking, and client download network operations to prevent UI hangs on stalled connections.
+- **Steam Shortcut Key Indexing**: Fixed sequential key generation in `shortcuts.vdf` to prevent key collisions with existing non-Steam shortcuts.
+- **Release Parity**: Synchronized all packaging formats across AppImage, Flatpak, Snap, Debian PPA, and AUR to v1.4.3.
+
+## [1.4.2] - 2026-09-30
+
+### Fixed
+- **AppImage Child Environment Sanitization & RuneLite Launch Loop**: Stripped `APPIMAGE`, `APPDIR`, `OWD`, and `ARGV0` and cleaned `.mount_` paths from `LD_LIBRARY_PATH` when spawning native game clients (`src/main/osrs.ts` and `src/main/launcher.ts`). When running from inside an AppImage, RuneLite's launcher checked `System.getenv("APPIMAGE")`, mistakenly assumed the Jagex Launcher AppImage was RuneLite's own AppImage, and attempted to re-exec the Jagex Launcher binary in fork mode, causing RuneLite to immediately exit after hash verification.
+- **RuneLite & OSRS Process Lifecycle Tracking**: Prioritized the actual game client (`net.runelite.client.RuneLite`) over the bootstrap jar (`RuneLite.jar`) in `findOsrsPid()`. Added successor process migration in `startMonitoring()` so when the bootstrap jar cleanly terminates after spawning the client, process monitoring smoothly shifts to the client PID instead of resetting game state. Extended JVM fork detection grace period to 15 seconds.
+- **OpenJDK 24+ ZGC Compatibility**: Automatically detect and filter out `-XX:+ZGenerational` on OpenJDK 24+ where Generational ZGC is enabled by default and the JVM argument was removed.
+- **AppImage FUSE2-Free Static Runtime**: Added AppImage toolset 1.0.3 static runtime configuration in `electron-builder.json` to run seamlessly on Ubuntu 24.04 and 26.04 without requiring legacy `libfuse.so.2`.
+- **Application Menu Launching & Stale Desktop Override Resolution**: Fixed desktop integration in `src/main/desktop.ts` to properly resolve the application root directory rather than relying on current working directory. Cleaned up stale or broken user desktop overrides that previously shadowed system-installed launcher binaries.
+- **Single-Instance Lock & Window Focus**: Enforced Chromium single-instance lock in `src/main/index.ts` with `app.requestSingleInstanceLock()`. Clicking the launcher from the application menu or dock now smoothly restores and focuses existing launcher windows instead of spawning duplicate competing processes.
+- **Wayland Window Presentation Fallbacks**: Added secondary presentation fallbacks (`did-finish-load` and timeout) to ensure the main window displays reliably under Wayland and X11 compositors even if hardware acceleration frames are delayed.
+- **Linux Wayland / Vulkan Compatibility**: Added `--disable-features=Vulkan` command line switch on Linux to prevent Chromium Ozone Wayland surface initialization conflicts.
+- **Application Menu Category Conformance**: Corrected desktop entry categories in `electron-builder.json` to standard `Game;` ensuring consistent placement across GNOME, KDE Plasma, and XFCE application menus.
+
+### Added
+- **Canonical Snap Release Pipeline**: Added full Snap package build and distribution support (`packaging/snap/snapcraft.yaml`, `snap/snapcraft.yaml`, and `npm run dist:snap`) targeting `core24` with strict confinement. Includes full interface plugs (`removable-media`, `joystick`, `process-control`, `network-bind`, `opengl`, `audio-playback`) and data persistence in `SNAP_USER_COMMON` across snap auto-refreshes.
+- **In-App Snap Format Detection**: Added `'snap'` package recognition to `AutoUpdater` and runtime paths in `folders.ts`, `installer.ts`, `store.ts`, `osrs.ts`, and `desktop.ts`.
+
+---
+
+## [1.4.1] - 2026-09-30
+
+### Fixed
+- **Ubuntu 24.04 (noble) and 26.04 (resolute) t64 Dependency Resolution**: Updated package dependencies in `electron-builder.json` and `packaging/ppa/debian/control` with transitional alternatives (`libatspi2.0-0t64 | libatspi2.0-0 | libatspi-0`, `libgtk-3-0 | libgtk-3-0t64`, `libasound2 | libasound2t64`, and added `xz-utils`, `xdg-utils`, `libxtst6`, `libgbm1`, `libdrm2`) ensuring seamless apt installation without broken package errors.
+- **Debian Rules Shared Library Scanning**: Configured `override_dh_shlibdeps` in `packaging/ppa/debian/rules` to bypass scanning pre-compiled Electron binaries, resolving Launchpad builder failures.
+- **Asynchronous OSRS Network Diagnostics**: Wrapped background socket and ping diagnostic probes in `src/main/osrs-diagnostics.ts` to prevent unhandled timeout rejections during network drops.
+
+### Changed
+- **PPA Source Package Build Resiliency**: Added automatic 4-attempt retry loop (`RETRY_DELAY=30`) and a 30-second cooldown (`sleep 30`) between series uploads in `packaging/ppa/build-source-package.sh` and `.github/workflows/ppa.yml` to prevent Launchpad rate-limiting.
+- **Website Organization & Visual Polish**: Re-architected `docs/index.html` and `docs/style.css` with centered block containers, comfortable side padding, left-aligned typography, official game crests, and anonymous screenshots.
+
+---
+
+## [1.4.0] - 2026-09-30
+
+### Added
+- **Native Linux System Tray Support**: Added system tray integration with right-click context menu, fast character launch shortcuts, background minimize toggle, and persistent tray status.
+- **Quick Shortcuts & Client Folders Hub**: Added quick-open shortcuts in Settings to easily locate screenshots, logs, and game caches for RuneLite (`~/.runelite`), RuneScape 3 (`~/.local/share/Jagex`), and HDOS (`~/.hdos`).
+- **Desktop Shortcuts & Icon Re-Registration**: Added utility button in Settings to safely recreate or repair `.desktop` application launchers and multi-resolution icons (`16x16` up to `1024x1024`) for Linux Jagex Launcher, RuneLite, HDOS, and the Official OSRS client.
+- **Official Launchpad Ubuntu PPA**: Full support for Ubuntu 26.04 LTS (`resolute`), Ubuntu 24.04 LTS (`noble`), and Ubuntu 22.04 LTS (`jammy`) via `ppa:danielcook2016/linux-jagex-launcher` with automated Launchpad cloud builds.
+- **Bit-for-Bit Reproducible Source Packaging**: Added deterministic Debian source package generator (`packaging/ppa/build-source-package.sh`) with strict Debian 3.0 (quilt) formatting and automated GPG signing wrapper.
+- **Flathub & AppStream Compliance**: Updated AppStream metainfo specification to satisfy 100% of Flathub Quality Guidelines with zero validation warnings.
+
+### Changed
+- Re-architected Debian packaging rules to install dual desktop entries and multi-resolution application icons.
+- Updated automated updater to handle in-place AppImage updates with SHA-256 verification and distribution-aware notifications.
+
+---
+
+## [1.3.0] - 2026-09-28
+
+### Added
+- **World Latency & Ping Prober**: Concurrently probes active RuneScape 3 (Worlds 1–141) and Old School RuneScape (Worlds 301–599) servers in ~1.2 seconds with regional filtering and color-coded latency badges.
+- **Standalone Ping CLI Tools**: Added parallel Bash scripts (`rs3-ping.sh` and `osrs-ping.sh`) for headless terminal benchmarking.
+- **Community Resources & Tools Directory**: Built-in player tool hub supporting RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds (including RuneKit, Alt1, PvME, and GE Tracker).
+- **Older Linux Hardware & Low-Spec Performance Mode**: GPU optimization mode disabling heavy CSS blurs and continuous animations, forcing Mesa hardware acceleration on older GPUs, and capping OSRS heap memory at 768MB.
+- **Mesa Compatibility & DRI Fallback**: Integrated settings toggles for `MESA_GL_VERSION_OVERRIDE=4.5COMPAT` and `LIBGL_DRI3_DISABLE=1`.
+
+---
+
+## [1.2.0] - 2026-09-28
+
+### Added
+- **Steam Deck Turnkey Installer**: One-line Konsole installation script (`deck-install.sh`) with rootless execution.
+- **Steam Shortcuts & Grid Art Registration**: Automated registration in Steam's `shortcuts.vdf` with official high-resolution grid, hero, logo, and cover art.
+- **Multi-Account Profile Switcher**: Fast switching dock supporting multiple saved Jagex Accounts with active character selection and membership status badges.
+- **Mesa Threaded OpenGL**: One-click toggle for `mesa_glthread=true` to maximize RS3 NXT frame rates on AMD and Intel Mesa drivers.
+
+---
+
+## [1.1.0] - 2026-09-28
+
+### Added
+- **Steam Deck & Handheld Support**: Full HTML5 Gamepad API controller navigation (bumpers, D-pad, face buttons), 1280×800 touch scaling, and Steam On-Screen Keyboard (OSK) invocation.
+- **Integrated Auto-Updater**: In-app release checking, streaming download progress, and format detection.
+- **RuneScape: Dragonwilds Support**: Integrated Steam launch protocol (`steam://run/1374490`) and live Steam RSS patch feeds.
+- **Rs3Doctor Diagnostic Engine**: Automated diagnostic checker verifying graphics drivers, XWayland compatibility, OpenSSL 1.1 userspace libraries, and audio routing.
+
+---
+
+## [1.0.0] - 2026-09-28
+
+### Added
+- **Initial Stable Release**: Native 64-bit Linux execution of RuneScape 3 NXT with zero Wine/Proton overhead.
+- **Multi-Client Dock for OSRS**: Seamless switching between RuneLite, HDOS, and the Official OSRS client.
+- **Jagex Account Authentication**: Full OAuth 2.0 PKCE authentication with Cloudflare Turnstile webview support.
+- **Isolated OpenSSL 1.1 Compatibility**: Userspace `libssl1.1` provisioning resolving Ubuntu 22.04 and 24.04 library mismatches.
+- **Zero-RAM Mode**: Auto-closing launcher 1.5 seconds after game launch.

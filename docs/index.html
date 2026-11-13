@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux Jagex Launcher - Native RuneScape 3, OSRS &amp; Dragonwilds on Linux</title>
+  <meta name="description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 (NXT Client), Old School RuneScape (RuneLite, HDOS, Official), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE login, and 100% privacy.">
+  <meta name="keywords" content="linux jagex launcher, runescape linux, osrs linux, runelite linux, hdos linux, steam deck runescape, dragonwilds linux, jagex account linux, jagex launcher wine alternative, runescape steam deck, ubuntu 26.04 runescape">
+  <meta name="google-site-verification" content="5wJElmmhy0D740ptpxH2lr5LJADj-jnKqXMZ7lokMIg">
+  <link rel="canonical" href="https://cook0001.github.io/Linux-Jagex-Launcher/">
+  <link rel="icon" type="image/png" href="assets/icon.png">
+
+  <!-- Open Graph & Social Sharing Embeds -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cook0001.github.io/Linux-Jagex-Launcher/">
+  <meta property="og:title" content="Linux Jagex Launcher - Native RuneScape 3, OSRS &amp; Dragonwilds on Linux">
+  <meta property="og:description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3, OSRS (RuneLite, HDOS), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE, and full privacy.">
+  <meta property="og:image" content="https://cook0001.github.io/Linux-Jagex-Launcher/assets/banner.png">
+  <meta property="og:image:alt" content="Linux Jagex Launcher Banner">
+  <meta property="og:site_name" content="Linux Jagex Launcher">
+
+  <!-- Twitter / X Card Embeds -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://cook0001.github.io/Linux-Jagex-Launcher/">
+  <meta name="twitter:title" content="Linux Jagex Launcher - Native RuneScape 3, OSRS &amp; Dragonwilds on Linux">
+  <meta name="twitter:description" content="Authentic, native Jagex Launcher for Linux supporting RuneScape 3, OSRS (RuneLite, HDOS), and Dragonwilds. Zero Wine overhead, direct OAuth 2.0 PKCE, and full privacy.">
+  <meta name="twitter:image" content="https://cook0001.github.io/Linux-Jagex-Launcher/assets/banner.png">
+
+  <!-- JSON-LD Structured Data for Google Search -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Linux Jagex Launcher",
+    "operatingSystem": "Linux, SteamOS",
+    "applicationCategory": "GameApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Authentic, native Jagex Launcher for Linux supporting RuneScape 3, Old School RuneScape (RuneLite, HDOS, Official Client), and Dragonwilds without Wine overhead.",
+    "url": "https://cook0001.github.io/Linux-Jagex-Launcher/",
+    "downloadUrl": "https://github.com/cook0001/Linux-Jagex-Launcher/releases",
+    "softwareVersion": "1.4.8",
+    "author": {
+      "@type": "Person",
+      "name": "Daniel Cook",
+      "url": "https://github.com/cook0001"
+    }
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css?v=1.4.8">
+</head>
+<body>
+
+  <!-- Sticky Responsive Header -->
+  <header class="header is-wide" id="site-header">
+    <a href="#hero-heading" class="skip-link visually-hidden">Skip to main content</a>
+    <div class="header-container" id="header-container">
+      <a href="#overview" class="brand">
+        <img src="assets/icon.png" alt="Linux Jagex Launcher Logo" class="brand-icon" width="38" height="38">
+        <div class="brand-text">
+          <span class="brand-name">Linux Jagex Launcher</span>
+          <span class="brand-tag">v1.4.8 Live</span>
+        </div>
+      </a>
+
+      <nav class="site-nav" aria-label="Primary">
+        <button class="menu-button" type="button" popovertarget="site-menu" popovertargetaction="toggle" aria-controls="site-menu">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <span>Menu</span>
+        </button>
+        <ul id="site-menu" class="site-menu">
+          <li><a href="#games">Games</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#install">Installation</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#feedback">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <a href="https://github.com/cook0001/Linux-Jagex-Launcher" class="btn-github" target="_blank" rel="noopener noreferrer" aria-label="GitHub repository">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+        <a href="#install" class="btn-nav-install">Get Launcher</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <!-- Hero Section -->
+    <section class="hero" id="overview">
+      <div class="hero-content">
+        <div class="hero-pill">
+          <span class="hero-pill-dot" aria-hidden="true"></span>
+          <span>Native Linux Gaming &bull; v1.4.8 Available</span>
+        </div>
+
+        <h1 id="hero-heading" class="hero-title" tabindex="-1">
+          RuneScape on Linux.<br>
+          <span class="highlight-gold">Authentic.</span> Native. <span class="highlight-cyan">Zero Wine.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          A 1:1 replica of the official Jagex Launcher built specifically for Linux and SteamOS. Experience native 64-bit NXT performance, Old School RuneScape with RuneLite &amp; HDOS, and RuneScape: Dragonwilds &mdash; with direct Jagex Account OAuth 2.0 PKCE authentication.
+        </p>
+
+        <!-- Primary Download CTAs -->
+        <div class="hero-actions">
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.8_amd64.deb" class="btn-primary" download>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download .deb (v1.4.8)</span>
+          </a>
+
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x86_64.rpm" class="btn-secondary" download>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Download .rpm (Fedora)</span>
+          </a>
+
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x64.pacman" class="btn-secondary" download>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Download .pacman (Arch)</span>
+          </a>
+
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.8.AppImage" class="btn-secondary" download>
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            <span>Download .AppImage</span>
+          </a>
+
+          <button type="button" class="btn-secondary" onclick="navigateToInstall('snap')">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2 2 7l10 5 10-5-10-5Z"></path>
+              <path d="m2 17 10 5 10-5"></path>
+              <path d="m2 12 10 5 10-5"></path>
+            </svg>
+            <span>Snap Store</span>
+          </button>
+
+          <button type="button" class="btn-secondary" onclick="navigateToInstall('deck')">
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+              <circle cx="8" cy="12" r="2"></circle>
+              <circle cx="16" cy="10" r="1"></circle>
+              <circle cx="18" cy="12" r="1"></circle>
+              <circle cx="16" cy="14" r="1"></circle>
+              <circle cx="14" cy="12" r="1"></circle>
+            </svg>
+            <span>Steam Deck Setup</span>
+          </button>
+        </div>
+
+        <!-- Quick Terminal Setup Snippet -->
+        <div class="quick-terminal-card">
+          <div class="quick-terminal-header">
+            <span class="quick-terminal-label">Quick Ubuntu / Mint / Pop!_OS PPA Install:</span>
+            <a href="#install" onclick="navigateToInstall('ppa')" class="quick-terminal-more">Other distros &rarr;</a>
+          </div>
+          <div class="code-wrapper quick-code">
+            <pre class="code-block"><code>sudo add-apt-repository ppa:danielcook2016/linux-jagex-launcher &amp;&amp; sudo apt install -y linux-jagex-launcher</code></pre>
+            <button type="button" class="btn-copy-code" aria-label="Copy Ubuntu PPA install command" onclick="copyCode(this)">
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Window Showcase Frame -->
+      <div class="showcase-section">
+        <div class="showcase-nav" role="group" aria-label="Launcher game preview">
+          <button type="button" class="showcase-pill" aria-pressed="true" onclick="switchGallery('rs3', this)">
+            <svg aria-hidden="true" class="game-crest-icon" viewBox="0 0 48 48" fill="none" width="20" height="20">
+              <circle cx="24" cy="24" r="22" stroke="url(#gold-gradient-rs3)" stroke-width="2.5" fill="#131924"/>
+              <path d="M24 6L28 16H20L24 6Z" fill="url(#gold-gradient-rs3)"/>
+              <path d="M22 17H26V36H22V17Z" fill="url(#gold-gradient-rs3)"/>
+              <path d="M16 26H32V29H16V26Z" fill="url(#gold-gradient-rs3)"/>
+              <circle cx="24" cy="38" r="2.5" fill="url(#gold-gradient-rs3)"/>
+              <defs>
+                <linearGradient id="gold-gradient-rs3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fae084"/>
+                  <stop offset="50%" stop-color="#dfaa38"/>
+                  <stop offset="100%" stop-color="#9a6e16"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>RuneScape 3</span>
+          </button>
+
+          <button type="button" class="showcase-pill" aria-pressed="false" onclick="switchGallery('osrs', this)">
+            <svg aria-hidden="true" class="game-crest-icon" viewBox="0 0 48 48" fill="none" width="20" height="20">
+              <rect x="4" y="4" width="40" height="40" rx="8" stroke="#8792a2" stroke-width="2" fill="#10151f"/>
+              <path d="M14 18L24 10L34 18V34L24 40L14 34V18Z" stroke="#c09643" stroke-width="2" fill="#201a14"/>
+              <path d="M24 14V34M19 22L29 22" stroke="#e0be6c" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Old School RuneScape</span>
+          </button>
+
+          <button type="button" class="showcase-pill" aria-pressed="false" onclick="switchGallery('dragonwilds', this)">
+            <svg aria-hidden="true" class="game-crest-icon" viewBox="0 0 48 48" fill="none" width="20" height="20">
+              <circle cx="24" cy="24" r="22" stroke="url(#dragon-border-dw)" stroke-width="2.5" fill="#141113"/>
+              <path d="M24 7L27 15L36 14L30 21L39 26L29 28L33 37L24 32L15 37L19 28L9 26L18 21L12 14L21 15L24 7Z" fill="url(#dragon-gradient-dw)"/>
+              <circle cx="24" cy="24" r="3.5" fill="#ffd15c"/>
+              <defs>
+                <linearGradient id="dragon-gradient-dw" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ff9944"/>
+                  <stop offset="50%" stop-color="#e55024"/>
+                  <stop offset="100%" stop-color="#991500"/>
+                </linearGradient>
+                <linearGradient id="dragon-border-dw" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ff7b39"/>
+                  <stop offset="50%" stop-color="#e5b352"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span>RuneScape: Dragonwilds</span>
+          </button>
+        </div>
+
+        <div class="mockup-window">
+          <div class="mockup-body">
+            <img id="gallery-image" src="assets/screenshot-rs3.png" alt="Linux Jagex Launcher running RuneScape 3 natively on Linux" width="1080" height="720" fetchpriority="high">
+          </div>
+          <div class="mockup-footer">
+            <span class="mockup-caption" id="gallery-caption">RuneScape 3 &mdash; Official 64-bit NXT Linux Client</span>
+            <span class="mockup-badge" id="gallery-badge">Native Linux ELF</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported Games Section -->
+    <section id="games" class="section">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Game Ecosystem</span>
+          <h2 class="section-title">One Launcher. Every RuneScape Adventure.</h2>
+          <p class="section-desc">
+            Designed from the ground up for native compatibility with official Jagex games and community clients.
+          </p>
+        </div>
+
+        <div class="games-grid">
+          <!-- RuneScape 3 -->
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-top">
+                <svg aria-hidden="true" class="game-crest-large" viewBox="0 0 48 48" fill="none" width="36" height="36">
+                  <circle cx="24" cy="24" r="22" stroke="url(#gold-gradient-rs3-card)" stroke-width="2.5" fill="#131924"/>
+                  <path d="M24 6L28 16H20L24 6Z" fill="url(#gold-gradient-rs3-card)"/>
+                  <path d="M22 17H26V36H22V17Z" fill="url(#gold-gradient-rs3-card)"/>
+                  <path d="M16 26H32V29H16V26Z" fill="url(#gold-gradient-rs3-card)"/>
+                  <circle cx="24" cy="38" r="2.5" fill="url(#gold-gradient-rs3-card)"/>
+                  <defs>
+                    <linearGradient id="gold-gradient-rs3-card" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#fae084"/>
+                      <stop offset="50%" stop-color="#dfaa38"/>
+                      <stop offset="100%" stop-color="#9a6e16"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="game-badge rs3">Native 64-bit ELF</div>
+              </div>
+              <h3 class="game-title">RuneScape 3</h3>
+            </div>
+            <p class="game-summary">
+              Runs Jagex's official 64-bit native NXT client directly on your Linux kernel. No Wine prefixes, zero Proton latency, and maximum hardware acceleration.
+            </p>
+            <ul class="game-features" role="list">
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Rootless User Auto-Deployment:</strong> Extracts the official client straight into userspace without <code>sudo</code>.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>OpenSSL 1.1 Isolation:</strong> Automatically supplies isolated compatibility libraries on Ubuntu 22.04, 24.04, and 26.04 LTS without altering host apt.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Wayland &amp; Mesa Zink Overrides:</strong> Eliminates "Loading application resources" startup freezes via automated X11/Pulse flags.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Built-in RS3 Doctor:</strong> One-click system dependency, legacy APT repo cleanup &amp; driver check in Settings.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Old School RuneScape -->
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-top">
+                <svg aria-hidden="true" class="game-crest-large" viewBox="0 0 48 48" fill="none" width="36" height="36">
+                  <rect x="4" y="4" width="40" height="40" rx="8" stroke="#8792a2" stroke-width="2" fill="#10151f"/>
+                  <path d="M14 18L24 10L34 18V34L24 40L14 34V18Z" stroke="#c09643" stroke-width="2" fill="#201a14"/>
+                  <path d="M24 14V34M19 22L29 22" stroke="#e0be6c" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <div class="game-badge osrs">RuneLite &bull; HDOS &bull; Official</div>
+              </div>
+              <h3 class="game-title">Old School RuneScape</h3>
+            </div>
+            <p class="game-summary">
+              Enjoy full flexibility with your favorite clients. Injects your Jagex Account session tokens directly on launch.
+            </p>
+            <ul class="game-features" role="list">
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>RuneLite Integration:</strong> Automatically preserves your existing <code>~/.runelite</code> configurations, plugins, screenshots, and bank tags.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>HDOS Support:</strong> Full compatibility with the 2008-era HD graphics engine running on OpenGL &amp; Vulkan.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Official C++ Client:</strong> Native OSRS desktop client support with direct Jagex single sign-on.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Multi-Character Switching:</strong> Switch between your Jagex characters instantly from the main menu.</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- RuneScape: Dragonwilds -->
+          <div class="game-card">
+            <div class="game-card-header">
+              <div class="game-header-top">
+                <svg aria-hidden="true" class="game-crest-large" viewBox="0 0 48 48" fill="none" width="36" height="36">
+                  <circle cx="24" cy="24" r="22" stroke="url(#dragon-border-dw-card)" stroke-width="2.5" fill="#141113"/>
+                  <path d="M24 7L27 15L36 14L30 21L39 26L29 28L33 37L24 32L15 37L19 28L9 26L18 21L12 14L21 15L24 7Z" fill="url(#dragon-gradient-dw-card)"/>
+                  <circle cx="24" cy="24" r="3.5" fill="#ffd15c"/>
+                  <defs>
+                    <linearGradient id="dragon-gradient-dw-card" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#ff9944"/>
+                      <stop offset="50%" stop-color="#e55024"/>
+                      <stop offset="100%" stop-color="#991500"/>
+                    </linearGradient>
+                    <linearGradient id="dragon-border-dw-card" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#ff7b39"/>
+                      <stop offset="50%" stop-color="#e5b352"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="game-badge dragonwilds">Steam Protocol</div>
+              </div>
+              <h3 class="game-title">RuneScape: Dragonwilds</h3>
+            </div>
+            <p class="game-summary">
+              Launch Jagex's open-world survival action RPG in Ashenfall directly through native Linux Steam integration.
+            </p>
+            <ul class="game-features" role="list">
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Direct Steam Protocol Launch:</strong> Integrates directly with <code>steam://run/1374490</code> for instant play.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Live Steam RSS News &amp; Patches:</strong> Real-time update cards and announcements pulled straight from Steam.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Unified Interface:</strong> Jump between RS3, OSRS, and Dragonwilds within a single familiar launcher.</span>
+              </li>
+              <li>
+                <span class="check" aria-hidden="true">&check;</span>
+                <span><strong>Zero Extra Bloat:</strong> Lightweight client switcher with clean background process management.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Features Section -->
+    <section id="features" class="section section-darker">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Engineered For Linux</span>
+          <h2 class="section-title">Built with Precision &amp; Respect for Your System</h2>
+          <p class="section-desc">
+            Official aesthetics with Linux power tools under the hood.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-item">
+            <div class="feature-icon gold">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <h3 class="feature-heading">1:1 Authentic Jagex UI</h3>
+            <p class="feature-body">
+              Faithful replica of the official launcher with live event artwork, official Jagex server maintenance notices, and native left-side window controls.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon cyan">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-heading">Pre-Flight System Doctor</h3>
+            <p class="feature-body">
+              Integrated diagnostic tool in Settings that audits GPU drivers (OpenGL, Vulkan), display servers, and runtime packages with copyable fix commands.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon gold">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <h3 class="feature-heading">Cloudflare Turnstile &amp; PKCE</h3>
+            <p class="feature-body">
+              Direct OAuth 2.0 PKCE authentication with <code>account.jagex.com</code>. Built-in interactive view handles Turnstile bot checks and 2FA with zero credential leaks.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon cyan">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h3 class="feature-heading">Zero RAM Mode ("Close on Launch")</h3>
+            <p class="feature-body">
+              Enable "Close on Launch" in settings to automatically terminate the launcher after your game starts, releasing 100% of memory for your games.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon gold">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+            </div>
+            <h3 class="feature-heading">GameMode &amp; MangoHud Ready</h3>
+            <p class="feature-body">
+              One-click toggles in Settings to engage Feral <code>gamemoderun</code> for CPU governor scheduling and <code>mangohud</code> for real-time FPS &amp; frametime stats.
+            </p>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-icon cyan">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+            </div>
+            <h3 class="feature-heading">100% Privacy &amp; Zero Telemetry</h3>
+            <p class="feature-body">
+              No telemetry, no tracking servers, and no analytics. Tokens and settings are stored strictly in local userspace (<code>~/.config/linux-jagex-launcher/</code>).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Streamlined Installation Hub -->
+    <section id="install" class="section">
+      <div class="section-container">
+        <div class="section-header">
+          <span class="section-tag">Quick Start</span>
+          <h2 class="section-title">Install on Any Linux Distribution</h2>
+          <p class="section-desc">
+            Choose your distribution below for fast, automated setup.
+          </p>
+        </div>
+
+        <div class="install-hub" id="install-hub">
+          <!-- Accessible Scrolling Tablist -->
+          <div class="install-tabs" id="install-tablist" focusgroup="tablist nomemory" role="tablist" aria-label="Linux distribution installation methods">
+            <button type="button" id="tab-btn-ppa" class="install-tab-btn" role="tab" aria-selected="true" focusgroupstart onclick="switchInstallTab('ppa', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+              <span>Ubuntu / Debian</span>
+            </button>
+
+            <button type="button" id="tab-btn-fedora" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('fedora', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              <span>Fedora / RPM</span>
+            </button>
+
+            <button type="button" id="tab-btn-arch" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('arch', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <span>Arch / AUR</span>
+            </button>
+
+            <button type="button" id="tab-btn-deck" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('deck', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+                <circle cx="8" cy="12" r="2"></circle>
+                <circle cx="16" cy="10" r="1"></circle>
+                <circle cx="18" cy="12" r="1"></circle>
+                <circle cx="16" cy="14" r="1"></circle>
+                <circle cx="14" cy="12" r="1"></circle>
+              </svg>
+              <span>Steam Deck</span>
+            </button>
+
+            <button type="button" id="tab-btn-snap" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('snap', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 2 7l10 5 10-5-10-5Z"></path>
+                <path d="m2 17 10 5 10-5"></path>
+                <path d="m2 12 10 5 10-5"></path>
+              </svg>
+              <span>Snap Store</span>
+            </button>
+
+            <button type="button" id="tab-btn-universal" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('universal', this)">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>Universal / AppImage</span>
+            </button>
+          </div>
+
+          <!-- Tab 1: Ubuntu / Debian / Mint -->
+          <div id="tab-panel-ppa" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-ppa">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Recommended</span>
+                  <span class="badge green">Automatic Updates via APT</span>
+                  <span class="badge subtle">Ubuntu 26.04, 24.04 &amp; 22.04 LTS</span>
+                </div>
+                <p class="panel-intro">
+                  The official <strong>Launchpad PPA</strong> provides packages built natively in Canonical's cloud builders for Ubuntu, Linux Mint, and Pop!_OS. System dependencies are resolved automatically, and updates arrive seamlessly via <code>sudo apt upgrade</code>.
+                </p>
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text">Add the official Launchpad PPA repository:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo add-apt-repository ppa:danielcook2016/linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy add-apt-repository command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text">Install Linux Jagex Launcher:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo apt update &amp;&amp; sudo apt install -y linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy apt install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <span class="step-text">Launch from your application menu or terminal:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy launch command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direct .deb fallback accordion -->
+              <details class="sub-accordion">
+                <summary>Prefer direct .deb download, automated script, or Ubuntu 26.04 APT cleanup?</summary>
+                <div class="sub-accordion-content">
+                  <p>One-line automated installer (fetches v1.4.8, removes broken legacy Jagex <code>trusty</code> APT entries if present, and installs cleanly):</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy automated installer script command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="sub-accordion-note">Or download the standalone <code>.deb</code> package manually:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.8_amd64.deb &amp;&amp; sudo apt install ./jagex-launcher_1.4.8_amd64.deb</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy manual deb install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="sub-accordion-note"><strong>Seeing <code>NO_PUBKEY 7373B12CE03BEB4B</code> or <code>trusty InRelease is not signed</code> on Ubuntu 24.04 / 26.04 ("Resolute Raccoon")?</strong> Remove Jagex's deprecated Ubuntu 14.04 repository left over from Jagex's old website instructions:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>sudo rm -f /etc/apt/sources.list.d/runescape.list /etc/apt/sources.list.d/runescape.sources &amp;&amp; sudo apt update</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy legacy runescape APT repo cleanup command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- Tab 2: Fedora & RHEL (Copr & Native RPM) -->
+          <div id="tab-panel-fedora" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-fedora" hidden="until-found">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Fedora Copr</span>
+                  <span class="badge green">Automatic Updates via DNF</span>
+                  <span class="badge subtle">Fedora 40, 41, 42 &amp; RHEL / Nobara / Bazzite</span>
+                </div>
+                <p class="panel-intro">
+                  The official <strong>Fedora Copr repository</strong> provides packages built natively in Fedora's build infrastructure. Updates are delivered automatically via <code>sudo dnf upgrade</code>, or you can install the standalone <code>.rpm</code> directly.
+                </p>
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text">Enable the official Fedora Copr repository:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo dnf copr enable -y cook0001/linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy dnf copr enable command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text">Install the launcher package:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo dnf install -y linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy dnf install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <span class="step-text">Launch from your application menu or terminal:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Fedora launch command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direct .rpm fallback accordion -->
+              <details class="sub-accordion">
+                <summary>Prefer direct standalone .rpm installation?</summary>
+                <div class="sub-accordion-content">
+                  <p>Download and install the standalone <code>.rpm</code> package directly with DNF:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x86_64.rpm &amp;&amp; sudo dnf install -y ./linux-jagex-launcher-1.4.8.x86_64.rpm</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy standalone rpm install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <!-- Tab 3: Arch Linux & Manjaro (Pacman & AUR) -->
+          <div id="tab-panel-arch" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-arch" hidden="until-found">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Standalone Pacman &amp; AUR</span>
+                  <span class="badge green">Arch Linux, Manjaro &amp; EndeavourOS</span>
+                  <span class="badge subtle">Direct Offline or AUR Install</span>
+                </div>
+                <p class="panel-intro">
+                  Install via standalone native <code>.pacman</code> binary package for instant setup, through an AUR helper, or with the local <code>makepkg</code> script:
+                </p>
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text"><strong>Standalone Pacman Binary Package</strong> (fastest direct install):</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x64.pacman &amp;&amp; sudo pacman -U ./linux-jagex-launcher-1.4.8.x64.pacman</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy pacman install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text">Using <strong>yay</strong> (AUR helper):</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>yay -S linux-jagex-launcher-bin</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy yay install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <span class="step-text">Using <strong>paru</strong> (Rust AUR helper):</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>paru -S linux-jagex-launcher-bin</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy paru install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">4</span>
+                  <div class="step-content">
+                    <span class="step-text">Manual <code>makepkg</code> install from AUR:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>git clone https://aur.archlinux.org/linux-jagex-launcher-bin.git &amp;&amp; cd linux-jagex-launcher-bin &amp;&amp; makepkg -si</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy manual makepkg AUR command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Steam Deck & SteamOS -->
+          <div id="tab-panel-deck" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-deck" hidden="until-found">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Turnkey Setup</span>
+                  <span class="badge green">100% Rootless Userspace</span>
+                  <span class="badge subtle">Never Modifies System Partitions</span>
+                </div>
+                <p class="panel-intro">
+                  Installs cleanly into <code>~/Applications/</code> without disabling SteamOS read-only mode. Automatically registers the Non-Steam shortcut, applies official high-res Steam Grid artwork (poster, banner, hero), and enables gamepad navigation.
+                </p>
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text">Switch to <strong>Desktop Mode</strong> (Press <code>Steam</code> &rarr; <code>Power</code> &rarr; <code>Switch to Desktop</code>).</span>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text">Open <strong>Konsole</strong> and run the automated turnkey installer:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/deck-install.sh | bash</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Steam Deck installer command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <span class="step-text">Double-click <strong>Return to Gaming Mode</strong> on the desktop. Launch <strong>Jagex Launcher</strong> straight from your Library under <strong>Non-Steam</strong>!</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="deck-features-pills">
+                <span class="deck-feature-pill">Native Controller Navigation</span>
+                <span class="deck-feature-pill">Auto-applied Steam Grid Artwork</span>
+                <span class="deck-feature-pill">Steam OSK Virtual Keyboard Integration</span>
+                <span class="deck-feature-pill">Gamescope 1280&times;800 Optimized</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 5: Canonical Snap (Snapd) -->
+          <div id="tab-panel-snap" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-snap" hidden="until-found">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Canonical Snap</span>
+                  <span class="badge green">Strict Confinement (core24)</span>
+                  <span class="badge subtle">Auto-Updating</span>
+                </div>
+                <p class="panel-intro">
+                  Official Canonical Snap package for Ubuntu, Debian, Fedora, Arch, and all snap-enabled distributions. Fully sandboxed with persistent multi-gigabyte cache storage in <code>$SNAP_USER_COMMON</code>.
+                </p>
+              </div>
+
+              <div class="snap-banner-frame">
+                <img src="assets/banner.png" alt="Linux Jagex Launcher Banner" class="snap-banner-img" width="1440" height="810" loading="lazy">
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text">Install directly from the <strong>Snap Store</strong>:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo snap install linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy snap install command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text">Optional: Connect controller &amp; external storage plugs (for handhelds &amp; SD cards):</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>sudo snap connect linux-jagex-launcher:joystick &amp;&amp; sudo snap connect linux-jagex-launcher:removable-media</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy snap connect plugs command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">3</span>
+                  <div class="step-content">
+                    <span class="step-text">Launch from your application menu or terminal:</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Snap launch command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="deck-features-pills">
+                <span class="deck-feature-pill">Automated Background Updates</span>
+                <span class="deck-feature-pill">Zero Dependency Conflicts</span>
+                <span class="deck-feature-pill">Persistent Common Cache ($SNAP_USER_COMMON)</span>
+                <span class="deck-feature-pill">Strict Security Sandbox (core24)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 6: Universal Linux & Others -->
+          <div id="tab-panel-universal" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-universal" hidden="until-found">
+            <div class="install-panel-body">
+              <div class="install-panel-header">
+                <div class="panel-badge-group">
+                  <span class="badge gold">Universal Standalone</span>
+                  <span class="badge subtle">AppImage, RPM, Pacman, DEB, tar.gz</span>
+                </div>
+                <p class="panel-intro">
+                  Download native packages and standalone binaries for any x86_64 Linux distribution:
+                </p>
+              </div>
+
+              <div class="install-steps">
+                <div class="step-item">
+                  <span class="step-num">1</span>
+                  <div class="step-content">
+                    <span class="step-text"><strong>Universal AppImage</strong> (runs on all modern x86_64 distributions):</span>
+                    <div class="code-wrapper">
+                      <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.8.AppImage &amp;&amp; chmod +x Jagex-Launcher-1.4.8.AppImage &amp;&amp; ./Jagex-Launcher-1.4.8.AppImage</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy AppImage download and run command" onclick="copyCode(this)">
+                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        <span>Copy</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="step-item">
+                  <span class="step-num">2</span>
+                  <div class="step-content">
+                    <span class="step-text"><strong>Direct Package Downloads</strong> (v1.4.8):</span>
+                    <div class="direct-downloads-row">
+                      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.8.AppImage" class="btn-secondary btn-compact" download>AppImage (x86_64)</a>
+                      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.8_amd64.deb" class="btn-secondary btn-compact" download>DEB (Debian/Ubuntu)</a>
+                      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x86_64.rpm" class="btn-secondary btn-compact" download>RPM (Fedora/RHEL)</a>
+                      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x64.pacman" class="btn-secondary btn-compact" download>Pacman (Arch)</a>
+                      <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.tar.gz" class="btn-secondary btn-compact" download>Tarball (.tar.gz)</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FUSE note & SHA-256 verification -->
+              <details class="sub-accordion">
+                <summary>FUSE requirements for AppImage &amp; SHA-256 checksum verification</summary>
+                <div class="sub-accordion-content">
+                  <p><strong>For Fedora Workstation / Ubuntu 24.04+:</strong> ensure FUSE 2 runtime libraries are installed for AppImages:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>sudo dnf install -y fuse-libs   # or: sudo apt install -y libfuse2t64</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy FUSE runtime install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+
+                  <p class="sub-accordion-note"><strong>Verify Release Integrity</strong> against published <code>SHA256SUMS.txt</code>:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/SHA256SUMS.txt &amp;&amp; sha256sum -c SHA256SUMS.txt --ignore-missing</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy sha256sum verification command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive FAQ Section -->
+    <section id="faq" class="section section-darker">
+      <div class="section-container faq-container">
+        <div class="section-header">
+          <span class="section-tag">Common Inquiries</span>
+          <h2 id="faq-heading" class="section-title">Frequently Asked Questions</h2>
+          <p class="section-desc">
+            Answers regarding game security, anti-cheat, account migration, Ubuntu 26.04 compatibility, and performance tuning.
+          </p>
+        </div>
+
+        <div class="faq-accordion" role="group" aria-labelledby="faq-heading">
+          <details class="faq-item" open>
+            <summary class="faq-question">Will I get banned for using Linux Jagex Launcher?</summary>
+            <div class="faq-answer">
+              <p>
+                <strong>No.</strong> This launcher does not modify game code, alter memory, intercept network packets, or inject unauthorized hooks into game clients. It utilizes official Jagex OAuth 2.0 PKCE authentication and passes standard session environment variables (<code>JX_SESSION_ID</code>, <code>JX_CHARACTER_ID</code>) directly to official, verified game binaries (RuneLite, HDOS, or native RuneScape 3).
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How does RuneLite work? Do I lose my plugins or settings?</summary>
+            <div class="faq-answer">
+              <p>
+                Your plugins, tile markers, bank tags, and configurations remain <strong>100% untouched</strong>. The launcher launches RuneLite within your standard user home directory, preserving <code>~/.runelite</code> while enabling in-game web links to open in your default Linux browser.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Can I play on Linux if I have migrated to a Jagex Account?</summary>
+            <div class="faq-answer">
+              <p>
+                <strong>Yes!</strong> Migrated Jagex Accounts can no longer use legacy login screens. Linux Jagex Launcher executes the official OAuth 2.0 PKCE flow, handles Cloudflare Turnstile verification natively, and securely injects your active session into your selected game or client.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How does the native Linux RS3 client run without root?</summary>
+            <div class="faq-answer">
+              <p>
+                The launcher unpacks Jagex's official Debian package into your local user data directory (<code>~/.local/share/linux-jagex-launcher/client/</code>) using userspace archive utilities (<code>tar</code> / <code>ar</code>), allowing it to install and update without ever requesting <code>sudo</code> or root privileges.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Why does RuneScape 3 freeze on "Loading application resources" and how do I fix it?</summary>
+            <div class="faq-answer">
+              <p>
+                This freeze is typically caused by Wayland compositor conflicts with legacy GTK2/SDL2 or PulseAudio underruns. Linux Jagex Launcher resolves this automatically by enforcing <code>GDK_BACKEND=x11</code>, <code>SDL_VIDEODRIVER=x11</code>, <code>PULSE_LATENCY_MSEC=100</code>, unsetting <code>XMODIFIERS</code>, and providing an optional Mesa Zink (OpenGL over Vulkan) override in Settings.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How do I fix "NO_PUBKEY 7373B12CE03BEB4B" or "trusty InRelease is not signed" on Ubuntu 24.04 &amp; 26.04?</summary>
+            <div class="faq-answer">
+              <p>
+                Jagex's website still instructs Ubuntu users to add their deprecated Ubuntu 14.04 (<code>trusty</code>) APT repository (<code>https://content.runescape.com/downloads/ubuntu</code>) via <code>sudo apt-key add -</code>. On <strong>Ubuntu 24.04 LTS</strong> and <strong>Ubuntu 26.04 LTS ("Resolute Raccoon")</strong>, <code>apt-key</code> has been removed and APT 3.x strictly rejects unsigned / legacy SHA-1-signed repositories, causing <code>sudo apt update</code> to fail. <strong>Linux Jagex Launcher never uses that repository</strong> because it extracts the native RS3 client rootlessly in userspace. Remove the leftover repository file with <code>sudo rm -f /etc/apt/sources.list.d/runescape.list /etc/apt/sources.list.d/runescape.sources &amp;&amp; sudo apt update</code> (or click <strong>Remove Legacy Repo</strong> inside <strong>Settings &rarr; Run Diagnostics</strong>).
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">How does the launcher resolve libssl1.1 on Ubuntu 22.04, 24.04, and 26.04?</summary>
+            <div class="faq-answer">
+              <p>
+                Modern Ubuntu releases dropped <code>libssl1.1</code>. The native RS3 NXT client was linked against <code>libssl.so.1.1</code> and crashes on clean installations. Rather than risking your package manager with old third-party packages, Linux Jagex Launcher extracts isolated <code>libssl.so.1.1</code> libraries into userspace and injects <code>LD_LIBRARY_PATH</code> only for the game process, keeping your system 100% clean.
+              </p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">Does it support Feral GameMode and MangoHud?</summary>
+            <div class="faq-answer">
+              <p>
+                <strong>Yes!</strong> Both <strong>Feral GameMode</strong> (<code>gamemoderun</code>) and <strong>MangoHud</strong> can be toggled on/off in the Launcher Settings modal for high-performance CPU governor scheduling and real-time performance overlays.
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Community Feedback Section -->
+    <section id="feedback" class="section">
+      <div class="section-container">
+        <div class="feedback-card">
+          <div class="feedback-badge">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+            Community Driven
+          </div>
+          <h2 class="feedback-title">Help Shape Linux Jagex Launcher</h2>
+          <p class="feedback-desc">
+            Whether you are running RuneScape 3 on Arch, Old School on Steam Deck, or playing on Ubuntu 26.04 &mdash; your feedback helps us prioritize features, fix quirks, and deliver the best native Linux gaming experience.
+          </p>
+          <div class="feedback-buttons">
+            <a href="https://forms.gle/KvagBxcmVBB3Q721A" class="btn-primary" target="_blank" rel="noopener noreferrer">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+              <span>Open Feedback Survey</span>
+            </a>
+            <a href="https://github.com/cook0001/Linux-Jagex-Launcher/issues" class="btn-secondary" target="_blank" rel="noopener noreferrer">
+              <span>Report Issue on GitHub &rarr;</span>
+            </a>
+          </div>
+          <span class="feedback-meta">Takes under 60 seconds &bull; Powered by Google Forms</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Clean Minimal Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div class="brand">
+          <img src="assets/icon.png" alt="Linux Jagex Launcher Logo" class="brand-icon" width="38" height="38" loading="lazy">
+          <div class="brand-text">
+            <span class="brand-name">Linux Jagex Launcher</span>
+            <span class="brand-tag">Proprietary Freeware</span>
+          </div>
+        </div>
+
+        <nav class="footer-nav" aria-label="Footer">
+          <a href="#games">Games</a>
+          <a href="#features">Features</a>
+          <a href="#install">Install</a>
+          <a href="#faq">FAQ</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+          <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
+        </nav>
+      </div>
+
+      <div class="disclaimer-box">
+        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. Linux Jagex Launcher is an independent freeware project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Screen Reader Copy Status Live Region -->
+  <div id="copy-announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Interactive JavaScript -->
+  <script>
+    // Progressive polyfills for Popover & Focusgroup where needed
+    if (!Object.hasOwn(HTMLElement.prototype, 'popover')) {
+      import('https://unpkg.com/@oddbird/popover-polyfill@latest/dist/popover.min.js').catch(() => {});
+    }
+    if (!('focusgroup' in HTMLElement.prototype)) {
+      import('https://cdn.jsdelivr.net/npm/@microsoft/focusgroup-polyfill@latest/focusgroup-polyfill.min.js').catch(() => {});
+    }
+
+    // Content-measured responsive header navigation (switches inline <-> popover without overlap)
+    (function initResponsiveHeader() {
+      const header = document.getElementById('site-header');
+      const headerContainer = document.getElementById('header-container');
+      const siteMenu = document.getElementById('site-menu');
+      if (!header || !headerContainer || !siteMenu) return;
+
+      const isPopoverOpen = () => {
+        try {
+          return siteMenu.matches(':popover-open, .\\:popover-open');
+        } catch {
+          return siteMenu.classList.contains(':popover-open');
+        }
+      };
+
+      const syncHeaderLayout = () => {
+        const wasOpen = isPopoverOpen();
+        header.classList.add('is-measuring', 'is-wide');
+        siteMenu.removeAttribute('popover');
+
+        const fitsInline = headerContainer.scrollWidth <= headerContainer.clientWidth;
+        if (!fitsInline) {
+          header.classList.remove('is-wide');
+          siteMenu.setAttribute('popover', 'auto');
+          if (wasOpen && typeof siteMenu.showPopover === 'function') {
+            try {
+              siteMenu.showPopover();
+            } catch {
+              // Ignore if not yet connected to top layer
+            }
+          }
+        }
+
+        requestAnimationFrame(() => {
+          header.classList.remove('is-measuring');
+        });
+      };
+
+      syncHeaderLayout();
+      if ('ResizeObserver' in window) {
+        new ResizeObserver(syncHeaderLayout).observe(headerContainer);
+      } else {
+        window.addEventListener('resize', syncHeaderLayout, { passive: true });
+      }
+
+      siteMenu.addEventListener('click', (event) => {
+        const link = event.target instanceof Element ? event.target.closest('a') : null;
+        if (link && !header.classList.contains('is-wide') && typeof siteMenu.hidePopover === 'function') {
+          try {
+            siteMenu.hidePopover();
+          } catch {
+            // Ignore when already closed
+          }
+        }
+      });
+    })();
+
+    // Accessible Installation Hub tabs + Find-in-Page beforematch + scroll-fade fallback
+    function switchInstallTab(tabId, btn, options) {
+      const opts = options || {};
+      const activeBtn = btn || document.getElementById('tab-btn-' + tabId);
+      const activePanel = document.getElementById('tab-panel-' + tabId);
+      if (!activeBtn || !activePanel) return;
+
+      document.querySelectorAll('.install-tab-btn').forEach((tab) => {
+        const isSelected = tab === activeBtn;
+        tab.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        tab.toggleAttribute('focusgroupstart', isSelected);
+        if (!('focusgroup' in HTMLElement.prototype)) {
+          tab.tabIndex = isSelected ? 0 : -1;
+        }
+      });
+
+      document.querySelectorAll('.install-panel').forEach((panel) => {
+        if (panel === activePanel) {
+          panel.removeAttribute('hidden');
+        } else {
+          panel.setAttribute('hidden', 'until-found');
+        }
+      });
+
+      if (opts.scrollTab !== false) {
+        try {
+          activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest', container: 'nearest' });
+        } catch {
+          activeBtn.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        }
+      }
+
+      if (opts.focusTab) {
+        activeBtn.focus();
+      }
+    }
+
+    function navigateToInstall(tabId) {
+      switchInstallTab(tabId, null, { scrollTab: true });
+      const installSection = document.getElementById('install');
+      if (installSection) {
+        installSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    (function initInstallTabs() {
+      const tablist = document.getElementById('install-tablist');
+      const hub = document.getElementById('install-hub');
+      if (!tablist || !hub) return;
+
+      const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      if (!('focusgroup' in HTMLElement.prototype)) {
+        tabs.forEach((tab) => {
+          tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+        });
+
+        tablist.addEventListener('keydown', (event) => {
+          const currentIndex = tabs.indexOf(document.activeElement);
+          if (currentIndex === -1) return;
+
+          let nextIndex = -1;
+          if (event.key === 'ArrowRight') {
+            nextIndex = (currentIndex + 1) % tabs.length;
+          } else if (event.key === 'ArrowLeft') {
+            nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+          } else if (event.key === 'Home') {
+            nextIndex = 0;
+          } else if (event.key === 'End') {
+            nextIndex = tabs.length - 1;
+          }
+
+          if (nextIndex !== -1) {
+            event.preventDefault();
+            const targetTab = tabs[nextIndex];
+            const tabId = targetTab.id.replace('tab-btn-', '');
+            switchInstallTab(tabId, targetTab, { focusTab: true });
+          }
+        });
+      }
+
+      // Reveal matching tab panel automatically during browser Find-in-Page
+      hub.addEventListener('beforematch', (event) => {
+        const matchedPanel = event.target instanceof Element ? event.target.closest('.install-panel') : null;
+        if (matchedPanel && matchedPanel.id.startsWith('tab-panel-')) {
+          const tabId = matchedPanel.id.replace('tab-panel-', '');
+          switchInstallTab(tabId, null, { scrollTab: true });
+        }
+      });
+
+      // IntersectionObserver edge-fade fallback when scroll-driven animations are unsupported
+      if (
+        typeof CSS !== 'undefined' &&
+        !CSS.supports('animation-timeline', 'scroll()') &&
+        'IntersectionObserver' in window &&
+        tabs.length > 1
+      ) {
+        const firstTab = tabs[0];
+        const lastTab = tabs[tabs.length - 1];
+        const edgeObserver = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.target === firstTab) {
+                tablist.classList.toggle('more-start', entry.intersectionRatio < 0.99);
+              } else if (entry.target === lastTab) {
+                tablist.classList.toggle('more-end', entry.intersectionRatio < 0.99);
+              }
+            }
+          },
+          { root: tablist, threshold: [0.99] }
+        );
+        edgeObserver.observe(firstTab);
+        edgeObserver.observe(lastTab);
+      }
+    })();
+
+    // Showcase Gallery Switcher with metadata sync & non-racing transition
+    const GALLERY_META = {
+      rs3: {
+        src: 'assets/screenshot-rs3.png',
+        alt: 'Linux Jagex Launcher running RuneScape 3 natively on Linux',
+        caption: 'RuneScape 3 \u2014 Official 64-bit NXT Linux Client',
+        badge: 'Native Linux ELF'
+      },
+      osrs: {
+        src: 'assets/screenshot-osrs.png',
+        alt: 'Linux Jagex Launcher Old School RuneScape view with RuneLite, HDOS, and Official client selector',
+        caption: 'Old School RuneScape \u2014 Multi-Client Dock (RuneLite, HDOS & Official)',
+        badge: 'RuneLite \u2022 HDOS \u2022 Official'
+      },
+      dragonwilds: {
+        src: 'assets/screenshot-dragonwilds.png',
+        alt: 'Linux Jagex Launcher RuneScape: Dragonwilds view with Steam integration and live patch feed',
+        caption: 'RuneScape: Dragonwilds \u2014 Direct Steam Protocol & Live RSS Feed',
+        badge: 'Steam Integration'
+      }
+    };
+    let galleryTransitionToken = 0;
+
+    function switchGallery(game, btn) {
+      const meta = GALLERY_META[game];
+      if (!meta) return;
+
+      document.querySelectorAll('.showcase-pill').forEach((pill) => {
+        pill.setAttribute('aria-pressed', pill === btn ? 'true' : 'false');
+      });
+
+      const captionEl = document.getElementById('gallery-caption');
+      const badgeEl = document.getElementById('gallery-badge');
+      if (captionEl) captionEl.textContent = meta.caption;
+      if (badgeEl) badgeEl.textContent = meta.badge;
+
+      const img = document.getElementById('gallery-image');
+      if (!img || img.getAttribute('src') === meta.src) return;
+
+      const currentToken = ++galleryTransitionToken;
+      img.style.opacity = '0.35';
+      img.style.transform = 'scale(0.992)';
+
+      const preload = new Image();
+      preload.src = meta.src;
+      const commitSwap = () => {
+        if (currentToken !== galleryTransitionToken) return;
+        img.src = meta.src;
+        img.alt = meta.alt;
+        requestAnimationFrame(() => {
+          img.style.opacity = '1';
+          img.style.transform = 'scale(1)';
+        });
+      };
+      preload.onload = commitSwap;
+      preload.onerror = commitSwap;
+    }
+
+    // Race-safe Copy Button Handler + Screen Reader Announcement
+    const COPY_DEFAULT_HTML = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span>Copy</span>';
+    const COPY_SUCCESS_HTML = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg><span>Copied!</span>';
+    const copyTimers = new WeakMap();
+
+    function copyCode(btn) {
+      const wrapper = btn.closest('.code-wrapper');
+      if (!wrapper) return;
+      const codeEl = wrapper.querySelector('code, .code-block');
+      if (!codeEl || !navigator.clipboard) return;
+
+      const textToCopy = (codeEl.textContent || '').trim();
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const existingTimer = copyTimers.get(btn);
+        if (existingTimer) {
+          clearTimeout(existingTimer);
+        }
+
+        btn.innerHTML = COPY_SUCCESS_HTML;
+        btn.classList.add('copied');
+
+        const announcer = document.getElementById('copy-announcer');
+        if (announcer) {
+          announcer.textContent = 'Copied command to clipboard.';
+        }
+
+        const timerId = setTimeout(() => {
+          btn.innerHTML = COPY_DEFAULT_HTML;
+          btn.classList.remove('copied');
+          copyTimers.delete(btn);
+        }, 2000);
+        copyTimers.set(btn, timerId);
+      }).catch((err) => {
+        console.error('Failed to copy code:', err);
+      });
+    }
+  </script>
+</body>
+</html>

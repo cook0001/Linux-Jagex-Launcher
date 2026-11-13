@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Linux Jagex Launcher
+GenericName=RuneScape Game Launcher
+Comment=Authentic Jagex Launcher for RuneScape 3, Old School RuneScape, and Dragonwilds
+Exec=linux-jagex-launcher %U
+Icon=io.github.cook0001.LinuxJagexLauncher
+Terminal=false
+Type=Application
+Categories=Game;RolePlaying;
+MimeType=x-scheme-handler/jagex;x-scheme-handler/runescape;
+StartupWMClass=linux-jagex-launcher
+Keywords=runescape;runescape3;rs3;osrs;jagex;runelite;hdos;dragonwilds;steamdeck;steamos;electron;game;
