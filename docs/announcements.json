@@ -2,15 +2,15 @@
   "announcements": [
     {
       "id": "announcement-2026-11-14-ubuntu-ppa-snap-live",
-      "title": "v1.4.9 Published on Ubuntu Launchpad PPA (26.04, 24.04, 22.04) & Snap Store",
+      "title": "Ubuntu Launchpad PPA (26.04, 24.04, 22.04) & Snap Store Live",
       "date": "2026-11-14",
       "badge": "Distribution",
-      "pinned": true,
-      "summary": "Linux Jagex Launcher v1.4.9 is live on ppa:danielcook2016/linux-jagex-launcher for Ubuntu 26.04, 24.04, and 22.04 alongside Canonical Snap Store latest/stable (Rev 9), with repository community standards now at 100%.",
+      "pinned": false,
+      "summary": "Linux Jagex Launcher v1.5.0 is live on ppa:danielcook2016/linux-jagex-launcher for Ubuntu 26.04, 24.04, and 22.04 alongside Canonical Snap Store latest/stable (Rev 10), keeping native installs updated automatically.",
       "bullets": [
         "**Ubuntu PPA**: Published cleanly for Ubuntu 26.04 Resolute, 24.04 Noble, and 22.04 Jammy on `ppa:danielcook2016/linux-jagex-launcher`.",
-        "**Snap Store**: Canonical Snap `latest/stable` updated to `v1.4.9` (Rev 9) with Wayland/X11 desktop integration.",
-        "**Community Standards**: Repository now ships issue forms, PR checklist, contributing guide, security policy, and Code of Conduct."
+        "**Snap Store**: Canonical Snap `latest/stable` updated to `v1.5.0` (Rev 10) with Wayland/X11 desktop integration.",
+        "**Community Standards**: Repository ships issue forms, PR checklist, contributing guide, security policy, and Code of Conduct."
       ],
       "url": "https://launchpad.net/~danielcook2016/+archive/ubuntu/linux-jagex-launcher",
       "ctaLabel": "View Launchpad PPA"
