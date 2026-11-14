@@ -24,6 +24,6 @@ pkgbase = linux-jagex-launcher-bin
 	conflicts = linux-jagex-launcher
 	conflicts = jagex-launcher
 	source = https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v1.4.9/jagex-launcher_1.4.9_amd64.deb
-	sha256sums = 8cc8f1bad20413b8a3ff97fc026aa1fa9533265588392cc3a9ff928f8eff90e0
+	sha256sums = 9b5f63e0bd2bf8bda05746032f02f3d455cc44c325034d173e5e521761df479d
 
 pkgname = linux-jagex-launcher-bin

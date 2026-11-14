@@ -84,7 +84,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v1.4.9/linux-jagex-launcher-1.4.9.tar.gz
-        sha256: ec54b1b450abebbbe382e4b13136f8f67f882c991b32fba32bc501938fe5a5f7
+        sha256: dc6e9bcab71adcfa90641eb87ab1884ae2b52433b2d558775fb1fefe6e3facbc
         dest: app-bundle
         only-arches:
           - x86_64
