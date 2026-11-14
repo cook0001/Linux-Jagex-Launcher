@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project Website & Install Guides
+    url: https://cook0001.github.io/Linux-Jagex-Launcher/
+    about: Official Linux install instructions, troubleshooting guides, and distribution packages.
+  - name: Jagex Support & Account Help
+    url: https://support.runescape.com/
+    about: For Jagex account, password resets, bans, or billing issues, please contact official Jagex Support.
+  - name: RuneLite Support
+    url: https://runelite.net/
+    about: For plugin or RuneLite specific issues, visit the RuneLite community.
+  - name: HDOS Website & Support
+    url: https://hdos.dev/
+    about: For HDOS client-specific graphics or plugin questions, visit the official HDOS site.
