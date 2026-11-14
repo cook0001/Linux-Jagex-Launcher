@@ -256,11 +256,11 @@ curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.8_amd64.deb
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.4.9_amd64.deb
 ```
 ```bash
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.4.8_amd64.deb
+sudo apt install ./jagex-launcher_1.4.9_amd64.deb
 ```
 
 ---
@@ -271,15 +271,15 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.8.AppImage
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.4.9.AppImage
 ```
 ```bash
 # Make executable:
-chmod +x Jagex-Launcher-1.4.8.AppImage
+chmod +x Jagex-Launcher-1.4.9.AppImage
 ```
 ```bash
 # Run:
-./Jagex-Launcher-1.4.8.AppImage
+./Jagex-Launcher-1.4.9.AppImage
 ```
 
 ---
@@ -327,10 +327,10 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 **Method A: Standalone Pacman Package (No AUR helper needed):**
 ```bash
 # 1. Download standalone package from GitHub Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.x64.pacman
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.9.x64.pacman
 
 # 2. Install with pacman:
-sudo pacman -U ./linux-jagex-launcher-1.4.8.x64.pacman
+sudo pacman -U ./linux-jagex-launcher-1.4.9.x64.pacman
 ```
 
 **Method B: Install via AUR Helper:**
@@ -361,7 +361,7 @@ sudo dnf install -y linux-jagex-launcher
 linux-jagex-launcher
 ```
 
-*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.4.8.x86_64.rpm`)*
+*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.4.9.x86_64.rpm`)*
 
 ---
 
@@ -371,15 +371,15 @@ Extract and run anywhere in userspace without installing system packages:
 
 ```bash
 # 1. Download tarball and SHA256SUMS.txt from GitHub Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.8.tar.gz
+curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.4.9.tar.gz
 curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/SHA256SUMS.txt
 
 # 2. Verify SHA-256 checksum integrity:
 sha256sum -c SHA256SUMS.txt --ignore-missing
 
 # 3. Extract and launch:
-tar -xzf linux-jagex-launcher-1.4.8.tar.gz
-./linux-jagex-launcher-1.4.8/linux-jagex-launcher
+tar -xzf linux-jagex-launcher-1.4.9.tar.gz
+./linux-jagex-launcher-1.4.9/linux-jagex-launcher
 ```
 
 ---

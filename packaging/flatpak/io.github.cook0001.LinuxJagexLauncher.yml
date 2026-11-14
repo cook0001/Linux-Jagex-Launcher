@@ -1,8 +1,8 @@
 app-id: io.github.cook0001.LinuxJagexLauncher
 base: org.electronjs.Electron2.BaseApp
-base-version: '24.08'
+base-version: '26.08'
 runtime: org.freedesktop.Platform
-runtime-version: '24.08'
+runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21
@@ -83,8 +83,8 @@ modules:
       - install -Dm644 icon-32.png /app/share/icons/hicolor/32x32/apps/io.github.cook0001.LinuxJagexLauncher.png
     sources:
       - type: archive
-        url: https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v1.4.8/linux-jagex-launcher-1.4.8.tar.gz
-        sha256: 428cf746820b408132a513299b730cd077324cbdada819f48fe8638cce1f6f21
+        url: https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v1.4.9/linux-jagex-launcher-1.4.9.tar.gz
+        sha256: ec54b1b450abebbbe382e4b13136f8f67f882c991b32fba32bc501938fe5a5f7
         dest: app-bundle
         only-arches:
           - x86_64
@@ -93,22 +93,22 @@ modules:
       - type: file
         path: io.github.cook0001.LinuxJagexLauncher.metainfo.xml
       - type: file
-        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.8/resources/icons/512x512.png
+        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.9/resources/icons/512x512.png
         dest-filename: icon-512.png
         sha256: 1aad284f3e212e6a47ce2bbf33165957540bcd2fa8d38c5bbcea39ae75226cfe
       - type: file
-        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.8/resources/icons/256x256.png
+        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.9/resources/icons/256x256.png
         dest-filename: icon-256.png
         sha256: b8b8e0dd98d2888bbe79c47aa7f30a7256ebbbf5952e55a8d2b1df60dabe94e1
       - type: file
-        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.8/resources/icons/128x128.png
+        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.9/resources/icons/128x128.png
         dest-filename: icon-128.png
         sha256: 2b6f20ed6fd62028c6f82a65766486eddb90ac75a917dadead3fc4447e58a675
       - type: file
-        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.8/resources/icons/64x64.png
+        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.9/resources/icons/64x64.png
         dest-filename: icon-64.png
         sha256: 5f96eaa418d664ba6ae97cc77fd31bdceb16570fec6e824f0c87c5ae42823210
       - type: file
-        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.8/resources/icons/32x32.png
+        url: https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v1.4.9/resources/icons/32x32.png
         dest-filename: icon-32.png
         sha256: 139b977a41ea0b23354bdfd239b93e11737f996b44d656d9fef1ceb3bca1fc18

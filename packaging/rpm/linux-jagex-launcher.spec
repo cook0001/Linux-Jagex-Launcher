@@ -1,5 +1,5 @@
 Name:           linux-jagex-launcher
-Version:        1.4.8
+Version:        1.4.9
 Release:        1%{?dist}
 Summary:        Authentic, native Jagex Launcher for Linux
 License:        Proprietary
@@ -107,6 +107,9 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/io.g
 %{_datadir}/icons/hicolor/*/apps/io.github.cook0001.LinuxJagexLauncher.png
 
 %changelog
+* Fri Nov 13 2026 Daniel Cook <danielcook2016@outlook.com> - 1.4.9-1
+- Release v1.4.9: Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer; Dependencies: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08
+
 * Thu Nov 12 2026 Daniel Cook <danielcook2016@outlook.com> - 1.4.8-1
 - Release v1.4.8: Ubuntu 26.04/24.04 legacy Jagex APT repository remediation, t64 package diagnostics, and website UI overhaul
 

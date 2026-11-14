@@ -131,7 +131,7 @@ main() {
   LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' || true)
 
   if [ -z "$LATEST_TAG" ]; then
-    LATEST_TAG="v1.4.8"
+    LATEST_TAG="v1.4.9"
   fi
 
   VERSION="${LATEST_TAG#v}"

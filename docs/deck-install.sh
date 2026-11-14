@@ -41,9 +41,9 @@ mkdir -p "${ICONS_DIR}"
 mkdir -p "${LAUNCHER_DATA_DIR}/grid"
 
 echo "==> Checking latest release from GitHub..."
-LATEST_TAG=$(curl -sSL "https://api.github.com/repos/${REPO}/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' || true)
 if [ -z "$LATEST_TAG" ]; then
-  LATEST_TAG="v1.4.8"
+  LATEST_TAG="v1.4.9"
 fi
 VERSION="${LATEST_TAG#v}"
 
@@ -51,7 +51,7 @@ TARGET_APPIMAGE="${APPLICATIONS_DIR}/Jagex-Launcher.AppImage"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/Jagex-Launcher-${VERSION}.AppImage"
 
 echo "==> Downloading Jagex Launcher ${LATEST_TAG} to ~/Applications/..."
-curl -L -o "${TARGET_APPIMAGE}.part" "${DOWNLOAD_URL}"
+curl -fsSL -o "${TARGET_APPIMAGE}.part" "${DOWNLOAD_URL}"
 mv "${TARGET_APPIMAGE}.part" "${TARGET_APPIMAGE}"
 chmod 0755 "${TARGET_APPIMAGE}"
 echo "    Installed executable: ${TARGET_APPIMAGE}"
@@ -60,9 +60,9 @@ echo "==> Fetching Steam Deck artwork and icons..."
 ICON_URL="https://raw.githubusercontent.com/${REPO}/main/docs/assets/icon.png"
 HERO_URL="https://raw.githubusercontent.com/${REPO}/main/docs/assets/banner.png"
 
-curl -sSL -o "${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png" "${ICON_URL}"
-curl -sSL -o "${LAUNCHER_DATA_DIR}/icon.png" "${ICON_URL}"
-curl -sSL -o "${LAUNCHER_DATA_DIR}/banner.png" "${HERO_URL}"
+curl -fsSL -o "${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png" "${ICON_URL}" || true
+curl -fsSL -o "${LAUNCHER_DATA_DIR}/icon.png" "${ICON_URL}" || true
+curl -fsSL -o "${LAUNCHER_DATA_DIR}/banner.png" "${HERO_URL}" || true
 
 # Create standard .desktop file
 DESKTOP_FILE="${DESKTOP_DIR}/io.github.cook0001.LinuxJagexLauncher.desktop"
@@ -113,7 +113,7 @@ if [ -n "$STEAM_DIR" ] && [ -d "${STEAM_DIR}/userdata" ]; then
       # Register shortcut in shortcuts.vdf via python3 if available
       if command -v python3 >/dev/null 2>&1; then
         python3 -c "
-import os, sys, struct, binascii
+import os, re, sys, struct, binascii
 
 app_name = sys.argv[1]
 exe = sys.argv[2]
@@ -123,42 +123,52 @@ shortcuts_file = sys.argv[5]
 
 app_id = (binascii.crc32(f'\"{exe}\"{app_name}'.encode()) | 0x80000000) & 0xFFFFFFFF
 
-chunk = b'\x000\x00'
-chunk += b'\x02appid\x00' + struct.pack('<I', app_id)
-chunk += b'\x01AppName\x00' + app_name.encode() + b'\x00'
-chunk += b'\x01Exe\x00\"' + exe.encode() + b'\"\x00'
-chunk += b'\x01StartDir\x00\"' + start_dir.encode() + b'\"\x00'
-chunk += b'\x01icon\x00' + icon.encode() + b'\x00'
-chunk += b'\x01LaunchOptions\x00GDK_BACKEND=x11 SDL_VIDEODRIVER=x11 %command%\x00'
-chunk += b'\x02IsHidden\x00\x00\x00\x00\x00'
-chunk += b'\x02AllowDesktopConfig\x00\x01\x00\x00\x00'
-chunk += b'\x02AllowOverlay\x00\x01\x00\x00\x00'
-chunk += b'\x02OpenVR\x00\x00\x00\x00\x00'
-chunk += b'\x02Devkit\x00\x00\x00\x00\x00'
-chunk += b'\x01DevkitGameID\x00\x00'
-chunk += b'\x02DevkitOverrideAppID\x00\x00\x00\x00\x00'
-chunk += b'\x02LastPlayTime\x00\x00\x00\x00\x00'
-chunk += b'\x01FlatpakAppID\x00\x00'
-chunk += b'\x00tags\x00\x08'
-chunk += b'\x08'
+def build_chunk(idx):
+    c = b'\x00' + str(idx).encode() + b'\x00'
+    c += b'\x02appid\x00' + struct.pack('<I', app_id)
+    c += b'\x01AppName\x00' + app_name.encode() + b'\x00'
+    c += b'\x01Exe\x00\"' + exe.encode() + b'\"\x00'
+    c += b'\x01StartDir\x00\"' + start_dir.encode() + b'\"\x00'
+    c += b'\x01icon\x00' + icon.encode() + b'\x00'
+    c += b'\x01LaunchOptions\x00GDK_BACKEND=x11 SDL_VIDEODRIVER=x11 %command%\x00'
+    c += b'\x02IsHidden\x00\x00\x00\x00\x00'
+    c += b'\x02AllowDesktopConfig\x00\x01\x00\x00\x00'
+    c += b'\x02AllowOverlay\x00\x01\x00\x00\x00'
+    c += b'\x02OpenVR\x00\x00\x00\x00\x00'
+    c += b'\x02Devkit\x00\x00\x00\x00\x00'
+    c += b'\x01DevkitGameID\x00\x00'
+    c += b'\x02DevkitOverrideAppID\x00\x00\x00\x00\x00'
+    c += b'\x02LastPlayTime\x00\x00\x00\x00\x00'
+    c += b'\x01FlatpakAppID\x00\x00'
+    c += b'\x00tags\x00\x08'
+    c += b'\x08'
+    return c
 
 try:
     if not os.path.exists(shortcuts_file) or os.path.getsize(shortcuts_file) < 10:
         with open(shortcuts_file, 'wb') as f:
-            f.write(b'\x00shortcuts\x00' + chunk + b'\x08\x08')
+            f.write(b'\x00shortcuts\x00' + build_chunk(0) + b'\x08\x08')
     else:
         with open(shortcuts_file, 'rb') as f:
             data = f.read()
         if app_name.encode() not in data:
+            next_idx = 0
+            for m in re.findall(b'\x00(\d+)\x00', data):
+                try:
+                    val = int(m)
+                    if val >= next_idx:
+                        next_idx = val + 1
+                except ValueError:
+                    pass
             insert_pos = len(data) - 2
             for i in range(len(data) - 1, 0, -1):
                 if data[i] == 0x08 and data[i-1] == 0x08:
                     insert_pos = i - 1
                     break
-            new_data = data[:insert_pos] + chunk + b'\x08\x08'
+            new_data = data[:insert_pos] + build_chunk(next_idx) + b'\x08\x08'
             with open(shortcuts_file, 'wb') as f:
                 f.write(new_data)
-except Exception as err:
+except Exception:
     pass
 " "${APP_NAME}" "${TARGET_APPIMAGE}" "${APPLICATIONS_DIR}" "${LAUNCHER_DATA_DIR}/icon.png" "${SHORTCUTS_FILE}" 2>/dev/null || true
       fi

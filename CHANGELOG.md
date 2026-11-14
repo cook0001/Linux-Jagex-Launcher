@@ -5,6 +5,16 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.9] - 2026-11-13
+
+### Fixed
+- Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer
+
+### Changed
+- **Dependencies**: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08
+
+---
+
 ## [1.4.8] - 2026-11-12
 
 ### Added
