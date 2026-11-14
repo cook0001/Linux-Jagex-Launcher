@@ -1,7 +1,7 @@
 # Maintainer: Daniel Cook <danielcook2016@outlook.com>
 pkgname=linux-jagex-launcher-bin
 _pkgname=jagex-launcher
-pkgver=1.4.9
+pkgver=1.5.0
 pkgrel=1
 pkgdesc="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape"
 arch=('x86_64')
@@ -28,7 +28,7 @@ optdepends=(
 provides=('linux-jagex-launcher' 'jagex-launcher')
 conflicts=('linux-jagex-launcher' 'jagex-launcher')
 source=("https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
-sha256sums=('9b5f63e0bd2bf8bda05746032f02f3d455cc44c325034d173e5e521761df479d')
+sha256sums=('ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857')
 
 package() {
   # Extract the deb payload

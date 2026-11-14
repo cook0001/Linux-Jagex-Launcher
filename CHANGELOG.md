@@ -5,6 +5,23 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-11-14
+
+### Notes
+- **Thanks for your patience**: Sorry for the radio silence, I was recently affected by hurricane Issias and lost power for a few days. On top of that, I have not had internet access till just the other day. My sincerest apologies for the delay in response. The last couple of updates have been a mix of both a bug fix affecting a few users(v1.4.8), and (v1.4.9) was a few general bug fixes. This version (v1.5.0) is a huge codebase organization and backend improvement for me this shouldn't really affect any end-users. Huge thanks to the people and users that use this! I will continue to add updates and improvements when needed.
+
+### Added
+- **Website News & Release Feed**: Added an interactive Updates & News section to the project website with JSON/RSS feeds and automated release synchronization.
+
+### Fixed
+- **Live Client Logger & Diagnostics**: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling.
+
+### Changed
+- **Launcher Architecture & Modularity**: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated Linux /proc process monitoring, icon deployment, and streaming downloads.
+- **Community**: Added Code of Conduct, refreshed issue/PR templates, and synced public community files.
+
+---
+
 ## [1.4.9] - 2026-11-13
 
 ### Fixed

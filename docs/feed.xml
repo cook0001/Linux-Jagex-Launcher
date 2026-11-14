@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux Jagex Launcher — News &amp; Releases</title>
+    <link>https://cook0001.github.io/Linux-Jagex-Launcher/</link>
+    <atom:link href="https://cook0001.github.io/Linux-Jagex-Launcher/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Official releases, packaging updates, and maintainer announcements for Linux Jagex Launcher.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 14 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <item>
+      <title>v1.4.9 Published on Ubuntu Launchpad PPA (26.04, 24.04, 22.04) &amp; Snap Store</title>
+      <link>https://launchpad.net/~danielcook2016/+archive/ubuntu/linux-jagex-launcher</link>
+      <guid isPermaLink="false">announcement-2026-11-14-ubuntu-ppa-snap-live</guid>
+      <pubDate>Sat, 14 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Announcement</category>
+      <description>Linux Jagex Launcher v1.4.9 is live on ppa:danielcook2016/linux-jagex-launcher for Ubuntu 26.04, 24.04, and 22.04 alongside Canonical Snap Store latest/stable (Rev 9), with repository community standards now at 100%.
+
+- Highlights: Ubuntu PPA: Published cleanly for Ubuntu 26.04 Resolute, 24.04 Noble, and 22.04 Jammy on ppa:danielcook2016/linux-jagex-launcher.
+- Highlights: Snap Store: Canonical Snap latest/stable updated to v1.4.9 (Rev 9) with Wayland/X11 desktop integration.
+- Highlights: Community Standards: Repository now ships issue forms, PR checklist, contributing guide, security policy, and Code of Conduct.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.5.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0</link>
+      <guid isPermaLink="false">release-v1.5.0</guid>
+      <pubDate>Sat, 14 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Thanks for your patience: Sorry for the radio silence, I was recently affected by hurricane Issias and lost power for a few days. On top of that, I have not had internet access till just the other day. My...
+
+- Notes: Thanks for your patience: Sorry for the radio silence, I was recently affected by hurricane Issias and lost power for a few days. On top of that, I have not had internet access till just the other day. My sincerest apologies for the delay in response. The last couple of updates have been a mix of both a bug fix affecting a few users(v1.4.8), and (v1.4.9) was a few general bug fixes. This version (v1.5.0) is a huge codebase organization and backend improvement for me this shouldn't really affect any end-users. Huge thanks to the people and users that use this! I will continue to add updates and improvements when needed.
+- Added: Website News &amp; Release Feed: Added an interactive Updates &amp; News section to the project website with JSON/RSS feeds and automated release synchronization.
+- Fixed: Live Client Logger &amp; Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling.
+- Changed: Launcher Architecture &amp; Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated Linux /proc process monitoring, icon deployment, and streaming downloads.
+- Changed: Community: Added Code of Conduct, refreshed issue/PR templates, and synced public community files.</description>
+    </item>
+    <item>
+      <title>Arch (.pacman) &amp; Fedora (.rpm) Packages Hosted Directly on GitHub Releases</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest</link>
+      <guid isPermaLink="false">announcement-2026-11-13-arch-fedora-github-packages</guid>
+      <pubDate>Fri, 13 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Announcement</category>
+      <description>Due to upstream AUR downtime, native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and source tarballs are hosted directly on every GitHub Release.
+
+- Highlights: Arch Linux: Install the .x64.pacman package from GitHub Releases using sudo pacman -U or build from packaging/aur/PKGBUILD.
+- Highlights: Fedora &amp; RHEL: Install the .x86_64.rpm package directly with dnf or use the cook0001/linux-jagex-launcher Copr repository.
+- Highlights: Verified Checksums: Every release publishes SHA256SUMS.txt verified automatically by the built-in launcher updater.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.9</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.9</link>
+      <guid isPermaLink="false">release-v1.4.9</guid>
+      <pubDate>Fri, 13 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer; Dependencies: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08.
+
+- Fixed: Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer
+- Changed: Dependencies: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.8</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.8</link>
+      <guid isPermaLink="false">release-v1.4.8</guid>
+      <pubDate>Thu, 12 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Legacy Jagex APT Repository Detection &amp; One-Click Remediation: Added automatic inspection (inspectLegacyJagexAptSources) and PolicyKit (pkexec) cleanup (removeLegacyJagexAptSources) for Jagex's deprecated...
+
+- Added: Legacy Jagex APT Repository Detection &amp; One-Click Remediation: Added automatic inspection (inspectLegacyJagexAptSources) and PolicyKit (pkexec) cleanup (removeLegacyJagexAptSources) for Jagex's deprecated Ubuntu 14.04 (trusty) repository (content.runescape.com/downloads/ubuntu), resolving NO_PUBKEY 7373B12CE03BEB4B and InRelease is not signed APT errors on Ubuntu 24.04 LTS and Ubuntu 26.04 LTS ("Resolute Raccoon") in RS3 Doctor, OSRS Doctor, Issue Reporter, and install.sh.
+- Fixed: Ubuntu 24.04 &amp; 26.04 (resolute) t64 Package Resolution: Updated RS3 Doctor, OSRS Doctor, and Debian repository metadata to resolve modern 64-bit time_t library names (libgtk2.0-0t64, libasound2t64, libgtk-3-0t64) on Ubuntu 24.04+, Ubuntu 26.04 LTS, Linux Mint 22+, Pop!_OS 24.04+, and Debian 13+, while retaining pre-t64 package names on Ubuntu 22.04 and Debian 12.
+- Fixed: RS3 CDN Diagnostic Probe Endpoint: Updated Rs3Doctor.probeNetwork() to query the active dists/trusty/non-free/binary-amd64/Packages index instead of a legacy 404 URL, and fixed ~ path expansion in OsrsDoctor.repairPermissions().
+- Fixed: Standalone Debian Installer Resiliency (install.sh): Prevented broken third-party APT repositories from aborting local .deb package installation and enabled fast HTTP error detection (curl -f) on release downloads.
+- Fixed: Official Website UI, Responsive Layout &amp; Accessibility Overhaul: Removed the redundant macOS traffic-light titlebar stacked above the launcher's native Linux window frame, added a responsive mobile navigation popover menu, implemented accessible WAI-ARIA / focusgroup installation tabs with hidden="until-found" find-in-page auto-switching and scroll-edge fades, fixed flexbox code-block horizontal overflow and copy-button race conditions, corrected the Fedora Copr repository command (cook0001/linux-jagex-launcher), and added explicit image dimensions + LCP priority hints to eliminate layout shift.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.7</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.7</link>
+      <guid isPermaLink="false">release-v1.4.7</guid>
+      <pubDate>Tue, 06 Oct 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>RuneScape API Plugins Beta Support (World 204): Added first-class integration for the official RuneScape Lua API Plugins Beta. Includes deep link parsing for jagex:launch=runescape,args=[configURI=...] and...
+
+- Added: RuneScape API Plugins Beta Support (World 204): Added first-class integration for the official RuneScape Lua API Plugins Beta. Includes deep link parsing for jagex:launch=runescape,args=[configURI=...] and rs-launch:// protocols, dynamic environment switching between Live NXT and API Beta directly on the launch dock, and one-click configuration presets in RS3 settings.
+- Changed: Codebase Optimization &amp; Architecture Refinement: Centralized system query helpers (commandExists, resolveExecutable, findLibraryInPaths) into a unified system.ts module, simplified Buffer conversions using native Node.js base64url codecs, and eliminated redundant defensive type guards.
+- Changed: Cache Inspector &amp; Diagnostics Performance: Hoisted static diagnostic distro definitions to module scope and consolidated repetitive multi-client cache clearing logic into a single lookup table.
+- Changed: Documentation &amp; UI Parity: Cleaned shell script output formatting across Steam Deck and standalone installers, removed visual ASCII banner noise, and updated distribution specifications across all packaging formats.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.6</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.6</link>
+      <guid isPermaLink="false">release-v1.4.6</guid>
+      <pubDate>Sun, 04 Oct 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Cache Size Inspector: Live disk usage calculation and selective safe cache clearing across RuneScape 3 NXT (~/.local/share/Jagex), RuneLite (~/.runelite/repository2), HDOS (~/.hdos), and launcher...
+
+- Added: Cache Size Inspector: Live disk usage calculation and selective safe cache clearing across RuneScape 3 NXT (~/.local/share/Jagex), RuneLite (~/.runelite/repository2), HDOS (~/.hdos), and launcher application logs with confirmation safeguards.
+- Added: In-App Issue Reporter &amp; Diagnostics: Built-in system environment collector and issue generator with sanitized hardware/distro diagnostics, pre-filled GitHub issue templates, and 4-point in-app discoverability (sidebar rail "Issues" button, General Settings hub, RS3 diagnostics card, and OSRS diagnostics card).
+- Added: GitHub Actions Workflows: Added CodeQL security analysis, Flatpak manifest linting, automated Dependabot pull request auto-merge, GitHub Release Drafter, PR labeler, and markdown documentation link checker.
+- Fixed: Character Membership Detection: Corrected Jagex Account character membership status evaluation and badge indicators in profile cards and quick switcher.
+- Fixed: Release Parity: Synchronized all distribution specifications (AppImage, Flatpak, Snap, Debian PPA, Fedora RPM/Copr, Arch AUR/Pacman, and Steam Deck turnkey installer) to v1.4.6.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.5</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.5</link>
+      <guid isPermaLink="false">release-v1.4.5</guid>
+      <pubDate>Fri, 02 Oct 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>In-Place Atomic Auto-Updater: Overhauled auto-updater engine with safe atomic file replacement, SHA-256 integrity verification, permission preservation, and live in-app download progress; Automated...
+
+- Added: In-Place Atomic Auto-Updater: Overhauled auto-updater engine with safe atomic file replacement, SHA-256 integrity verification, permission preservation, and live in-app download progress.
+- Added: Automated Snapcraft Publishing: Added automated CI deployment for Canonical Snap Store publishing targeting core24.
+- Changed: Refactored updater UI modal with distinct distribution format detection and package-specific update instructions.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.4</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.4</link>
+      <guid isPermaLink="false">release-v1.4.4</guid>
+      <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Debian &amp; PPA Package Relationships: Declared explicit Replaces: linux-jagex-launcher, Conflicts: linux-jagex-launcher, and Provides: linux-jagex-launcher in electron-builder.json, along with corresponding...
+
+- Fixed: Debian &amp; PPA Package Relationships: Declared explicit Replaces: linux-jagex-launcher, Conflicts: linux-jagex-launcher, and Provides: linux-jagex-launcher in electron-builder.json, along with corresponding declarations in packaging/ppa/debian/control, resolving dpkg file overwrite and upgrade collisions between jagex-launcher and linux-jagex-launcher.
+- Fixed: AUR Binary Execution &amp; Symlink Paths: Corrected target binary installation path in packaging/aur/PKGBUILD and added symlinks in /usr/bin for both linux-jagex-launcher and jagex-launcher for immediate command-line execution.
+- Fixed: Launchpad PPA Version Synchronization: Bumped upstream release version to v1.4.4 to generate clean Debian source artifacts (.orig.tar.gz, .dsc, and .changes) and resolve Launchpad PPA rejection caused by re-uploading modified v1.4.3 source archives with differing checksums.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.3</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.3</link>
+      <guid isPermaLink="false">release-v1.4.3</guid>
+      <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>HiDPI Display Scaling Controls for OSRS: Configurable UI scaling (1.0x to 3.0x) passing JVM -Dsun.java2d.uiScale and FlatLaf UI font scaling parameters, providing crisp high-resolution rendering on 4K,...
+
+- Added: HiDPI Display Scaling Controls for OSRS: Configurable UI scaling (1.0x to 3.0x) passing JVM -Dsun.java2d.uiScale and FlatLaf UI font scaling parameters, providing crisp high-resolution rendering on 4K, 1440p, and high-density laptop displays.
+- Added: Multi-Instance Client Manager: Live tracking and managing multiple concurrent RuneLite, HDOS, and RS3 game clients with live process heartbeats and individual force-stop/kill controls.
+- Added: In-App Live Client Log Viewer: Dedicated real-time terminal modal with ring-buffered streaming, level coloring, log source filters, token sanitization, and text export.
+- Added: Multi-GPU &amp; Dedicated GPU Selector: Automatic hardware detection of integrated and discrete GPUs with one-click Mesa DRI PRIME (DRI_PRIME=1) and NVIDIA PRIME Render Offload (__NV_PRIME_RENDER_OFFLOAD=1).
+- Added: Deep Link OAuth Protocol Handling: Seamless authentication callback interception for jagex:// and jagex-launcher:// URLs on running instances (second-instance) and cold start.
+- Fixed: Custom Launch Command Template Expansion: Corrected argument tokenization in %command% templates in launcher.ts and osrs.ts, preventing monolithic argument strings that caused spawn ENOENT failures when running tools like gamemoderun, mangohud, or gamescope.
+- Fixed: Process Lifecycle &amp; PID Recycling Safeguards: Linux /proc/${pid}/comm verification in instance-manager.ts preventing accidental collateral signals and safely pruning dead instances with non-positive PIDs.
+- Fixed: Harmless Desktop Warning Classification: Automatically categorized non-fatal desktop subsystem notices (canberra-gtk-module, pk-gtk-module, ALSA, LWJGL, WARNING:) as warnings rather than red errors.
+- Fixed: Network Resilience Timeouts: Added AbortSignal.timeout across all authentication, update checking, and client download network operations to prevent UI hangs on stalled connections.
+- Fixed: Steam Shortcut Key Indexing: Fixed sequential key generation in shortcuts.vdf to prevent key collisions with existing non-Steam shortcuts.
+- Fixed: Release Parity: Synchronized all packaging formats across AppImage, Flatpak, Snap, Debian PPA, and AUR to v1.4.3.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.2</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.2</link>
+      <guid isPermaLink="false">release-v1.4.2</guid>
+      <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>AppImage Child Environment Sanitization &amp; RuneLite Launch Loop: Stripped APPIMAGE, APPDIR, OWD, and ARGV0 and cleaned .mount_ paths from LD_LIBRARY_PATH when spawning native game clients (src/main/osrs.ts...
+
+- Fixed: AppImage Child Environment Sanitization &amp; RuneLite Launch Loop: Stripped APPIMAGE, APPDIR, OWD, and ARGV0 and cleaned .mount_ paths from LD_LIBRARY_PATH when spawning native game clients (src/main/osrs.ts and src/main/launcher.ts). When running from inside an AppImage, RuneLite's launcher checked System.getenv("APPIMAGE"), mistakenly assumed the Jagex Launcher AppImage was RuneLite's own AppImage, and attempted to re-exec the Jagex Launcher binary in fork mode, causing RuneLite to immediately exit after hash verification.
+- Fixed: RuneLite &amp; OSRS Process Lifecycle Tracking: Prioritized the actual game client (net.runelite.client.RuneLite) over the bootstrap jar (RuneLite.jar) in findOsrsPid(). Added successor process migration in startMonitoring() so when the bootstrap jar cleanly terminates after spawning the client, process monitoring smoothly shifts to the client PID instead of resetting game state. Extended JVM fork detection grace period to 15 seconds.
+- Fixed: OpenJDK 24+ ZGC Compatibility: Automatically detect and filter out -XX:+ZGenerational on OpenJDK 24+ where Generational ZGC is enabled by default and the JVM argument was removed.
+- Fixed: AppImage FUSE2-Free Static Runtime: Added AppImage toolset 1.0.3 static runtime configuration in electron-builder.json to run seamlessly on Ubuntu 24.04 and 26.04 without requiring legacy libfuse.so.2.
+- Fixed: Application Menu Launching &amp; Stale Desktop Override Resolution: Fixed desktop integration in src/main/desktop.ts to properly resolve the application root directory rather than relying on current working directory. Cleaned up stale or broken user desktop overrides that previously shadowed system-installed launcher binaries.
+- Fixed: Single-Instance Lock &amp; Window Focus: Enforced Chromium single-instance lock in src/main/index.ts with app.requestSingleInstanceLock(). Clicking the launcher from the application menu or dock now smoothly restores and focuses existing launcher windows instead of spawning duplicate competing processes.
+- Fixed: Wayland Window Presentation Fallbacks: Added secondary presentation fallbacks (did-finish-load and timeout) to ensure the main window displays reliably under Wayland and X11 compositors even if hardware acceleration frames are delayed.
+- Fixed: Linux Wayland / Vulkan Compatibility: Added --disable-features=Vulkan command line switch on Linux to prevent Chromium Ozone Wayland surface initialization conflicts.
+- Fixed: Application Menu Category Conformance: Corrected desktop entry categories in electron-builder.json to standard Game; ensuring consistent placement across GNOME, KDE Plasma, and XFCE application menus.
+- Added: Canonical Snap Release Pipeline: Added full Snap package build and distribution support (packaging/snap/snapcraft.yaml, snap/snapcraft.yaml, and npm run dist:snap) targeting core24 with strict confinement. Includes full interface plugs (removable-media, joystick, process-control, network-bind, opengl, audio-playback) and data persistence in SNAP_USER_COMMON across snap auto-refreshes.
+- Added: In-App Snap Format Detection: Added 'snap' package recognition to AutoUpdater and runtime paths in folders.ts, installer.ts, store.ts, osrs.ts, and desktop.ts.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.1</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.1</link>
+      <guid isPermaLink="false">release-v1.4.1</guid>
+      <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Ubuntu 24.04 (noble) and 26.04 (resolute) t64 Dependency Resolution: Updated package dependencies in electron-builder.json and packaging/ppa/debian/control with transitional alternatives (libatspi2.0-0t64 |...
+
+- Fixed: Ubuntu 24.04 (noble) and 26.04 (resolute) t64 Dependency Resolution: Updated package dependencies in electron-builder.json and packaging/ppa/debian/control with transitional alternatives (libatspi2.0-0t64 | libatspi2.0-0 | libatspi-0, libgtk-3-0 | libgtk-3-0t64, libasound2 | libasound2t64, and added xz-utils, xdg-utils, libxtst6, libgbm1, libdrm2) ensuring seamless apt installation without broken package errors.
+- Fixed: Debian Rules Shared Library Scanning: Configured override_dh_shlibdeps in packaging/ppa/debian/rules to bypass scanning pre-compiled Electron binaries, resolving Launchpad builder failures.
+- Fixed: Asynchronous OSRS Network Diagnostics: Wrapped background socket and ping diagnostic probes in src/main/osrs-diagnostics.ts to prevent unhandled timeout rejections during network drops.
+- Changed: PPA Source Package Build Resiliency: Added automatic 4-attempt retry loop (RETRY_DELAY=30) and a 30-second cooldown (sleep 30) between series uploads in packaging/ppa/build-source-package.sh and .github/workflows/ppa.yml to prevent Launchpad rate-limiting.
+- Changed: Website Organization &amp; Visual Polish: Re-architected docs/index.html and docs/style.css with centered block containers, comfortable side padding, left-aligned typography, official game crests, and anonymous screenshots.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.4.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.0</link>
+      <guid isPermaLink="false">release-v1.4.0</guid>
+      <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Native Linux System Tray Support: Added system tray integration with right-click context menu, fast character launch shortcuts, background minimize toggle, and persistent tray status; Quick Shortcuts &amp;...
+
+- Added: Native Linux System Tray Support: Added system tray integration with right-click context menu, fast character launch shortcuts, background minimize toggle, and persistent tray status.
+- Added: Quick Shortcuts &amp; Client Folders Hub: Added quick-open shortcuts in Settings to easily locate screenshots, logs, and game caches for RuneLite (~/.runelite), RuneScape 3 (~/.local/share/Jagex), and HDOS (~/.hdos).
+- Added: Desktop Shortcuts &amp; Icon Re-Registration: Added utility button in Settings to safely recreate or repair .desktop application launchers and multi-resolution icons (16x16 up to 1024x1024) for Linux Jagex Launcher, RuneLite, HDOS, and the Official OSRS client.
+- Added: Official Launchpad Ubuntu PPA: Full support for Ubuntu 26.04 LTS (resolute), Ubuntu 24.04 LTS (noble), and Ubuntu 22.04 LTS (jammy) via ppa:danielcook2016/linux-jagex-launcher with automated Launchpad cloud builds.
+- Added: Bit-for-Bit Reproducible Source Packaging: Added deterministic Debian source package generator (packaging/ppa/build-source-package.sh) with strict Debian 3.0 (quilt) formatting and automated GPG signing wrapper.
+- Added: Flathub &amp; AppStream Compliance: Updated AppStream metainfo specification to satisfy 100% of Flathub Quality Guidelines with zero validation warnings.
+- Changed: Re-architected Debian packaging rules to install dual desktop entries and multi-resolution application icons.
+- Changed: Updated automated updater to handle in-place AppImage updates with SHA-256 verification and distribution-aware notifications.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.3.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.3.0</link>
+      <guid isPermaLink="false">release-v1.3.0</guid>
+      <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>World Latency &amp; Ping Prober: Concurrently probes active RuneScape 3 (Worlds 1–141) and Old School RuneScape (Worlds 301–599) servers in ~1.2 seconds with regional filtering and color-coded latency badges;...
+
+- Added: World Latency &amp; Ping Prober: Concurrently probes active RuneScape 3 (Worlds 1–141) and Old School RuneScape (Worlds 301–599) servers in ~1.2 seconds with regional filtering and color-coded latency badges.
+- Added: Standalone Ping CLI Tools: Added parallel Bash scripts (rs3-ping.sh and osrs-ping.sh) for headless terminal benchmarking.
+- Added: Community Resources &amp; Tools Directory: Built-in player tool hub supporting RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds (including RuneKit, Alt1, PvME, and GE Tracker).
+- Added: Older Linux Hardware &amp; Low-Spec Performance Mode: GPU optimization mode disabling heavy CSS blurs and continuous animations, forcing Mesa hardware acceleration on older GPUs, and capping OSRS heap memory at 768MB.
+- Added: Mesa Compatibility &amp; DRI Fallback: Integrated settings toggles for MESA_GL_VERSION_OVERRIDE=4.5COMPAT and LIBGL_DRI3_DISABLE=1.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.2.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.2.0</link>
+      <guid isPermaLink="false">release-v1.2.0</guid>
+      <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Steam Deck Turnkey Installer: One-line Konsole installation script (deck-install.sh) with rootless execution; Steam Shortcuts &amp; Grid Art Registration: Automated registration in Steam's shortcuts.vdf with...
+
+- Added: Steam Deck Turnkey Installer: One-line Konsole installation script (deck-install.sh) with rootless execution.
+- Added: Steam Shortcuts &amp; Grid Art Registration: Automated registration in Steam's shortcuts.vdf with official high-resolution grid, hero, logo, and cover art.
+- Added: Multi-Account Profile Switcher: Fast switching dock supporting multiple saved Jagex Accounts with active character selection and membership status badges.
+- Added: Mesa Threaded OpenGL: One-click toggle for mesa_glthread=true to maximize RS3 NXT frame rates on AMD and Intel Mesa drivers.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.1.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.1.0</link>
+      <guid isPermaLink="false">release-v1.1.0</guid>
+      <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Steam Deck &amp; Handheld Support: Full HTML5 Gamepad API controller navigation (bumpers, D-pad, face buttons), 1280×800 touch scaling, and Steam On-Screen Keyboard (OSK) invocation; Integrated Auto-Updater:...
+
+- Added: Steam Deck &amp; Handheld Support: Full HTML5 Gamepad API controller navigation (bumpers, D-pad, face buttons), 1280×800 touch scaling, and Steam On-Screen Keyboard (OSK) invocation.
+- Added: Integrated Auto-Updater: In-app release checking, streaming download progress, and format detection.
+- Added: RuneScape: Dragonwilds Support: Integrated Steam launch protocol (steam://run/1374490) and live Steam RSS patch feeds.
+- Added: Rs3Doctor Diagnostic Engine: Automated diagnostic checker verifying graphics drivers, XWayland compatibility, OpenSSL 1.1 userspace libraries, and audio routing.</description>
+    </item>
+    <item>
+      <title>Linux Jagex Launcher v1.0.0</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.0.0</link>
+      <guid isPermaLink="false">release-v1.0.0</guid>
+      <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Initial Stable Release: Native 64-bit Linux execution of RuneScape 3 NXT with zero Wine/Proton overhead; Multi-Client Dock for OSRS: Seamless switching between RuneLite, HDOS, and the Official OSRS client;...
+
+- Added: Initial Stable Release: Native 64-bit Linux execution of RuneScape 3 NXT with zero Wine/Proton overhead.
+- Added: Multi-Client Dock for OSRS: Seamless switching between RuneLite, HDOS, and the Official OSRS client.
+- Added: Jagex Account Authentication: Full OAuth 2.0 PKCE authentication with Cloudflare Turnstile webview support.
+- Added: Isolated OpenSSL 1.1 Compatibility: Userspace libssl1.1 provisioning resolving Ubuntu 22.04 and 24.04 library mismatches.
+- Added: Zero-RAM Mode: Auto-closing launcher 1.5 seconds after game launch.</description>
+    </item>
+  </channel>
+</rss>
