@@ -8,6 +8,7 @@ body:
       value: |
         Thanks for taking the time to report an issue! Please check existing issues before submitting.
         **Tip:** You can also use the built-in **Issues / Report** button in the launcher sidebar to attach sanitized diagnostics automatically.
+        *Testing on Linux **ARM64 (`aarch64`)**? Please go back and select the **ARM64 (aarch64) Bug Report** template instead.*
   - type: dropdown
     id: game
     attributes:

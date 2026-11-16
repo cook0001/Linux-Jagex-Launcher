@@ -3,6 +3,9 @@ contact_links:
   - name: Project Website & Install Guides
     url: https://cook0001.github.io/Linux-Jagex-Launcher/
     about: Official Linux install instructions, troubleshooting guides, and distribution packages.
+  - name: ARM64 (aarch64) Development Branch & Pre-Releases
+    url: https://github.com/cook0001/Linux-Jagex-Launcher/tree/ARM64
+    about: Dedicated Linux ARM64 development branch, hardware compatibility matrix, and Box64/FEX-Emu status.
   - name: Jagex Support & Account Help
     url: https://support.runescape.com/
     about: For Jagex account, password resets, bans, or billing issues, please contact official Jagex Support.
