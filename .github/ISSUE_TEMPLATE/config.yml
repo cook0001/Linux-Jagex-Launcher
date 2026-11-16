@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Project Website & Install Guides
-    url: https://cook0001.github.io/Linux-Jagex-Launcher/
+    url: https://launcher.patchcraft.dev/
     about: Official Linux install instructions, troubleshooting guides, and distribution packages.
   - name: ARM64 (aarch64) Development Branch & Pre-Releases
     url: https://github.com/cook0001/Linux-Jagex-Launcher/tree/ARM64

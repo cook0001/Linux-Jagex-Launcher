@@ -2,8 +2,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux Jagex Launcher — News &amp; Releases</title>
-    <link>https://cook0001.github.io/Linux-Jagex-Launcher/</link>
-    <atom:link href="https://cook0001.github.io/Linux-Jagex-Launcher/feed.xml" rel="self" type="application/rss+xml"/>
+    <link>https://launcher.patchcraft.dev/</link>
+    <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Official releases, packaging updates, and maintainer announcements for Linux Jagex Launcher.</description>
     <language>en-us</language>
     <lastBuildDate>Sat, 14 Nov 2026 12:00:00 +0000</lastBuildDate>

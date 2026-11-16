@@ -10,7 +10,7 @@
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Linux-Jagex-Launcher/total?color=10b981" alt="Total Downloads" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
-    <a href="https://cook0001.github.io/Linux-Jagex-Launcher/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
+    <a href="https://launcher.patchcraft.dev/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
   </p>
 
   <p>
@@ -250,7 +250,7 @@ sudo add-apt-repository --remove ppa:danielcook2016/linux-jagex-launcher
 
 **One-Line Fast Install:**
 ```bash
-curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/install.sh | bash
+curl -sSL https://launcher.patchcraft.dev/install.sh | bash
 ```
 
 **Or manual install via `apt`:**
@@ -315,7 +315,7 @@ Installs 100% rootless in userspace without modifying read-only system partition
 
 In **Desktop Mode** (`Steam Button` &rarr; `Power` &rarr; `Switch to Desktop`), open **Konsole** and run:
 ```bash
-curl -sSL https://cook0001.github.io/Linux-Jagex-Launcher/deck-install.sh | bash
+curl -sSL https://launcher.patchcraft.dev/deck-install.sh | bash
 ```
 
 Once complete, return to **Gaming Mode** and launch directly from your Non-Steam library with full physical controller/gamepad navigation!

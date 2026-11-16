@@ -36,20 +36,20 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-rs3.png</image>
+      <image>https://launcher.patchcraft.dev/assets/screenshot-rs3.png</image>
       <caption xml:lang="en">RuneScape 3 running natively on Linux</caption>
     </screenshot>
     <screenshot>
-      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-osrs.png</image>
+      <image>https://launcher.patchcraft.dev/assets/screenshot-osrs.png</image>
       <caption xml:lang="en">Old School RuneScape view with RuneLite and HDOS client selection</caption>
     </screenshot>
     <screenshot>
-      <image>https://cook0001.github.io/Linux-Jagex-Launcher/assets/screenshot-dragonwilds.png</image>
+      <image>https://launcher.patchcraft.dev/assets/screenshot-dragonwilds.png</image>
       <caption xml:lang="en">RuneScape: Dragonwilds integration</caption>
     </screenshot>
   </screenshots>
 
-  <url type="homepage">https://cook0001.github.io/Linux-Jagex-Launcher/</url>
+  <url type="homepage">https://launcher.patchcraft.dev/</url>
   <url type="bugtracker">https://github.com/cook0001/Linux-Jagex-Launcher/issues</url>
   <url type="vcs-browser">https://github.com/cook0001/Linux-Jagex-Launcher</url>
   <url type="help">https://forms.gle/KvagBxcmVBB3Q721A</url>
