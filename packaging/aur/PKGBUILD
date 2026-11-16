@@ -5,7 +5,7 @@ pkgver=1.5.0
 pkgrel=1
 pkgdesc="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape"
 arch=('x86_64')
-url="https://cook0001.github.io/Linux-Jagex-Launcher/"
+url="https://launcher.patchcraft.dev/"
 license=('custom:proprietary')
 depends=(
   'gtk3'

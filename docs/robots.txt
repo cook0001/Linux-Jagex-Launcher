@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cook0001.github.io/Linux-Jagex-Launcher/sitemap.xml
+Sitemap: https://launcher.patchcraft.dev/sitemap.xml

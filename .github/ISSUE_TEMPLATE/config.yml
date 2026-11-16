@@ -7,7 +7,7 @@ contact_links:
     url: https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v0.0.1-arm64
     about: Download latest ARM64 AppImage, .deb, .tar.gz, and .snap artifacts plus SHA256SUMS-arm64.txt.
   - name: x86_64 Main Branch & Website
-    url: https://cook0001.github.io/Linux-Jagex-Launcher/
+    url: https://launcher.patchcraft.dev/
     about: Looking for stable x86_64 desktop or Steam Deck releases instead? Visit the main project site.
   - name: Jagex Support & Account Help
     url: https://support.runescape.com/

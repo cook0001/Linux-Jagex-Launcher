@@ -3,7 +3,7 @@ Version:        1.5.0
 Release:        1%{?dist}
 Summary:        Authentic, native Jagex Launcher for Linux
 License:        Proprietary
-URL:            https://cook0001.github.io/Linux-Jagex-Launcher/
+URL:            https://launcher.patchcraft.dev/
 Source0:        https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v%{version}/linux-jagex-launcher-%{version}.tar.gz
 Source1:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop
 Source2:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
