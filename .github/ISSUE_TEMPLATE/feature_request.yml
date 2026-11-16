@@ -1,18 +1,24 @@
-name: Feature Request
-description: Suggest an idea or enhancement for Linux Jagex Launcher
-title: "[Feature]: "
-labels: ["enhancement"]
+name: ARM64 Feature / Compatibility Request
+description: Suggest an ARM64 (aarch64) enhancement, hardware profile, or Box64/FEX-Emu improvement
+title: "[ARM64 Feature]: "
+labels: ["enhancement", "arm64"]
 body:
   - type: markdown
     attributes:
       value: |
-        Have an idea to make the Linux Jagex Launcher even better? Let us know below!
+        Have an idea to improve **Linux ARM64 (`aarch64`)** support, SBC hardware detection, or x86_64 client translation (Box64 / FEX-Emu)? Let us know below!
+  - type: input
+    id: target_hardware
+    attributes:
+      label: Target ARM64 Hardware / Distro (if applicable)
+      description: e.g. Raspberry Pi 5, Apple Silicon (Asahi Linux 16K pages), Snapdragon X, Ampere
+      placeholder: Raspberry Pi 5 / Ubuntu 24.04 arm64
   - type: textarea
     id: problem
     attributes:
-      label: Is your feature request related to a problem?
-      description: A clear and concise description of what the problem is.
-      placeholder: I'm always frustrated when...
+      label: What ARM64 limitation or workflow gap does this solve?
+      description: A clear and concise description of the issue or missing ARM64 integration.
+      placeholder: On ARM64, RuneLite / Box64 / FEX-Emu currently...
   - type: textarea
     id: solution
     attributes:
@@ -23,10 +29,10 @@ body:
   - type: textarea
     id: alternatives
     attributes:
-      label: Describe alternatives you've considered
-      description: Any alternative solutions or features you've evaluated.
+      label: Alternatives or Workarounds Tested
+      description: Any custom launch wrappers, Box64 env vars, or packaging tweaks you've tried.
   - type: textarea
     id: additional-context
     attributes:
-      label: Additional context
-      description: Add any other context, screenshots, or mockups here.
+      label: Additional Context
+      description: Add hardware specs, logs, benchmarks, or upstream links here.

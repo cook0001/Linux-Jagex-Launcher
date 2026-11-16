@@ -1,49 +1,63 @@
-name: Bug Report
-description: Create a report to help us improve Linux Jagex Launcher
-title: "[Bug]: "
-labels: ["bug"]
+name: Bug Report (ARM64 Branch)
+description: Report a bug or client compatibility issue on Linux ARM64 (aarch64)
+title: "[ARM64 Bug]: "
+labels: ["bug", "arm64"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report an issue! Please check existing issues before submitting.
-        **Tip:** You can also use the built-in **Issues / Report** button in the launcher sidebar to attach sanitized diagnostics automatically.
+        Thanks for helping test the **Linux ARM64 (`aarch64`)** build of Linux Jagex Launcher!
+        > **Current ARM64 Status:** Old School RuneScape (native ARM64 RuneLite) is playable today. RuneScape 3 (NXT), HDOS, Official OSRS C++, and RuneScape: Dragonwilds currently ship `x86_64`-only upstream binaries and remain experimental under Box64 / FEX-Emu.
+
+        **Tip:** You can also use the built-in **Issues / Report** or **Doctor** buttons in the launcher to attach sanitized ARM64 diagnostics.
   - type: dropdown
     id: game
     attributes:
-      label: Game / Client
-      description: Which game or client is affected?
+      label: Client or ARM64 Subsystem
+      description: Which client or ARM64 feature is affected?
       options:
-        - RuneScape 3 (Native Linux Client)
-        - Old School RuneScape - RuneLite
-        - Old School RuneScape - HDOS
-        - Old School RuneScape - Official Client
-        - RuneScape: Dragonwilds
+        - Old School RuneScape - RuneLite (Native ARM64)
         - Launcher UI / Authentication (Turnstile/OAuth)
-        - Other / General Launcher
+        - ARM64 Auto-Updater / Packaging (.AppImage, .deb, .tar.gz, .snap)
+        - Experimental x86_64 Emulation (RS3 NXT / HDOS / Official C++ / Dragonwilds)
+        - Other / General ARM64 Launcher
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: ARM64 Hardware / Device & Kernel Page Size
+      description: e.g. Raspberry Pi 5 (4K/16K pages), Apple M1/M2 Asahi Linux (16K pages), Snapdragon X, Ampere Altra
+      placeholder: Raspberry Pi 5 (8GB, VideoCore VII, 4096 pages)
     validations:
       required: true
   - type: input
     id: distro
     attributes:
-      label: Linux Distribution & Desktop Environment
-      description: e.g. Ubuntu 24.04 (GNOME, Wayland), Arch Linux (KDE, X11), SteamOS, Fedora 40
-      placeholder: Ubuntu 24.04 LTS (GNOME, Wayland)
+      label: ARM64 Linux Distribution & Desktop Environment
+      description: e.g. Ubuntu 24.04 arm64 (GNOME, Wayland), Asahi Fedora Remix (KDE, Wayland), Raspberry Pi OS arm64
+      placeholder: Ubuntu 24.04 LTS arm64 (GNOME, Wayland)
     validations:
       required: true
   - type: input
     id: package_type
     attributes:
-      label: Installation Method
-      description: Which package format are you running?
-      placeholder: AppImage / .deb / Snap / Launchpad PPA / .rpm / .pacman / Flatpak
+      label: ARM64 Installation Method
+      description: Which ARM64 package format are you running?
+      placeholder: AppImage (arm64) / .deb (arm64) / .tar.gz (arm64) / Snap (beta arm64) / Source
     validations:
       required: true
+  - type: input
+    id: runtime_layer
+    attributes:
+      label: Java Runtime / Translator (Box64 or FEX-Emu)
+      description: OpenJDK/RuneLite path or Box64/FEX-Emu version if testing x86_64 clients
+      placeholder: OpenJDK 21 aarch64 / Box64 / FEX-Emu / none
   - type: textarea
     id: what-happened
     attributes:
       label: What happened?
-      description: A clear and concise description of the bug.
+      description: A clear and concise description of the bug on ARM64.
     validations:
       required: true
   - type: textarea
@@ -52,14 +66,14 @@ body:
       label: Steps to Reproduce
       description: Detailed steps to reproduce the behavior.
       placeholder: |
-        1. Open launcher
-        2. Click 'PLAY' on RuneLite
+        1. Open ARM64 launcher build
+        2. Click 'PLAY' on RuneLite or run Doctor
         3. See error in terminal...
     validations:
       required: true
   - type: textarea
     id: logs
     attributes:
-      label: Terminal Output / Logs
-      description: Paste any terminal output or console logs here.
+      label: Doctor Output, `uname -a` & Terminal Logs
+      description: Paste `uname -a`, `getconf PAGESIZE`, Doctor output, or terminal logs here.
       render: shell

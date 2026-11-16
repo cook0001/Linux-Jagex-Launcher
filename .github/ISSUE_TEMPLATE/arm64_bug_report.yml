@@ -1,0 +1,87 @@
+name: ARM64 (aarch64) Bug Report
+description: Report a bug or compatibility finding on Linux ARM64 (Raspberry Pi, Asahi Linux, Snapdragon, Ampere)
+title: "[ARM64 Bug]: "
+labels: ["bug", "arm64"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping test the **Linux ARM64 (`aarch64`)** port of Linux Jagex Launcher!
+        > **Current ARM64 Compatibility Matrix:**
+        > - **Playable Now:** Old School RuneScape via native RuneLite (ARM64 OpenJDK 11+ or `RuneLite-aarch64.AppImage`)
+        > - **Experimental / Not Yet Verified Playable (`x86_64`-only upstream):** RuneScape 3 (NXT), HDOS, Official OSRS C++ Client, RuneScape: Dragonwilds
+
+        **Tip:** You can also use the built-in **Issues / Report** / **Doctor** buttons in the launcher to copy sanitized ARM64 diagnostics automatically.
+  - type: dropdown
+    id: component
+    attributes:
+      label: Client or Component
+      description: Which game client or ARM64 subsystem is affected?
+      options:
+        - Old School RuneScape - RuneLite (Native ARM64)
+        - Launcher UI / Jagex OAuth Authentication (Turnstile)
+        - ARM64 Auto-Updater (v*-arm64 prereleases)
+        - Desktop Integration / System Tray / Install Script
+        - Experimental x86_64 Translation (RS3 NXT / HDOS / Official C++ / Dragonwilds)
+        - Other / General ARM64 Launcher
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: ARM64 Device / SoC / Hardware
+      description: CPU / board model and GPU (e.g. Raspberry Pi 5 8GB / Apple M2 Asahi Mesa / Snapdragon X / Ampere Altra)
+      placeholder: Raspberry Pi 5 (8GB, VideoCore VII) or Apple M2 (Asahi Linux)
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: ARM64 Linux Distribution, Kernel & Display Server
+      description: Include distro, kernel (`uname -r`), desktop/compositor (Wayland/X11), and kernel page size (`getconf PAGESIZE`)
+      placeholder: Ubuntu 24.04 arm64 / Linux 6.8 aarch64 (GNOME, Wayland) / pagesize=4096
+    validations:
+      required: true
+  - type: dropdown
+    id: package_type
+    attributes:
+      label: ARM64 Installation Format
+      description: Which ARM64 package are you running?
+      options:
+        - AppImage (Jagex-Launcher-*-arm64.AppImage)
+        - Debian / Ubuntu package (.deb arm64)
+        - Portable Tarball (.tar.gz arm64)
+        - Snap Package (linux-jagex-launcher beta arm64)
+        - Built locally from ARM64 branch source
+    validations:
+      required: true
+  - type: input
+    id: runtime_layer
+    attributes:
+      label: Java Runtime or x86_64 Translator (if applicable)
+      description: ARM64 OpenJDK / RuneLite setup, or Box64 / FEX-Emu version if testing x86_64 clients
+      placeholder: OpenJDK 21 aarch64 / Box64 v0.3.x / FEX-Emu / none
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the issue on ARM64.
+    validations:
+      required: true
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the issue.
+      placeholder: |
+        1. Install the ARM64 prerelease package
+        2. Launch Linux Jagex Launcher
+        3. Attempt to launch OSRS (RuneLite)...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Doctor Output, Terminal Logs & Architecture Info
+      description: Paste launcher/Doctor output, `uname -a`, `getconf PAGESIZE`, or terminal logs here.
+      render: shell

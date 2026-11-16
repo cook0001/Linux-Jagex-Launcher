@@ -130,7 +130,7 @@ If you are helping test **RuneScape 3 (NXT)** or **HDOS** on an `aarch64` machin
 3. Run **Doctor** inside the RS3 or OSRS view to inspect detected binary ELF architectures, OpenJDK paths, and active translator availability.
 4. For custom wrappers (e.g., `box64 %command%`, FEX rootfs prefixes, or Gallium/Mesa overrides), set a **Custom Launch Command Wrapper** in Settings.
 
-Please share hardware + distro + kernel page size (`getconf PAGESIZE`) + Doctor output in **[GitHub Issues](https://github.com/cook0001/Linux-Jagex-Launcher/issues)** so we can validate and promote clients from **Experimental** to **Playable** in the compatibility matrix!
+Please share hardware + distro + kernel page size (`getconf PAGESIZE`) + Doctor output via our dedicated **[ARM64 Bug Report template](https://github.com/cook0001/Linux-Jagex-Launcher/issues/new?template=arm64_bug_report.yml)** (or browse **[GitHub Issues](https://github.com/cook0001/Linux-Jagex-Launcher/issues)**) so we can validate and promote clients from **Experimental** to **Playable** in the compatibility matrix!
 
 ---
 
