@@ -84,7 +84,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v1.5.1/linux-jagex-launcher-1.5.1.tar.gz
-        sha256: 162d0b9dff7781a7564f0982845ddbbc8b86bd1878a09d281e54256fa70e5dda
+        sha256: 142c7ccb81d801d71b1eea59f5396535ed89398caf2d672b797e96028c37e47a
         dest: app-bundle
         only-arches:
           - x86_64

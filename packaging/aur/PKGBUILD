@@ -28,7 +28,7 @@ optdepends=(
 provides=('linux-jagex-launcher' 'jagex-launcher')
 conflicts=('linux-jagex-launcher' 'jagex-launcher')
 source=("https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
-sha256sums=('93ce345236f904a09164831e6326cf404863df12212f898a3434094334e5ccd2')
+sha256sums=('3164532c34f33bded220517c6d20e243a966ec4c3ac5b71c29ae2089c9f7f052')
 
 package() {
   # Extract the deb payload
