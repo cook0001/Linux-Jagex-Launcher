@@ -108,7 +108,7 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/io.g
 
 %changelog
 * Sat Nov 14 2026 Daniel Cook <danielcook2016@outlook.com> - 1.5.0-1
-- Release v1.5.0: Website News & Release Feed: Added an interactive Updates & News section to the project website with JSON/RSS feeds and automated release synchronization; Live Client Logger & Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling; Launcher Architecture & Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated Linux /proc process monitoring, icon deployment, and streaming downloads
+- Release v1.5.0: Website News & Release Feed: Added an interactive Updates & News section to the project website with JSON/RSS feeds and automated release synchronization; Live Client Logger & Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling; Launcher Architecture & Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated process lifecycle monitoring, icon deployment, and streaming downloads
 
 * Fri Nov 13 2026 Daniel Cook <danielcook2016@outlook.com> - 1.4.9-1
 - Release v1.4.9: Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer; Dependencies: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08

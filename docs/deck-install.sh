@@ -57,8 +57,8 @@ chmod 0755 "${TARGET_APPIMAGE}"
 echo "    Installed executable: ${TARGET_APPIMAGE}"
 
 echo "==> Fetching Steam Deck artwork and icons..."
-ICON_URL="https://raw.githubusercontent.com/${REPO}/main/docs/assets/icon.png"
-HERO_URL="https://raw.githubusercontent.com/${REPO}/main/docs/assets/banner.png"
+ICON_URL="https://launcher.patchcraft.dev/assets/icon.png"
+HERO_URL="https://launcher.patchcraft.dev/assets/banner.png"
 
 curl -fsSL -o "${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png" "${ICON_URL}" || true
 curl -fsSL -o "${LAUNCHER_DATA_DIR}/icon.png" "${ICON_URL}" || true
@@ -90,9 +90,9 @@ if [ -n "$STEAM_DIR" ] && [ -d "${STEAM_DIR}/userdata" ]; then
   # Compute Steam non-Steam AppID via python or perl if available
   APPID=""
   if command -v python3 >/dev/null 2>&1; then
-    APPID=$(python3 -c "import binascii; print((binascii.crc32(b'\"${TARGET_APPIMAGE}\"${APP_NAME}') | 0x80000000) & 0xFFFFFFFF)")
+    APPID=$(TARGET_APPIMAGE="${TARGET_APPIMAGE}" APP_NAME="${APP_NAME}" python3 -c 'import binascii, os; data = ("\"" + os.environ["TARGET_APPIMAGE"] + "\"" + os.environ["APP_NAME"]).encode(); print((binascii.crc32(data) | 0x80000000) & 0xFFFFFFFF)')
   elif command -v perl >/dev/null 2>&1; then
-    APPID=$(perl -e 'use String::CRC32; print((crc32("\"'${TARGET_APPIMAGE}'\"'${APP_NAME}'") | 0x80000000) & 0xFFFFFFFF);' 2>/dev/null || echo "")
+    APPID=$(TARGET_APPIMAGE="${TARGET_APPIMAGE}" APP_NAME="${APP_NAME}" perl -e 'use String::CRC32; print((crc32("\"" . $ENV{TARGET_APPIMAGE} . "\"" . $ENV{APP_NAME}) | 0x80000000) & 0xFFFFFFFF);' 2>/dev/null || echo "")
   fi
 
   for USER_DIR in "${STEAM_DIR}/userdata/"*; do

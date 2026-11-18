@@ -8,7 +8,8 @@ ping_world() {
   local pingval
   # -W 1 for Linux, -t 1 for macOS timeout
   if pingval=$(ping -c 1 -W 1 "world${w}.runescape.com" 2>/dev/null || ping -c 1 -t 1 "world${w}.runescape.com" 2>/dev/null); then
-    local res=$(echo "$pingval" | awk -F"/" '/(min\/avg\/max|rtt)/ {print $5}')
+    local res
+    res=$(echo "$pingval" | awk -F"/" '/(min\/avg\/max|rtt)/ {print $5}')
     if [ -n "$res" ]; then
       printf "World %3d: %6.2f ms\n" "$w" "$res"
     fi

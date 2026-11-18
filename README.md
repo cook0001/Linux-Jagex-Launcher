@@ -60,8 +60,8 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 | **Old School RuneScape** | **Multi-Client Dock** (RuneLite, HDOS, Official) | Official OSRS / RuneLite inside Wine prefix | RuneLite & HDOS native | Official legacy client only |
 | **RuneScape: Dragonwilds** | **Integrated Steam Launch** + Live Patch Feeds | ❌ Not supported | ❌ Not supported | ❌ Not supported |
 | **Jagex Account Support** | **Full OAuth 2.0 PKCE + Turnstile Webview** | Full (via Windows Launcher in Wine) | Full (via Webview) | ❌ **Broken** (Only supports legacy usernames) |
-| **Ubuntu 22.04 / 24.04 / 26.04 OpenSSL Fix** | **Isolated Userspace `libssl1.1`** (Zero host pollution) | N/A (runs Windows OpenSSL DLLs in Wine) | ❌ Manual user intervention required | ❌ Fails `apt install` (`libssl1.1` missing) |
-| **Wayland & Audio Auto-Fixes** | **Built-in `Rs3Doctor`** + automatic XWayland/PipeWire flags | Relies on Wine Wayland / X11 bridging | ❌ Not provided | ❌ Freezes on "Loading application resources" |
+| **Ubuntu 22.04 / 24.04 / 26.04 OpenSSL Fix** | **Isolated Userspace OpenSSL 1.1 Compat** (Zero host pollution) | N/A (runs Windows OpenSSL DLLs in Wine) | ❌ Manual user intervention required | ❌ Fails `apt install` (`libssl1.1` missing) |
+| **Wayland & Audio Auto-Fixes** | **Built-in System Doctor** + automatic Wayland & PipeWire fixes | Relies on Wine Wayland / X11 bridging | ❌ Not provided | ❌ Freezes on "Loading application resources" |
 | **Root Permissions Required?** | ❌ **Never** (100% rootless in userspace) | ❌ Flatpak sandbox | ❌ Rootless | ⚠️ Requires `sudo apt` / `dpkg` |
 | **Steam Deck & SteamOS** | **Full Gamepad Navigation + OSK + Grid Art Generator** | Bulky Wine Flatpak; no native gamepad UI | Minimal handheld integration | ❌ No SteamOS support |
 | **User Interface Fidelity** | **1:1 Official Jagex Launcher Replica** + Linux window controls | Official Windows UI (inside Wine window) | Custom utilitarian UI | No launcher interface |
@@ -94,11 +94,11 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 * **Solves the Mandatory Jagex Account Dead-End:**  
   Jagex's official native Linux client (`runescape-launcher` `.deb`) was abandoned before Jagex introduced mandatory Jagex Accounts. When Jagex mandated account migration, Linux players who upgraded were locked out because the legacy client only accepts legacy username/password credentials. **Linux Jagex Launcher provides the missing link**, executing full OAuth 2.0 PKCE authentication with Cloudflare Turnstile bot verification and passing the secure session token directly to the native Linux client.
 * **Solves the Ubuntu 22.04, 24.04 & 26.04 `libssl1.1` Mismatch Safely:**  
-  Modern Linux distributions dropped `libssl1.1` in favor of OpenSSL 3.x (`libssl3` / `libssl3t64`). Attempting to install Jagex's official `.deb` package fails with unmet dependencies, and force-installing outdated Ubuntu 20.04 packages with `dpkg` risks corrupting host package managers during system updates. Our launcher provisions an isolated `libssl.so.1.1` library exclusively in userspace (`~/.local/share/linux-jagex-launcher/compat/lib64/`) without ever modifying host system libraries.
+  Modern Linux distributions dropped `libssl1.1` in favor of OpenSSL 3.x (`libssl3` / `libssl3t64`). Attempting to install Jagex's official `.deb` package fails with unmet dependencies, and force-installing outdated Ubuntu 20.04 packages with `dpkg` risks corrupting host package managers during system updates. Our launcher provisions isolated OpenSSL 1.1 compatibility libraries exclusively in userspace without ever modifying host system libraries.
 * **100% Rootless Installation:**  
-  The official Jagex documentation demands `sudo apt install`. Linux Jagex Launcher extracts, installs, updates, and runs the client entirely in userspace using `ar` and `tar`. You will never need to enter a root or `sudo` password.
+  The official Jagex documentation demands `sudo apt install`. Linux Jagex Launcher extracts, installs, updates, and runs the client entirely in userspace. You will never need to enter a root or `sudo` password.
 * **Fixes the "Loading Application Resources" Freeze Out of the Box:**  
-  The legacy client notoriously hangs on modern Linux desktops due to Wayland compositor conflicts, PipeWire audio starvation, and GTK2 input method locks. Linux Jagex Launcher automatically sets the necessary environment variables (`GDK_BACKEND=x11`, `SDL_VIDEODRIVER=x11`, `PULSE_LATENCY_MSEC=100`, unsets `XMODIFIERS`, and provides a Mesa Zink override) to ensure smooth, crash-free launches.
+  The legacy client notoriously hangs on modern Linux desktops due to Wayland compositor conflicts, PipeWire audio starvation, and GTK2 input method locks. Linux Jagex Launcher automatically configures the display server, input method, audio latency, and GPU compatibility settings required for smooth, crash-free launches.
 
 ---
 
@@ -106,10 +106,10 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 
 ### ⚡ RuneScape 3 (Native Linux NXT)
 - **Native 64-Bit ELF Execution**: Launches Jagex's official compiled 64-bit Linux binary directly against your Linux kernel, Mesa/Vulkan drivers, and display server.
-- **Rootless Auto-Deployment**: Downloads and extracts Jagex's official Ubuntu `.deb` package directly into your user data directory (`~/.local/share/linux-jagex-launcher/client/`) using userspace archive utilities (`ar` and `tar`). **Never requires `sudo` or root permissions**.
-- **Isolated OpenSSL 1.1 Compat (Ubuntu 22.04, 24.04 & 26.04 Fix)**: Automatically provisions isolated `libssl.so.1.1` and `libcrypto.so.1.1` libraries in userspace (`~/.local/share/linux-jagex-launcher/compat/lib64/`). Completely resolves the modern OpenSSL 3 mismatch without touching host `apt` or risking package manager conflicts.
-- **Wayland & "Loading Application Resources" Fixes**: Automatically enforces `GDK_BACKEND=x11` and `SDL_VIDEODRIVER=x11` to run cleanly over XWayland, sets `PULSE_LATENCY_MSEC=100` to prevent sound engine starvation, unsets `XMODIFIERS` to avoid GTK2 input hangs, and includes an optional Mesa Zink (`MESA_LOADER_DRIVER_OVERRIDE=zink`) override for NVIDIA GPUs.
-- **System Compatibility Doctor (`Rs3Doctor`)**: Integrated pre-flight diagnostic tool in Settings that verifies graphics drivers, display servers, and runtime dependencies, providing copyable terminal commands and one-click fixes.
+- **Rootless Auto-Deployment**: Downloads and unpacks Jagex's official Linux client directly into userspace. **Never requires `sudo` or root permissions**.
+- **Isolated OpenSSL 1.1 Compat (Ubuntu 22.04, 24.04 & 26.04 Fix)**: Automatically provisions isolated OpenSSL 1.1 compatibility libraries in userspace. Completely resolves the modern OpenSSL 3 mismatch without touching host `apt` or risking package manager conflicts.
+- **Wayland & "Loading Application Resources" Fixes**: Automatically bridges Wayland/X11 display, input method, and PipeWire/PulseAudio routing to prevent startup freezes, with an optional Vulkan-backed OpenGL compatibility override for NVIDIA GPUs.
+- **System Compatibility Doctor**: Integrated pre-flight diagnostic tool in Settings that verifies graphics drivers, display servers, and runtime dependencies, providing copyable terminal commands and one-click fixes.
 - **Hardware Acceleration**: Full native Vulkan and OpenGL rendering on AMD Radeon (RADV), Intel Arc/Iris, and NVIDIA proprietary drivers.
 - **PipeWire & PulseAudio Integration**: Pre-configured audio routing to eliminate crackles, buffer underruns, or latency.
 - **Live Maintenance Warnings**: Fetches real-time server status, game downtime warnings, and scheduled cold-update alerts directly from Jagex CDN feeds.
@@ -147,17 +147,17 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 ### 🛡️ Jagex Account Security & Privacy
 - **Direct OAuth 2.0 with PKCE**: Connects straight to `account.jagex.com`. The launcher never touches or logs your plain-text password.
 - **Interactive Cloudflare Turnstile Verification**: Built-in compliant webview allows you to complete Turnstile checkboxes and 2FA challenges effortlessly.
-- **100% Client-Side / Zero Telemetry**: No third-party servers, analytics, or tracking. Tokens (`JX_SESSION_ID`) and profile data reside exclusively in local user config (`~/.config/linux-jagex-launcher/`).
+- **100% Client-Side / Zero Telemetry**: No third-party servers, analytics, or tracking. Session credentials and profile data reside exclusively in local user config (`~/.config/linux-jagex-launcher/`).
 
 ---
 
 ### 🚀 Gaming Enhancements & Older Linux Hardware Support
-- **Performance Mode (Low-Spec / Older Hardware)**: Disables GPU-heavy CSS `backdrop-filter` blurs, suppresses continuous animation loops, applies lightweight memory management, and optimizes GPU fill-rate for older Intel HD Graphics (2000–5500), legacy AMD GPUs, and non-composited window managers (XFCE, MATE, Openbox).
-- **Mesa OpenGL Compatibility Profile Override (`MESA_GL_VERSION_OVERRIDE=4.5COMPAT`)**: Forces Mesa to expose OpenGL 4.5 in compatibility mode. Resolves OpenGL initialization crashes on older Intel (Ivy Bridge, Haswell) and legacy AMD TeraScale GPUs when launching RuneScape 3.
-- **Legacy DRI3/DRI2 Fallback (`LIBGL_DRI3_DISABLE=1`)**: Eliminates window stuttering, flickering, and startup lockups on classic Intel SNA X11 drivers.
-- **Lightweight OSRS Heap Tuning**: When Low-Spec Mode is active, automatically limits RuneLite/HDOS heap to 768MB (`-Xmx768m -XX:+UseG1GC`) to prevent swap thrashing and Linux Out-Of-Memory (OOM) killer terminations on 4GB–8GB RAM systems.
-- **Zero RAM Mode ("Close on Launch")**: Automatically closes the launcher 1.5 seconds after your game launches, freeing 100% of the launcher's memory (150–250MB RAM).
-- **Chromium GPU Blocklist Bypass**: Automatically passes `ignore-gpu-blocklist` and `enable-gpu-rasterization` on Linux to force hardware-accelerated rendering on legacy GPUs rather than burning CPU cycles on SwiftShader software rasterization.
+- **Performance Mode (Low-Spec / Older Hardware)**: Disables GPU-heavy CSS blurs, suppresses continuous animation loops, applies lightweight memory management, and optimizes GPU fill-rate for older Intel HD Graphics (2000–5500), legacy AMD GPUs, and non-composited window managers (XFCE, MATE, Openbox).
+- **Mesa OpenGL Compatibility Profile Override**: Forces Mesa to expose OpenGL 4.5 in compatibility mode, resolving OpenGL initialization crashes on older Intel (Ivy Bridge, Haswell) and legacy AMD TeraScale GPUs when launching RuneScape 3.
+- **Legacy DRI3/DRI2 Fallback**: Eliminates window stuttering, flickering, and startup lockups on classic Intel SNA X11 drivers.
+- **Lightweight OSRS Heap Tuning**: When Low-Spec Mode is active, automatically caps RuneLite/HDOS memory heap to prevent swap thrashing and Linux Out-Of-Memory (OOM) killer terminations on 4GB–8GB RAM systems.
+- **Zero RAM Mode ("Close on Launch")**: Automatically closes the launcher shortly after your game launches, freeing 100% of the launcher's memory (150–250MB RAM).
+- **Hardware-Accelerated Launcher UI**: Ensures hardware-accelerated GPU rendering on Linux for older GPUs rather than falling back to slow CPU software rasterization.
 - **System Tray Mode**: Minimize cleanly to the system tray to keep characters ready without cluttering your taskbar.
 - **Official Linux Window Controls**: Minimize, resize, and close buttons on the top-left matching standard Ubuntu and GNOME conventions.
 
@@ -392,7 +392,7 @@ Click the **Gear icon** in the bottom dock to access the unified Settings Modal:
 |---|---|
 | **General** | Close on Launch (0 MB RAM mode), Minimize to System Tray, Feral GameMode (`gamemoderun`), MangoHud overlay. |
 | **Old School RuneScape** | Default client selection (RuneLite / HDOS / Official), Custom Java binary path, Custom executable/JAR override, Custom JVM arguments (`-Xmx`), Custom client flags, Flatpak client auto-detection, One-click client verify/reinstall, Built-in OSRS World Latency & Ping prober. |
-| **RuneScape 3** | Custom client binary override, Extra launch parameters, Mesa Threaded OpenGL (`mesa_glthread=true`) performance boost, Force X11/XWayland, PulseAudio/PipeWire latency mitigation, Client cache verification, Built-in RS3 World Latency & Ping prober. |
+| **RuneScape 3** | Custom client binary override, Extra launch parameters, Mesa Threaded OpenGL performance boost, Force X11/XWayland, PulseAudio/PipeWire latency mitigation, Client cache verification, Built-in RS3 World Latency & Ping prober. |
 | **Account Management** | Multi-account login and fast switching, individual character selection with active membership badges. |
 
 ---
@@ -400,13 +400,12 @@ Click the **Gear icon** in the bottom dock to access the unified Settings Modal:
 ## 🔍 How It Works
 
 When you click **PLAY**:
-1. The launcher retrieves your active character credentials (`JX_SESSION_ID`, `JX_CHARACTER_ID`, `JX_DISPLAY_NAME`) obtained via direct OAuth 2.0 with `account.jagex.com`.
-2. The launcher prepares the target game client:
-   - For **RuneScape 3**: Launches the native ELF `runescape` binary with SDL X11, PulseAudio/PipeWire variables, and `--configURI "https://www.runescape.com/k=5/l=0/jav_config.ws"`.
-   - For **RuneLite**: Executes the launcher jar via `java -jar` (or native AppImage) while passing `--insecure-write-credentials` and session environment variables, pointing `HOME` to your regular user home directory.
-   - For **HDOS**: Executes the official `hdos-launcher.jar` with `JX_SESSION_ID` and `JX_CHARACTER_ID` environment variables.
-   - For **Dragonwilds**: Launches directly through Steam using `steam://run/1374490`.
-3. If enabled, the launcher terminates itself or minimizes to the tray to save memory.
+1. The launcher retrieves your active character session obtained via direct OAuth 2.0 PKCE authentication with `account.jagex.com`.
+2. The launcher configures and starts your selected game client:
+   - **RuneScape 3**: Launches the native 64-bit Linux client with display server, audio, and GPU compatibility settings applied.
+   - **Old School RuneScape (RuneLite / HDOS / Official)**: Passes your authenticated session cleanly to the selected client while preserving your standard home profile (`~/.runelite`).
+   - **Dragonwilds**: Launches directly through Steam (`steam://run/1374490`).
+3. If enabled, the launcher closes itself or minimizes to the system tray to save memory.
 
 ---
 
@@ -415,7 +414,7 @@ When you click **PLAY**:
 <details>
 <summary><strong>Will I get banned for using this launcher?</strong></summary>
 
-No. This launcher does not alter game binaries, manipulate memory, or inject cheat code. It operates identically to how the official launcher launches clients on Windows and macOS: by requesting an official OAuth2 token from Jagex and passing standard environment variables to the game client subprocess.
+No. This launcher does not alter game binaries, manipulate memory, or inject cheat code. It authenticates directly with official Jagex OAuth 2.0 servers and hands the resulting session to unmodified official or community-approved game clients.
 </details>
 
 <details>
@@ -427,7 +426,7 @@ Yes! The launcher respects your system user profile. All configuration, plugins,
 <details>
 <summary><strong>How does the native Linux RS3 client run without root?</strong></summary>
 
-The launcher extracts Jagex's official Ubuntu `.deb` package into your local user data directory (`~/.local/share/linux-jagex-launcher/client/`) using userspace archive utilities (`tar` / `ar`), allowing it to install and update without ever requesting `sudo` or root permissions.
+The launcher unpacks Jagex's official Linux package into local userspace storage, allowing it to install and update without ever requesting `sudo` or root permissions.
 </details>
 
 <details>
@@ -454,7 +453,7 @@ On **Ubuntu 24.04 LTS (`noble`)** and **Ubuntu 26.04 LTS ("Resolute Raccoon", `r
 2. APT 3.x strictly rejects unsigned / legacy SHA-1-bound repositories (`The repository 'https://content.runescape.com/downloads/ubuntu trusty InRelease' is not signed`), causing **every** `sudo apt update` or `sudo add-apt-repository` command on your system to fail.
 3. Even with a key, Jagex's `trusty` repository cannot be installed via `apt` on modern Ubuntu because its `.deb` hard-depends on removed `libssl1.1`.
 
-**Linux Jagex Launcher never uses that APT repository**—it downloads and extracts the native RS3 client rootlessly in userspace (`~/.local/share/linux-jagex-launcher/client/`). Remove the leftover Jagex APT source file:
+**Linux Jagex Launcher never uses that APT repository**—it installs and manages the native RS3 client rootlessly in userspace. Remove the leftover Jagex APT source file:
 
 ```bash
 sudo rm -f /etc/apt/sources.list.d/runescape.list /etc/apt/sources.list.d/runescape.sources /etc/apt/trusted.gpg.d/runescape.gpg /usr/share/keyrings/runescape.gpg
@@ -467,13 +466,13 @@ sudo apt update
 <details>
 <summary><strong>How does this launcher resolve the libssl1.1 error on Ubuntu 22.04, 24.04 & 26.04?</strong></summary>
 
-Modern Ubuntu versions (22.04 LTS and 24.04 LTS+) transitioned completely to OpenSSL 3 (`libssl3`) and dropped `libssl1.1`. The official native Jagex Linux client was built against `libssl.so.1.1` and fails to start on clean modern installations.
+Modern Ubuntu versions (22.04 LTS and 24.04 LTS+) transitioned completely to OpenSSL 3 (`libssl3`) and dropped `libssl1.1`. The official native Jagex Linux client was built against `libssl1.1` and fails to start on clean modern installations.
 
 **Never force-install outdated `libssl1.1` packages from Ubuntu 20.04 (Focal) into your host system package manager**, as this can corrupt `apt` during subsequent system upgrades.
 
 **The Linux Jagex Launcher automatically solves this safely:**
-1. It downloads the isolated `libssl.so.1.1` and `libcrypto.so.1.1` shared libraries into userspace (`~/.local/share/linux-jagex-launcher/compat/lib64/`).
-2. When launching the game, it injects an isolated `LD_LIBRARY_PATH` targeting only the game process.
+1. It downloads and verifies isolated OpenSSL 1.1 compatibility libraries exclusively in userspace.
+2. When launching the game, it scopes library resolution only to the game subprocess.
 3. Your system's package manager (`apt`, `dnf`, `pacman`) remains 100% clean and untouched!
 </details>
 
@@ -481,17 +480,17 @@ Modern Ubuntu versions (22.04 LTS and 24.04 LTS+) transitioned completely to Ope
 <summary><strong>Why does RuneScape 3 freeze on "Loading application resources" and how do I fix it?</strong></summary>
 
 The "Loading application resources" hang is typically caused by:
-1. **Wayland Compositor Conflicts**: The legacy GTK2/SDL2 client crashes or locks when interacting directly with modern Wayland compositors. **Fix**: Linux Jagex Launcher automatically injects `GDK_BACKEND=x11` and `SDL_VIDEODRIVER=x11` to route display operations cleanly through XWayland.
-2. **Missing OpenGL/Vulkan Drivers**: Minimal desktop installs may lack `libopengl0` or `mesa-vulkan-drivers`. Run **Settings > RuneScape 3 > Run Diagnostics** to check.
-3. **Audio Buffer Underrun**: PulseAudio/PipeWire buffers underflowing during initial asset decompression can block the main thread. Linux Jagex Launcher sets `PULSE_LATENCY_MSEC=100` to prevent audio starvation.
+1. **Wayland Compositor Conflicts**: The legacy client crashes or locks when interacting directly with modern Wayland compositors. **Fix**: Linux Jagex Launcher automatically applies the compatibility routing needed for modern Wayland and X11 desktops.
+2. **Missing OpenGL/Vulkan Drivers**: Minimal desktop installs may lack required OpenGL or Vulkan libraries. Run **Settings > RuneScape 3 > Run Diagnostics** to check.
+3. **Audio Buffer Underrun**: PulseAudio/PipeWire buffers underflowing during initial asset decompression can block the main thread. Linux Jagex Launcher automatically applies audio latency mitigation on launch.
 4. **Corrupted Shader/Asset Cache**: Click **Settings > RuneScape 3 > Clear Cache** to wipe stale cache files from `~/.jagex_launcher` and force a clean reload.
-5. **NVIDIA on Wayland**: Enable **Settings > RuneScape 3 > GPU Driver: Mesa Zink Override** to route OpenGL rendering over Vulkan (`MESA_LOADER_DRIVER_OVERRIDE=zink ZINK_DEBUG=flushsync`).
+5. **NVIDIA on Wayland**: Enable **Settings > RuneScape 3 > GPU Driver: Mesa Zink Override** to route OpenGL rendering over Vulkan.
 </details>
 
 <details>
 <summary><strong>Can I play on Linux if I migrated to a Jagex Account?</strong></summary>
 
-Yes! Characters migrated to Jagex Accounts can no longer authenticate using legacy in-client usernames/passwords. Linux Jagex Launcher performs the official OAuth 2.0 PKCE authentication flow directly with Jagex Auth servers, verifies Cloudflare Turnstile, and injects your active `JX_SESSION_ID`, `JX_CHARACTER_ID`, and `JX_DISPLAY_NAME` into the RS3 client subprocess.
+Yes! Characters migrated to Jagex Accounts can no longer authenticate using legacy in-client usernames/passwords. Linux Jagex Launcher performs the official OAuth 2.0 PKCE authentication flow directly with Jagex Auth servers, verifies Cloudflare Turnstile, and passes your authenticated session directly to the game client.
 </details>
 
 <details>

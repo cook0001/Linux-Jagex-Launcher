@@ -64,7 +64,7 @@
     <release version="1.5.0" date="2026-11-14" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0</url>
       <description>
-        <p>Website News &amp; Release Feed: Added an interactive Updates &amp; News section to the project website with JSON/RSS feeds and automated release synchronization; Live Client Logger &amp; Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling; Launcher Architecture &amp; Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated Linux /proc process monitoring, icon deployment, and streaming downloads; Community: Added Code of Conduct, refreshed issue/PR templates, and synced public community files.</p>
+        <p>Website News &amp; Release Feed: Added an interactive Updates &amp; News section to the project website with JSON/RSS feeds and automated release synchronization; Live Client Logger &amp; Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling; Launcher Architecture &amp; Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated process lifecycle monitoring, icon deployment, and streaming downloads; Community: Added Code of Conduct, refreshed issue/PR templates, and synced public community files.</p>
       </description>
     </release>
     <release version="1.4.9" date="2026-11-13" type="stable">
@@ -76,13 +76,13 @@
     <release version="1.4.8" date="2026-11-12" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.8</url>
       <description>
-        <p>Ubuntu 26.04 LTS (Resolute Raccoon) and 24.04 LTS legacy Jagex APT repository detection and one-click PolicyKit remediation, modern Debian/Ubuntu t64 library resolution in RS3 and OSRS Doctors, hardened standalone installer script, and website UI/accessibility enhancements.</p>
+        <p>Ubuntu 26.04 LTS (Resolute Raccoon) and 24.04 LTS legacy Jagex APT repository detection and one-click remediation, modern Debian/Ubuntu t64 library resolution in RS3 and OSRS Doctors, hardened standalone installer script, and website UI/accessibility enhancements.</p>
       </description>
     </release>
     <release version="1.4.7" date="2026-10-06" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.7</url>
       <description>
-        <p>Comprehensive codebase refinement, system helper consolidation, performance and memory optimizations across diagnostics and cache tools, and distribution specification parity.</p>
+        <p>Comprehensive codebase refinement, internal helper consolidation, performance and memory optimizations across diagnostics and cache tools, and distribution specification parity.</p>
       </description>
     </release>
     <release version="1.4.6" date="2026-10-04" type="stable">
@@ -106,13 +106,13 @@
     <release version="1.4.3" date="2026-10-01" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.3</url>
       <description>
-        <p>HiDPI display scaling controls for OSRS (1.0x to 3.0x), multi-instance client manager with live heartbeat and stop controls, in-app live client log viewer with ANSI styling and token redaction, multi-GPU and dedicated GPU selection (DRI PRIME and NVIDIA offload), custom launch command template expansion fixes, deep link OAuth protocol callback completion, PID recycling process safeguards, and harmless desktop subsystem warning classifications.</p>
+        <p>HiDPI display scaling controls for OSRS (1.0x to 3.0x), multi-instance client manager with live heartbeat and stop controls, in-app live client log viewer with ANSI styling and token redaction, multi-GPU and dedicated GPU selection (DRI PRIME and NVIDIA offload), custom launch command argument tokenization fixes, deep link OAuth protocol callback completion, process verification safeguards, and harmless desktop subsystem warning classifications.</p>
       </description>
     </release>
     <release version="1.4.2" date="2026-09-30" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.2</url>
       <description>
-        <p>AppImage child environment sanitization preventing RuneLite re-exec loops, enhanced RuneLite and OSRS process lifecycle tracking with successor process migration, OpenJDK 24+ ZGC compatibility, static FUSE2-free AppImage runtime for Ubuntu 24.04/26.04, single-instance window focus restoration, Wayland display presentation fallbacks, official Old School RuneScape client integration modal, interactive play state unlock, and official Canonical Snap distribution pipeline with 3:1 store banners.</p>
+        <p>AppImage child environment isolation preventing RuneLite launch loops, improved RuneLite and OSRS process lifecycle tracking across launcher handoff, OpenJDK 24+ ZGC compatibility, static FUSE2-free AppImage runtime for Ubuntu 24.04/26.04, single-instance window focus restoration, Wayland display presentation fallbacks, official Old School RuneScape client integration modal, interactive play state unlock, and official Canonical Snap distribution pipeline with 3:1 store banners.</p>
       </description>
     </release>
     <release version="1.4.1" date="2026-09-30" type="stable">

@@ -22,6 +22,7 @@
   --border-gold: rgba(229, 179, 82, 0.38);
   --border-cyan: rgba(0, 225, 217, 0.35);
 
+  --gold-bright: #ffe08a;
   --gold-primary: #f5c469;
   --gold-accent: #e5b352;
   --gold-dark: #b88628;
@@ -539,9 +540,8 @@ h1[tabindex="-1"]:focus {
 }
 
 .quick-code .code-block {
-  padding: 0.85rem 6rem 0.85rem 1.15rem;
+  padding: 0.85rem 0.65rem 0.85rem 1.15rem;
   font-size: clamp(0.78rem, 0.7rem + 0.25vw, 0.85rem);
-  background: #05080c;
 }
 
 /* Showcase Window */
@@ -1190,6 +1190,20 @@ h1[tabindex="-1"]:focus {
 
 .sub-accordion-note {
   margin-top: 1rem;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.inline-link {
+  color: var(--gold-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.inline-link:hover {
+  color: var(--gold-bright);
 }
 
 /* Progressive Details Slide Animation */
@@ -1236,18 +1250,27 @@ details:not([open])::details-content {
 
 /* Code Blocks & Copy Buttons */
 .code-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   position: relative;
   margin: 0.5rem 0;
   min-width: 0;
   max-width: 100%;
-}
-
-.code-block {
   background: #05080c;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 8px;
-  padding: 0.95rem 6.25rem 0.95rem 1.15rem;
-  position: relative;
+  padding-inline-end: 0.5rem;
+  overflow: hidden;
+}
+
+.code-block {
+  flex: 1 1 0%;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 8px 0 0 8px;
+  padding: 0.95rem 0.65rem 0.95rem 1.15rem;
   font-family: var(--font-mono);
   font-size: 0.86rem;
   line-height: 1.5;
@@ -1269,9 +1292,7 @@ details:not([open])::details-content {
 }
 
 .btn-copy-code {
-  position: absolute;
-  inset-block-start: 0.5rem;
-  inset-inline-end: 0.5rem;
+  flex-shrink: 0;
   min-block-size: 32px;
   display: inline-flex;
   align-items: center;
@@ -1285,9 +1306,7 @@ details:not([open])::details-content {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  backdrop-filter: blur(8px);
   user-select: none;
-  z-index: 2;
 }
 
 .btn-copy-code:hover {

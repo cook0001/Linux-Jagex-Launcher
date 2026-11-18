@@ -21,7 +21,7 @@ Your privacy and account security are our highest priority. **Linux Jagex Launch
 - **OAuth 2.0 with PKCE**: All sign-in requests use official OAuth 2.0 Proof Key for Code Exchange (PKCE) directly against Jagex authorization servers.
 - **Never Intercepts Passwords**: Your Jagex Account password is submitted directly to `account.jagex.com`. The launcher never reads, stores, or logs your plain-text password.
 - **Local Credential Storage**:
-  - Session tokens (`JX_SESSION_ID`), user ID (`sub`), and character lists are stored exclusively on your local machine in your user directory:
+  - Authenticated session tokens and character lists are stored exclusively on your local machine in your user directory:
     ```
     ~/.config/linux-jagex-launcher/
     ```
@@ -29,17 +29,17 @@ Your privacy and account security are our highest priority. **Linux Jagex Launch
 
 ---
 
-## 3. Game Launch & Environment Injection
+## 3. Game Launch & Local Session Handoff
 - When launching **Old School RuneScape (RuneLite/HDOS)** or **RuneScape 3**:
-  - Session credentials (`JX_SESSION_ID`, `JX_CHARACTER_ID`, `JX_DISPLAY_NAME`) are passed directly via local process environment variables to the game client subprocess on your machine.
+  - Active session tokens and selected character details are passed directly to the local game client subprocess on your machine.
   - Nothing is transmitted over external networks other than your game client communicating directly with Jagex game worlds.
 - The user's home directory (`~/.runelite` or standard user profile) is preserved intact so browser links open in your default browser.
 
 ---
 
-## 4. Open Source & Verifiable
-- All source code for this launcher is 100% open source under the **MIT License**.
-- You can inspect, audit, and build every component directly from the source code repository.
+## 4. Proprietary License & Release Verification
+- **Linux Jagex Launcher** is distributed as proprietary freeware under the [Proprietary Software License](LICENSE) for personal, non-commercial use.
+- Official release packages include published `SHA256SUMS.txt` checksums on GitHub Releases so you can verify download integrity before installing or updating.
 
 ---
 
