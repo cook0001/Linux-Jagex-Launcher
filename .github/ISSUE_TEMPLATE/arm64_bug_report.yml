@@ -52,7 +52,7 @@ body:
         - Debian / Ubuntu package (.deb arm64)
         - Portable Tarball (.tar.gz arm64)
         - Snap Package (linux-jagex-launcher beta arm64)
-        - Built locally from ARM64 branch source
+        - Custom / Other package
     validations:
       required: true
   - type: input

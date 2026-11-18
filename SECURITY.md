@@ -9,7 +9,7 @@
 
 ## Security Model & Principles
 
-1. **Zero External Servers**: This launcher runs 100% on the client side. No credentials, tokens, or personal information are ever dispatched to any intermediate or third-party servers.
+1. **Zero Background Telemetry**: Normal launcher execution sends zero analytics or background telemetry. External issue-relay connections (`reports.patchcraft.dev`) occur only when you explicitly click submit in the Issue Reporter with previewed, redacted diagnostics (scrubbed of tokens, emails, and home paths).
 2. **Direct Jagex OAuth 2.0 PKCE**: All authentication is performed directly with official Jagex endpoints (`account.jagex.com`). Passwords are typed into official Jagex forms and are never handled or logged by the launcher.
 3. **Local Credential Storage**: Session tokens are held strictly on your local filesystem under `~/.config/linux-jagex-launcher/` with restricted user permissions (`0600`/`0700`).
 

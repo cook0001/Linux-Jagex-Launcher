@@ -57,7 +57,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=1.5.0-2">
+  <link rel="stylesheet" href="style.css?v=1.5.0-3">
 </head>
 <body>
 
@@ -1347,21 +1347,69 @@
           </div>
           <h2 class="feedback-title">Help Shape Linux Jagex Launcher</h2>
           <p class="feedback-desc">
-            Whether you are running RuneScape 3 on Arch, Old School on Steam Deck, or playing on Ubuntu 26.04 &mdash; your feedback helps us prioritize features, fix quirks, and deliver the best native Linux gaming experience.
+            Whether you are running RuneScape 3 on Arch, Old School on Steam Deck, or playing on Ubuntu 26.04 &mdash; report bugs or suggest features directly below without needing a GitHub account, or open a GitHub thread directly.
           </p>
-          <div class="feedback-buttons">
-            <a href="https://forms.gle/KvagBxcmVBB3Q721A" class="btn-primary" target="_blank" rel="noopener noreferrer">
-              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              <span>Open Feedback Survey</span>
-            </a>
-            <a href="https://github.com/cook0001/Linux-Jagex-Launcher/issues" class="btn-secondary" target="_blank" rel="noopener noreferrer">
-              <span>Report Issue on GitHub &rarr;</span>
-            </a>
+
+          <div id="feedback-form-shell" class="feedback-form-shell" data-endpoint="https://reports.patchcraft.dev/api/report" data-turnstile-sitekey="">
+            <form id="web-feedback-form" class="feedback-form" novalidate>
+              <div class="feedback-form-row">
+                <div class="feedback-field">
+                  <label for="web-feedback-category">Category</label>
+                  <select id="web-feedback-category" name="category">
+                    <option value="bug">Bug Report</option>
+                    <option value="feature">Feature Request</option>
+                  </select>
+                </div>
+                <div class="feedback-field">
+                  <label for="web-feedback-game">Game / Scope</label>
+                  <select id="web-feedback-game" name="game">
+                    <option value="rs3">RuneScape 3 (NXT)</option>
+                    <option value="runelite">Old School (RuneLite)</option>
+                    <option value="hdos">Old School (HDOS)</option>
+                    <option value="official">Old School (Official)</option>
+                    <option value="dragonwilds">RuneScape: Dragonwilds</option>
+                    <option value="launcher">Launcher / Website / Packaging</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="feedback-form-row">
+                <div class="feedback-field">
+                  <label for="web-feedback-title">Summary Title</label>
+                  <input id="web-feedback-title" name="title" type="text" maxlength="120" placeholder="e.g., Crash when launching RS3 on Fedora 41 Wayland" required>
+                </div>
+                <div class="feedback-field">
+                  <label for="web-feedback-distro">Distro / Package <span class="feedback-optional">(optional)</span></label>
+                  <input id="web-feedback-distro" name="distro" type="text" maxlength="120" placeholder="e.g., Ubuntu 24.04 (.deb) or SteamOS (AppImage)">
+                </div>
+              </div>
+
+              <div class="feedback-field">
+                <label for="web-feedback-desc">Details / Steps to Reproduce</label>
+                <textarea id="web-feedback-desc" name="description" rows="4" maxlength="4000" placeholder="Describe what happened or what you'd like added (tip: for full GPU/log diagnostics, use Issues -> Submit In-App inside the launcher)..." required></textarea>
+              </div>
+
+              <div id="web-turnstile-slot" class="web-turnstile-slot" hidden></div>
+
+              <div class="feedback-form-actions">
+                <button id="web-feedback-submit" type="submit" class="btn-primary">
+                  <span>Submit Report Directly</span>
+                </button>
+                <a href="https://forms.gle/KvagBxcmVBB3Q721A" class="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <span>Open Google Form Survey</span>
+                </a>
+              </div>
+
+              <div id="web-feedback-status" class="web-feedback-status" role="status" aria-live="polite" hidden></div>
+            </form>
           </div>
-          <span class="feedback-meta">Takes under 60 seconds &bull; Powered by Google Forms</span>
+
+          <div class="feedback-alt-links">
+            <a href="https://github.com/cook0001/Linux-Jagex-Launcher/issues/new/choose" class="inline-link" target="_blank" rel="noopener noreferrer">Open on GitHub Issues</a>
+            <span aria-hidden="true">&bull;</span>
+            <a href="https://github.com/cook0001/Linux-Jagex-Launcher/discussions" class="inline-link" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions</a>
+          </div>
+          <span class="feedback-meta">Tip: Submissions inside the launcher attach redacted GPU &amp; log diagnostics automatically.</span>
         </div>
       </div>
     </section>
@@ -2061,6 +2109,142 @@
       renderNewsView({ announce: false });
       hydrateGitHubReleases().catch(() => {
         // Offline or rate-limited visitors keep pre-rendered changelog entries seamlessly
+      });
+    })();
+
+    // Direct Website Report Form (Cloudflare Worker relay + Turnstile + fallback)
+    (function initWebsiteFeedbackForm() {
+      const shell = document.getElementById('feedback-form-shell');
+      const form = document.getElementById('web-feedback-form');
+      const categoryEl = document.getElementById('web-feedback-category');
+      const gameEl = document.getElementById('web-feedback-game');
+      const titleEl = document.getElementById('web-feedback-title');
+      const distroEl = document.getElementById('web-feedback-distro');
+      const descEl = document.getElementById('web-feedback-desc');
+      const submitBtn = document.getElementById('web-feedback-submit');
+      const turnstileSlot = document.getElementById('web-turnstile-slot');
+      const statusEl = document.getElementById('web-feedback-status');
+      if (!shell || !form || !submitBtn || !statusEl) return;
+
+      const endpoint = shell.dataset.endpoint || 'https://reports.patchcraft.dev/api/report';
+      const siteKey = (shell.dataset.turnstileSitekey || '').trim();
+      let turnstileToken = '';
+      let widgetId = null;
+
+      if (siteKey && turnstileSlot && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
+        turnstileSlot.hidden = false;
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+          if (window.turnstile && typeof window.turnstile.render === 'function') {
+            widgetId = window.turnstile.render(turnstileSlot, {
+              sitekey: siteKey,
+              theme: 'dark',
+              callback: (token) => { turnstileToken = token || ''; },
+              'expired-callback': () => { turnstileToken = ''; },
+            });
+          }
+        };
+        document.head.appendChild(script);
+      }
+
+      function showFeedbackStatus(message, kind, extraLinks = []) {
+        statusEl.hidden = false;
+        statusEl.className = `web-feedback-status is-${kind}`;
+        statusEl.replaceChildren(document.createTextNode(message));
+        for (const item of extraLinks) {
+          statusEl.appendChild(document.createTextNode(' '));
+          const link = document.createElement('a');
+          link.className = 'inline-link';
+          link.href = item.href;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = item.label;
+          statusEl.appendChild(link);
+        }
+      }
+
+      function buildFallbackGitHubHref(category, title, desc) {
+        const params = new URLSearchParams();
+        if (category === 'feature') {
+          params.set('template', 'feature_request.yml');
+          params.set('title', `[Feature]: ${title}`);
+          params.set('solution', desc);
+        } else {
+          params.set('template', 'bug_report.yml');
+          params.set('title', `[Bug]: ${title}`);
+          params.set('what-happened', desc);
+        }
+        return `https://github.com/cook0001/Linux-Jagex-Launcher/issues/new?${params.toString()}`;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const category = categoryEl?.value === 'feature' ? 'feature' : 'bug';
+        const game = gameEl?.value || 'launcher';
+        const title = String(titleEl?.value || '').trim();
+        const distro = String(distroEl?.value || '').trim();
+        const description = String(descEl?.value || '').trim();
+
+        if (title.length < 6 || description.length < 10) {
+          showFeedbackStatus('Please enter a title (6+ characters) and details (10+ characters).', 'error');
+          return;
+        }
+        if (siteKey && !turnstileToken) {
+          showFeedbackStatus('Please complete the human verification check before submitting.', 'error');
+          return;
+        }
+
+        const labelSpan = submitBtn.querySelector('span');
+        const originalText = labelSpan ? labelSpan.textContent : 'Submit Report Directly';
+        submitBtn.disabled = true;
+        if (labelSpan) labelSpan.textContent = 'Submitting...';
+
+        try {
+          const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              source: 'website',
+              category,
+              game,
+              title,
+              distro,
+              description,
+              turnstileToken: turnstileToken || undefined,
+            }),
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || !data?.ok || !/^https:\/\/github\.com\//.test(String(data.issueUrl || ''))) {
+            throw new Error(data?.error || `HTTP ${response.status}`);
+          }
+
+          showFeedbackStatus(
+            `Report submitted directly! Track progress on GitHub:`,
+            'success',
+            [{ href: data.issueUrl, label: data.issueNumber ? `Issue #${data.issueNumber} ↗` : 'View Issue ↗' }]
+          );
+          form.reset();
+          turnstileToken = '';
+          if (widgetId !== null && window.turnstile?.reset) {
+            window.turnstile.reset(widgetId);
+          }
+        } catch {
+          const ghFallback = buildFallbackGitHubHref(category, title, description);
+          showFeedbackStatus(
+            'Direct relay unavailable right now — submit with your text pre-filled instead:',
+            'error',
+            [
+              { href: ghFallback, label: 'Open Pre-Filled GitHub Issue ↗' },
+              { href: 'https://forms.gle/KvagBxcmVBB3Q721A', label: 'Google Form Survey ↗' },
+            ]
+          );
+        } finally {
+          submitBtn.disabled = false;
+          if (labelSpan) labelSpan.textContent = originalText;
+        }
       });
     })();
   </script>

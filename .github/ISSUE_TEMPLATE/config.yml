@@ -3,6 +3,9 @@ contact_links:
   - name: Project Website & Install Guides
     url: https://launcher.patchcraft.dev/
     about: Official Linux install instructions, troubleshooting guides, and distribution packages.
+  - name: Setup Help & General Questions (Discussions)
+    url: https://github.com/cook0001/Linux-Jagex-Launcher/discussions
+    about: Ask distro setup, Wayland/GPU tuning, or general usage questions in GitHub Discussions.
   - name: ARM64 (aarch64) Development Branch & Pre-Releases
     url: https://github.com/cook0001/Linux-Jagex-Launcher/tree/ARM64
     about: Dedicated Linux ARM64 development branch, hardware compatibility matrix, and Box64/FEX-Emu status.

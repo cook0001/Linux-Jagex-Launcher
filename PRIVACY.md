@@ -8,12 +8,12 @@ Your privacy and account security are our highest priority. **Linux Jagex Launch
 
 ---
 
-## 1. Zero Data Collection & No External Servers
-- We do **not** own, operate, or maintain any intermediate proxy servers, analytics endpoints, or databases.
-- The launcher connects **exclusively** to:
+## 1. Zero Background Telemetry & Opt-In Issue Reporting
+- We do **not** collect background telemetry, analytics, crash dumps, account identifiers, or usage tracking metrics.
+- Normal launcher usage connects **only** to:
   1. **Official Jagex Identity & Game Services** (`account.jagex.com`, `auth.jagex.com`, `secure.runescape.com`, `content.jagex.com`).
-  2. **Official Open-Source Client Repositories** (GitHub releases for RuneLite and official CDN for HDOS).
-- No personal data, IP addresses, telemetry, crash dumps, or usage metrics are collected, tracked, or transmitted to any third party.
+  2. **Official Game & Update Endpoints** (GitHub Releases for updates/RuneLite and official CDN for HDOS).
+- **Optional User-Initiated Issue Reports:** If you explicitly click **Submit In-App** in the Issue Reporter (or submit via the website form at `launcher.patchcraft.dev`), only the title, description, and previewed redacted system diagnostics you approve are relayed via `reports.patchcraft.dev` directly to our public GitHub Issues tracker. Session tokens, passwords, email addresses, and local usernames are scrubbed before transmission.
 
 ---
 
