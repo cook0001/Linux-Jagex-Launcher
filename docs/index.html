@@ -1350,7 +1350,7 @@
             Whether you are running RuneScape 3 on Arch, Old School on Steam Deck, or playing on Ubuntu 26.04 &mdash; report bugs or suggest features directly below without needing a GitHub account, or open a GitHub thread directly.
           </p>
 
-          <div id="feedback-form-shell" class="feedback-form-shell" data-endpoint="https://reports.patchcraft.dev/api/report" data-turnstile-sitekey="">
+          <div id="feedback-form-shell" class="feedback-form-shell" data-endpoint="https://reports.patchcraft.dev/api/report" data-turnstile-sitekey="0x4AAAAAAGGRwouunmHdGAeh">
             <form id="web-feedback-form" class="feedback-form" novalidate>
               <div class="feedback-form-row">
                 <div class="feedback-field">
@@ -2133,20 +2133,21 @@
 
       if (siteKey && turnstileSlot && (window.location.protocol === 'https:' || window.location.protocol === 'http:')) {
         turnstileSlot.hidden = false;
-        const script = document.createElement('script');
-        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
+        window.onLjlTurnstileReady = () => {
           if (window.turnstile && typeof window.turnstile.render === 'function') {
             widgetId = window.turnstile.render(turnstileSlot, {
               sitekey: siteKey,
               theme: 'dark',
               callback: (token) => { turnstileToken = token || ''; },
               'expired-callback': () => { turnstileToken = ''; },
+              'error-callback': () => { turnstileToken = ''; },
             });
           }
         };
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onLjlTurnstileReady&render=explicit';
+        script.async = true;
+        script.defer = true;
         document.head.appendChild(script);
       }
 
