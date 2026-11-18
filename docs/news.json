@@ -1,12 +1,42 @@
 {
-  "generatedAt": "2026-11-18T01:28:11.605Z",
+  "generatedAt": "2026-11-18T03:08:42.115Z",
   "siteUrl": "https://launcher.patchcraft.dev/",
   "publicRepo": "cook0001/Linux-Jagex-Launcher",
-  "latestVersion": "1.5.0",
-  "totalCount": 17,
-  "releaseCount": 15,
+  "latestVersion": "1.5.1",
+  "totalCount": 18,
+  "releaseCount": 16,
   "announcementCount": 2,
   "items": [
+    {
+      "id": "release-v1.5.1",
+      "kind": "release",
+      "categoryLabel": "Release",
+      "version": "1.5.1",
+      "title": "Linux Jagex Launcher v1.5.1",
+      "dateIso": "2026-11-17",
+      "displayDate": "Nov 17, 2026",
+      "badge": "v1.5.1",
+      "pinned": false,
+      "summary": "Direct In-App & Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates;...",
+      "highlightCount": 3,
+      "sections": [
+        {
+          "heading": "Added",
+          "bullets": [
+            "**Direct In-App & Web Issue Reporting**: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates."
+          ]
+        },
+        {
+          "heading": "Changed",
+          "bullets": [
+            "**Website & Visual Refresh**: Updated `https://launcher.patchcraft.dev/` with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices.",
+            "**Hardened Release Packaging**: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats."
+          ]
+        }
+      ],
+      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.1",
+      "ctaLabel": "View v1.5.1 on GitHub"
+    },
     {
       "id": "release-v1.5.0",
       "kind": "release",

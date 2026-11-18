@@ -6,7 +6,19 @@
     <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Official releases, packaging updates, and maintainer announcements for Linux Jagex Launcher.</description>
     <language>en-us</language>
-    <lastBuildDate>Sat, 14 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 17 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Linux Jagex Launcher v1.5.1</title>
+      <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.1</link>
+      <guid isPermaLink="false">release-v1.5.1</guid>
+      <pubDate>Tue, 17 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Direct In-App &amp; Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates;...
+
+- Added: Direct In-App &amp; Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates.
+- Changed: Website &amp; Visual Refresh: Updated https://launcher.patchcraft.dev/ with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices.
+- Changed: Hardened Release Packaging: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats.</description>
+    </item>
     <item>
       <title>Linux Jagex Launcher v1.5.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0</link>

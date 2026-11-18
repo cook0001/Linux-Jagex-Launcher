@@ -5,6 +5,17 @@ All notable changes to the **Linux Jagex Launcher** project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-11-17
+
+### Added
+- **Direct In-App & Web Issue Reporting**: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates.
+
+### Changed
+- **Website & Visual Refresh**: Updated `https://launcher.patchcraft.dev/` with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices.
+- **Hardened Release Packaging**: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats.
+
+---
+
 ## [1.5.0] - 2026-11-14
 
 ### Added

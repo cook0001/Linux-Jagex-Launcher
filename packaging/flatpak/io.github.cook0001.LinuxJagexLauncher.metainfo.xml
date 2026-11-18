@@ -61,6 +61,12 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="1.5.1" date="2026-11-17" type="stable">
+      <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.1</url>
+      <description>
+        <p>Direct In-App &amp; Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates; Website &amp; Visual Refresh: Updated launcher.patchcraft.dev with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices; Hardened Release Packaging: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats.</p>
+      </description>
+    </release>
     <release version="1.5.0" date="2026-11-14" type="stable">
       <url type="details">https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0</url>
       <description>

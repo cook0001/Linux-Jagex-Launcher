@@ -1,5 +1,5 @@
 Name:           linux-jagex-launcher
-Version:        1.5.0
+Version:        1.5.1
 Release:        1%{?dist}
 Summary:        Authentic, native Jagex Launcher for Linux
 License:        Proprietary
@@ -107,6 +107,9 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/io.g
 %{_datadir}/icons/hicolor/*/apps/io.github.cook0001.LinuxJagexLauncher.png
 
 %changelog
+* Tue Nov 17 2026 Daniel Cook <danielcook2016@outlook.com> - 1.5.1-1
+- Release v1.5.1: Direct In-App & Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates; Website & Visual Refresh: Updated https://launcher.patchcraft.dev/ with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices; Hardened Release Packaging: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats
+
 * Sat Nov 14 2026 Daniel Cook <danielcook2016@outlook.com> - 1.5.0-1
 - Release v1.5.0: Website News & Release Feed: Added an interactive Updates & News section to the project website with JSON/RSS feeds and automated release synchronization; Live Client Logger & Diagnostics: Fixed live log line rendering, replaced silent error catches with structured diagnostics, and removed startup timer workarounds across window initialization and deep-link handling; Launcher Architecture & Modularity: Refactored UI controllers (Auto Updater, RS3/OSRS Doctor diagnostics, and Tools hub) into focused modules and consolidated process lifecycle monitoring, icon deployment, and streaming downloads
 
