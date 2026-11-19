@@ -23,6 +23,7 @@
     <a href="#-how-it-works">How It Works</a> •
     <a href="#-settings--tweaks">Settings</a> •
     <a href="#-faq--troubleshooting">FAQ</a> •
+    <a href="https://github.com/cook0001/Linux-Jagex-Launcher/discussions" target="_blank">Discussions</a> •
     <a href="https://forms.gle/KvagBxcmVBB3Q721A" target="_blank">Feedback Form</a> •
     <a href="PRIVACY.md">Privacy Policy</a>
   </p>
@@ -31,6 +32,8 @@
 
   <img src="docs/assets/screenshot-rs3.png" alt="Linux Jagex Launcher running RuneScape 3 on Linux" width="900" style="border-radius: 10px; border: 1px solid rgba(229,179,82,0.3);" />
 </div>
+
+> **UI Redesign Feedback Wanted:** Preview the proposed Jagex-style top-bar layout and vote in [Discussion #2](https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2) or at [launcher.patchcraft.dev/#redesign-preview](https://launcher.patchcraft.dev/#redesign-preview).
 
 ---
 
@@ -503,7 +506,7 @@ Running the launcher with `sudo` will cause files in `~/.local/share`, `~/.confi
 
 ## 💬 Community Feedback
 
-Have feature suggestions, performance reports, or distro compatibility feedback? Help us shape future updates by submitting your thoughts through our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
+Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Linux-Jagex-Launcher/discussions) (including the [UI Redesign Poll in Discussion #2](https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2)), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
 
 ---
 
