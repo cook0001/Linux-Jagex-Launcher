@@ -1,6 +1,21 @@
 {
   "announcements": [
     {
+      "id": "announcement-2026-11-18-ui-redesign-feedback",
+      "title": "Preview the Proposed Jagex-Style UI Redesign & Vote in Discussion #2",
+      "date": "2026-11-18",
+      "badge": "Feedback",
+      "pinned": true,
+      "summary": "Before shipping the new Jagex-inspired top-bar layout, we are collecting community feedback on GitHub Discussions and launcher.patchcraft.dev. Check out the screenshots and tell us whether you prefer the new style or the current sidebar.",
+      "bullets": [
+        "**Side-by-Side Preview**: View screenshots of the RS3, Old School, Dragonwilds, and Settings redesign in Discussion #2 or in the Feedback & Discussions section below.",
+        "**Live Discussions**: Vote, comment on existing threads, or submit UI feedback straight from `#feedback` without needing a GitHub account.",
+        "**No Forced Change Yet**: The redesign stays local while feedback is gathered — `v1.5.1` remains the active stable release."
+      ],
+      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2",
+      "ctaLabel": "Vote & Comment in Discussion #2"
+    },
+    {
       "id": "announcement-2026-11-14-ubuntu-ppa-snap-live",
       "title": "Ubuntu Launchpad PPA (26.04, 24.04, 22.04) & Snap Store Live",
       "date": "2026-11-14",

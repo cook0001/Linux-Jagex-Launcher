@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-18",
+  "publicRepo": "cook0001/Linux-Jagex-Launcher",
+  "discussionsUrl": "https://github.com/cook0001/Linux-Jagex-Launcher/discussions",
+  "links": [
+    {
+      "id": "discussion-ui-redesign-2",
+      "game": "all",
+      "title": "UI Redesign Poll & Preview (Discussion #2)",
+      "description": "Compare the proposed Jagex-style desktop layout against the current sidebar and share your vote or suggestions.",
+      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2",
+      "category": "Community Poll",
+      "badge": "Feedback",
+      "featured": true
+    },
+    {
+      "id": "github-discussions-hub",
+      "game": "all",
+      "title": "GitHub Discussions Hub",
+      "description": "Ask questions, propose ideas, vote in community polls, and share Linux or Steam Deck tips.",
+      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/discussions",
+      "category": "Discussions",
+      "badge": "Live",
+      "featured": true
+    },
+    {
+      "id": "community-feedback-survey",
+      "game": "all",
+      "title": "Linux Launcher Feedback Survey",
+      "description": "Share quick structured feedback via Google Forms without needing a GitHub account.",
+      "url": "https://forms.gle/KvagBxcmVBB3Q721A",
+      "category": "Feedback Survey",
+      "badge": "Survey",
+      "featured": false
+    }
+  ]
+}
