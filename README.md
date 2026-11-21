@@ -8,6 +8,7 @@
   <p>
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Linux-Jagex-Launcher?color=e5b352" alt="Latest Release" /></a>
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Linux-Jagex-Launcher/total?color=10b981" alt="Total Downloads" /></a>
+    <a href="https://snapcraft.io/linux-jagex-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/linux-jagex-launcher/badge.svg" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
     <a href="https://launcher.patchcraft.dev/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
@@ -296,6 +297,8 @@ chmod +x Jagex-Launcher-1.5.1.AppImage
 ### Option 4: Canonical Snap (`snapd`)
 
 Official Snap package built with `core24` strict confinement, automated background updates, and persistent game data storage in `$SNAP_USER_COMMON`:
+
+[![linux-jagex-launcher](https://snapcraft.io/linux-jagex-launcher/badge.svg)](https://snapcraft.io/linux-jagex-launcher)
 
 [![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/linux-jagex-launcher)
 

@@ -1093,6 +1093,23 @@ h1[tabindex="-1"]:focus {
   display: block;
 }
 
+.snap-status-badge {
+  display: inline-flex;
+  align-items: center;
+  line-height: 0;
+  transition: opacity 0.2s ease;
+}
+
+.snap-status-badge:hover {
+  opacity: 0.9;
+}
+
+.snap-status-badge img {
+  height: 24px;
+  width: auto;
+  display: block;
+}
+
 .snap-banner-frame {
   margin-bottom: 1.5rem;
   border-radius: 10px;
