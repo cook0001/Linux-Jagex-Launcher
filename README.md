@@ -14,6 +14,12 @@
   </p>
 
   <p>
+    <a href="https://snapcraft.io/linux-jagex-launcher">
+      <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" />
+    </a>
+  </p>
+
+  <p>
     <a href="#-key-features">Key Features</a> •
     <a href="#-how-it-compares">How It Compares</a> •
     <a href="#-runescape-3-native-linux">RuneScape 3</a> •
@@ -290,6 +296,8 @@ chmod +x Jagex-Launcher-1.5.1.AppImage
 ### Option 4: Canonical Snap (`snapd`)
 
 Official Snap package built with `core24` strict confinement, automated background updates, and persistent game data storage in `$SNAP_USER_COMMON`:
+
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/linux-jagex-launcher)
 
 **1. Install from Snap Store:**
 ```bash

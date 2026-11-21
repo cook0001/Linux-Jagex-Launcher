@@ -57,7 +57,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=1.5.1-2">
+  <link rel="stylesheet" href="style.css?v=1.5.1-3">
 </head>
 <body>
 
@@ -159,15 +159,6 @@
             <span>Download .AppImage</span>
           </a>
 
-          <button type="button" class="btn-secondary" onclick="navigateToInstall('snap')">
-            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2 2 7l10 5 10-5-10-5Z"></path>
-              <path d="m2 17 10 5 10-5"></path>
-              <path d="m2 12 10 5 10-5"></path>
-            </svg>
-            <span>Snap Store</span>
-          </button>
-
           <button type="button" class="btn-secondary" onclick="navigateToInstall('deck')">
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="6" width="20" height="12" rx="4"></rect>
@@ -179,6 +170,10 @@
             </svg>
             <span>Steam Deck Setup</span>
           </button>
+
+          <a href="https://snapcraft.io/linux-jagex-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
+            <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" width="182" height="56">
+          </a>
         </div>
 
         <!-- Quick Terminal Setup Snippet -->
@@ -872,6 +867,11 @@
                 <p class="panel-intro">
                   Official Canonical Snap package for Ubuntu, Debian, Fedora, Arch, and all snap-enabled distributions. Fully sandboxed with persistent multi-gigabyte cache storage in <code>$SNAP_USER_COMMON</code>.
                 </p>
+                <div class="snap-store-cta">
+                  <a href="https://snapcraft.io/linux-jagex-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
+                    <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" width="182" height="56" loading="lazy">
+                  </a>
+                </div>
               </div>
 
               <div class="snap-banner-frame">
@@ -1546,6 +1546,7 @@
           <a href="#faq">FAQ</a>
           <a href="https://github.com/cook0001/Linux-Jagex-Launcher" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+          <a href="https://snapcraft.io/linux-jagex-launcher" target="_blank" rel="noopener noreferrer">Snap Store</a>
           <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <a href="https://github.com/cook0001/Linux-Jagex-Launcher/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
         </nav>
