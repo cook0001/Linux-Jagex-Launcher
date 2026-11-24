@@ -2,7 +2,7 @@
 set -e
 
 # Linux Jagex Launcher - Installer for Debian / Ubuntu / Mint / Pop!_OS
-REPO="cook0001/Linux-Jagex-Launcher"
+REPO="cook0001/Patchcraft-Launcher"
 APT_ETC_DIR="${APT_ETC_DIR:-/etc/apt}"
 
 if [ "$(id -u)" -eq 0 ]; then

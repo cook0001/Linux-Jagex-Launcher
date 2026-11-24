@@ -4,15 +4,15 @@ Release:        1%{?dist}
 Summary:        Unofficial native Linux launcher for RuneScape & Jagex Accounts
 License:        Proprietary
 URL:            https://launcher.patchcraft.dev/
-Source0:        https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v%{version}/linux-jagex-launcher-%{version}.tar.gz
-Source1:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop
-Source2:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
-Source3:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/512x512.png
-Source4:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/256x256.png
-Source5:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/128x128.png
-Source6:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/64x64.png
-Source7:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/32x32.png
-Source8:        https://raw.githubusercontent.com/cook0001/Linux-Jagex-Launcher/v%{version}/resources/icons/16x16.png
+Source0:        https://github.com/cook0001/Patchcraft-Launcher/releases/download/v%{version}/linux-jagex-launcher-%{version}.tar.gz
+Source1:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop
+Source2:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
+Source3:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/512x512.png
+Source4:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/256x256.png
+Source5:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/128x128.png
+Source6:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/64x64.png
+Source7:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/32x32.png
+Source8:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/16x16.png
 
 ExclusiveArch:  x86_64
 

@@ -4,10 +4,10 @@ contact_links:
     url: https://launcher.patchcraft.dev/
     about: Official Linux install instructions, troubleshooting guides, and distribution packages.
   - name: Setup Help & General Questions (Discussions)
-    url: https://github.com/cook0001/Linux-Jagex-Launcher/discussions
+    url: https://github.com/cook0001/Patchcraft-Launcher/discussions
     about: Ask distro setup, Wayland/GPU tuning, or general usage questions in GitHub Discussions.
   - name: ARM64 (aarch64) Development Branch & Pre-Releases
-    url: https://github.com/cook0001/Linux-Jagex-Launcher/tree/ARM64
+    url: https://github.com/cook0001/Patchcraft-Launcher/tree/ARM64
     about: Dedicated Linux ARM64 development branch, hardware compatibility matrix, and Box64/FEX-Emu status.
   - name: Jagex Support & Account Help
     url: https://support.runescape.com/

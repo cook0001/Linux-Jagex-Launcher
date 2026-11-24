@@ -51,7 +51,7 @@ decisions when appropriate.
 ## Scope
 
 This Code of Conduct applies within all community spaces (including the
-[GitHub Issue Tracker](https://github.com/cook0001/Linux-Jagex-Launcher/issues)
+[GitHub Issue Tracker](https://github.com/cook0001/Patchcraft-Launcher/issues)
 and community feedback channels), and also applies when an individual is
 officially representing the community in public spaces.
 

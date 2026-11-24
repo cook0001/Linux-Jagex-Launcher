@@ -7,11 +7,11 @@
   <p><sub>Formerly Linux Jagex Launcher &mdash; existing package slugs (<code>linux-jagex-launcher</code>) remain unchanged for seamless upgrades. Not affiliated with Jagex Ltd.</sub></p>
 
   <p>
-    <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Linux-Jagex-Launcher?color=e5b352" alt="Latest Release" /></a>
-    <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Linux-Jagex-Launcher/total?color=10b981" alt="Total Downloads" /></a>
+    <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Patchcraft-Launcher?color=e5b352" alt="Latest Release" /></a>
+    <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Patchcraft-Launcher/total?color=10b981" alt="Total Downloads" /></a>
     <a href="https://snapcraft.io/linux-jagex-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/linux-jagex-launcher/badge.svg" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
-    <a href="https://github.com/cook0001/Linux-Jagex-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
+    <a href="https://github.com/cook0001/Patchcraft-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
     <a href="https://launcher.patchcraft.dev/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
   </p>
 
@@ -31,7 +31,7 @@
     <a href="#-how-it-works">How It Works</a> •
     <a href="#-settings--tweaks">Settings</a> •
     <a href="#-faq--troubleshooting">FAQ</a> •
-    <a href="https://github.com/cook0001/Linux-Jagex-Launcher/discussions" target="_blank">Discussions</a> •
+    <a href="https://github.com/cook0001/Patchcraft-Launcher/discussions" target="_blank">Discussions</a> •
     <a href="https://forms.gle/KvagBxcmVBB3Q721A" target="_blank">Feedback Form</a> •
     <a href="PRIVACY.md">Privacy Policy</a>
   </p>
@@ -41,7 +41,7 @@
   <img src="docs/assets/screenshot-rs3.png" alt="Linux Jagex Launcher running RuneScape 3 on Linux" width="900" style="border-radius: 10px; border: 1px solid rgba(229,179,82,0.3);" />
 </div>
 
-> **UI Redesign Feedback Wanted:** Preview the proposed Jagex-style top-bar layout and vote in [Discussion #2](https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2) or at [launcher.patchcraft.dev/#redesign-preview](https://launcher.patchcraft.dev/#redesign-preview).
+> **UI Redesign Feedback Wanted:** Preview the proposed Jagex-style top-bar layout and vote in [Discussion #2](https://github.com/cook0001/Patchcraft-Launcher/discussions/2) or at [launcher.patchcraft.dev/#redesign-preview](https://launcher.patchcraft.dev/#redesign-preview).
 
 ---
 
@@ -218,7 +218,7 @@ Here is how **PatchCraft Launcher** compares and what it does differently:
 
 ## 📥 Installation
 
-Download the latest release package from the **[GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases)**.
+Download the latest release package from the **[GitHub Releases page](https://github.com/cook0001/Patchcraft-Launcher/releases)**.
 
 ### Option 1: Ubuntu / Linux Mint / Pop!_OS (Official Launchpad PPA)
 
@@ -267,7 +267,7 @@ curl -sSL https://launcher.patchcraft.dev/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/jagex-launcher_1.5.1_amd64.deb
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/jagex-launcher_1.5.1_amd64.deb
 ```
 ```bash
 # Install package (apt automatically pulls all required system libraries):
@@ -282,7 +282,7 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/Jagex-Launcher-1.5.1.AppImage
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/Jagex-Launcher-1.5.1.AppImage
 ```
 ```bash
 # Make executable:
@@ -342,7 +342,7 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 **Method A: Standalone Pacman Package (No AUR helper needed):**
 ```bash
 # 1. Download standalone package from GitHub Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x64.pacman
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x64.pacman
 
 # 2. Install with pacman:
 sudo pacman -U ./linux-jagex-launcher-1.5.1.x64.pacman
@@ -376,7 +376,7 @@ sudo dnf install -y linux-jagex-launcher
 linux-jagex-launcher
 ```
 
-*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Linux-Jagex-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.5.1.x86_64.rpm`)*
+*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Patchcraft-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.5.1.x86_64.rpm`)*
 
 ---
 
@@ -386,8 +386,8 @@ Extract and run anywhere in userspace without installing system packages:
 
 ```bash
 # 1. Download tarball and SHA256SUMS.txt from GitHub Releases:
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.tar.gz
-curl -LO https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest/download/SHA256SUMS.txt
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.tar.gz
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/SHA256SUMS.txt
 
 # 2. Verify SHA-256 checksum integrity:
 sha256sum -c SHA256SUMS.txt --ignore-missing
@@ -518,13 +518,13 @@ Running the launcher with `sudo` will cause files in `~/.local/share`, `~/.confi
 
 ## 💬 Community Feedback
 
-Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Linux-Jagex-Launcher/discussions) (including the [UI Redesign Poll in Discussion #2](https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2)), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
+Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Patchcraft-Launcher/discussions) (including the [UI Redesign Poll in Discussion #2](https://github.com/cook0001/Patchcraft-Launcher/discussions/2)), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
 
 ---
 
 ## 🐛 Bug Reports & Feature Requests
 
-Encountered a distribution-specific quirk or want to suggest a feature? Open an issue on [GitHub Issues](https://github.com/cook0001/Linux-Jagex-Launcher/issues) or use **Settings → Report Issue** inside the launcher to generate a sanitized system diagnostic summary automatically.
+Encountered a distribution-specific quirk or want to suggest a feature? Open an issue on [GitHub Issues](https://github.com/cook0001/Patchcraft-Launcher/issues) or use **Settings → Report Issue** inside the launcher to generate a sanitized system diagnostic summary automatically.
 
 ---
 

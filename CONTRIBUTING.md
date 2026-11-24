@@ -19,6 +19,6 @@ We welcome bug reports, hardware compatibility reports, and feature requests fro
 To submit feedback:
 1. **In-App Issue Reporter**: Click the **Issues / Report** button on the launcher sidebar rail to automatically collect sanitized diagnostic logs and submit an issue.
 2. **Community Feedback Survey**: Fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
-3. **GitHub Issue Tracker**: File a report on the [GitHub Issues](https://github.com/cook0001/Linux-Jagex-Launcher/issues) page using the appropriate bug report template.
+3. **GitHub Issue Tracker**: File a report on the [GitHub Issues](https://github.com/cook0001/Patchcraft-Launcher/issues) page using the appropriate bug report template.
 
 Thank you for supporting gaming on Linux!

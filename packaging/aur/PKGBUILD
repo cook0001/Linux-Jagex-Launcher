@@ -27,7 +27,7 @@ optdepends=(
 )
 provides=('linux-jagex-launcher' 'jagex-launcher')
 conflicts=('linux-jagex-launcher' 'jagex-launcher')
-source=("https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
+source=("https://github.com/cook0001/Patchcraft-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
 sha256sums=('ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857')
 
 package() {

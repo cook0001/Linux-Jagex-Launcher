@@ -2,7 +2,7 @@
 
 **Effective Date:** September 28, 2026  
 **Project:** PatchCraft Launcher (formerly Linux Jagex Launcher; package slug `linux-jagex-launcher`)  
-**Repository:** [https://github.com/cook0001/Linux-Jagex-Launcher](https://github.com/cook0001/Linux-Jagex-Launcher)
+**Repository:** [https://github.com/cook0001/Patchcraft-Launcher](https://github.com/cook0001/Patchcraft-Launcher)
 
 Your privacy and account security are our highest priority. **PatchCraft Launcher** is an unofficial Linux launcher for RuneScape &amp; Jagex Accounts built with a zero-telemetry, client-side only security model.
 
@@ -54,4 +54,4 @@ Your privacy and account security are our highest priority. **PatchCraft Launche
 
 ## 6. Contact & Questions
 If you have questions regarding security or privacy, please open an issue or security advisory on GitHub:  
-[https://github.com/cook0001/Linux-Jagex-Launcher/issues](https://github.com/cook0001/Linux-Jagex-Launcher/issues)
+[https://github.com/cook0001/Patchcraft-Launcher/issues](https://github.com/cook0001/Patchcraft-Launcher/issues)

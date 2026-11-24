@@ -18,7 +18,7 @@
 If you discover a security vulnerability within the Linux Jagex Launcher, please do **NOT** open a public issue.
 
 Instead:
-1. Please report vulnerabilities privately via [GitHub Private Vulnerability Reporting](https://github.com/cook0001/Linux-Jagex-Launcher/security/advisories/new).
+1. Please report vulnerabilities privately via [GitHub Private Vulnerability Reporting](https://github.com/cook0001/Patchcraft-Launcher/security/advisories/new).
 2. Alternatively, contact the maintainer directly through GitHub profile contact options.
 
 We take security seriously and will investigate and address reported issues promptly.

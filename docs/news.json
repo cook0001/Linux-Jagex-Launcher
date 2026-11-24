@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-11-24T11:59:02.047Z",
   "siteUrl": "https://launcher.patchcraft.dev/",
-  "publicRepo": "cook0001/Linux-Jagex-Launcher",
+  "publicRepo": "cook0001/Patchcraft-Launcher",
   "latestVersion": "1.5.1",
   "totalCount": 19,
   "releaseCount": 16,
@@ -29,7 +29,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/discussions/2",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/discussions/2",
       "ctaLabel": "Vote & Comment in Discussion #2"
     },
     {
@@ -59,7 +59,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.1",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.1",
       "ctaLabel": "View v1.5.1 on GitHub"
     },
     {
@@ -101,7 +101,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.0",
       "ctaLabel": "View v1.5.0 on GitHub"
     },
     {
@@ -151,7 +151,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/latest",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/latest",
       "ctaLabel": "Browse Release Packages"
     },
     {
@@ -180,7 +180,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.9",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.9",
       "ctaLabel": "View v1.4.9 on GitHub"
     },
     {
@@ -212,7 +212,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.8",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.8",
       "ctaLabel": "View v1.4.8 on GitHub"
     },
     {
@@ -242,7 +242,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.7",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.7",
       "ctaLabel": "View v1.4.7 on GitHub"
     },
     {
@@ -274,7 +274,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.6",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.6",
       "ctaLabel": "View v1.4.6 on GitHub"
     },
     {
@@ -304,7 +304,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.5",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.5",
       "ctaLabel": "View v1.4.5 on GitHub"
     },
     {
@@ -329,7 +329,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.4",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.4",
       "ctaLabel": "View v1.4.4 on GitHub"
     },
     {
@@ -367,7 +367,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.3",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.3",
       "ctaLabel": "View v1.4.3 on GitHub"
     },
     {
@@ -404,7 +404,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.2",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.2",
       "ctaLabel": "View v1.4.2 on GitHub"
     },
     {
@@ -436,7 +436,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.1",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.1",
       "ctaLabel": "View v1.4.1 on GitHub"
     },
     {
@@ -471,7 +471,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.0",
       "ctaLabel": "View v1.4.0 on GitHub"
     },
     {
@@ -498,7 +498,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.3.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.3.0",
       "ctaLabel": "View v1.3.0 on GitHub"
     },
     {
@@ -524,7 +524,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.2.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.2.0",
       "ctaLabel": "View v1.2.0 on GitHub"
     },
     {
@@ -550,7 +550,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.1.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.1.0",
       "ctaLabel": "View v1.1.0 on GitHub"
     },
     {
@@ -577,7 +577,7 @@
           ]
         }
       ],
-      "url": "https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.0.0",
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.0.0",
       "ctaLabel": "View v1.0.0 on GitHub"
     }
   ]

@@ -4,7 +4,7 @@ set -e
 # Linux Jagex Launcher - Steam Deck & SteamOS Fast Automated Installer
 # Works 100% rootless in userspace. Never touches read-only system partitions.
 
-REPO="cook0001/Linux-Jagex-Launcher"
+REPO="cook0001/Patchcraft-Launcher"
 APP_NAME="Jagex Launcher"
 APPLICATIONS_DIR="${HOME}/Applications"
 DESKTOP_DIR="${HOME}/.local/share/applications"
