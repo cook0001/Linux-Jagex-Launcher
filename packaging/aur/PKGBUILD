@@ -1,4 +1,4 @@
-# Maintainer: Daniel Cook <danielcook2016@outlook.com>
+# Maintainer: PatchCraft <support@patchcraft.dev>
 pkgname=linux-jagex-launcher-bin
 _pkgname=jagex-launcher
 pkgver=1.5.1

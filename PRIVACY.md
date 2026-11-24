@@ -53,5 +53,5 @@ Your privacy and account security are our highest priority. **PatchCraft Launche
 ---
 
 ## 6. Contact & Questions
-If you have questions regarding security or privacy, please open an issue or security advisory on GitHub:  
+If you have questions regarding security or privacy, email [support@patchcraft.dev](mailto:support@patchcraft.dev) or open an issue / security advisory on GitHub:  
 [https://github.com/cook0001/Patchcraft-Launcher/issues](https://github.com/cook0001/Patchcraft-Launcher/issues)

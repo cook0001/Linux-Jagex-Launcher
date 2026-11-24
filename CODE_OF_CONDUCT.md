@@ -59,7 +59,7 @@ officially representing the community in public spaces.
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
 reported to the project maintainer at
-[danielcook2016@outlook.com](mailto:danielcook2016@outlook.com) or through
+[support@patchcraft.dev](mailto:support@patchcraft.dev) or through
 private maintainer contact options on GitHub. All complaints will be reviewed
 and investigated promptly and fairly.
 
