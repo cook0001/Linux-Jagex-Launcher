@@ -1,9 +1,10 @@
 <div align="center">
-  <img src="docs/assets/banner.png" alt="Linux Jagex Launcher Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
+  <img src="docs/assets/banner.png" alt="PatchCraft Launcher Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
 
-  <img src="docs/assets/icon.png" width="96" height="96" alt="Linux Jagex Launcher Logo" />
-  <h1>Linux Jagex Launcher</h1>
-  <p><strong>An authentic, native Jagex Launcher for Linux supporting RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds.</strong></p>
+  <img src="docs/assets/icon.png" width="96" height="96" alt="PatchCraft Launcher Logo" />
+  <h1>PatchCraft Launcher</h1>
+  <p><strong>Unofficial native Linux launcher for RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds (Jagex Accounts).</strong></p>
+  <p><sub>Formerly Linux Jagex Launcher &mdash; existing package slugs (<code>linux-jagex-launcher</code>) remain unchanged for seamless upgrades. Not affiliated with Jagex Ltd.</sub></p>
 
   <p>
     <a href="https://github.com/cook0001/Linux-Jagex-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Linux-Jagex-Launcher?color=e5b352" alt="Latest Release" /></a>
@@ -46,10 +47,10 @@
 
 ## 🌟 Overview
 
-The **Linux Jagex Launcher** is a native desktop launcher built to replicate the **1:1 look, feel, and functionality of the official Windows and macOS Jagex Launcher** for Linux users.
+The **PatchCraft Launcher** (formerly *Linux Jagex Launcher*) is an unofficial native desktop launcher for Linux and SteamOS built for **RuneScape 3**, **Old School RuneScape**, and **RuneScape: Dragonwilds** with Jagex Accounts.
 
 Unlike third-party wrappers or Wine prefixes, this launcher:
-1. **Replicates the exact official Jagex Launcher UI**, with official promotional hero banners, real-time maintenance PSA broadcasts, live news feeds, character switcher, and official Linux window controls on the left.
+1. **Provides a familiar launcher layout**, with live promotional hero banners, maintenance PSA notices, news feeds, character switcher, and native Linux window controls.
 2. **Runs native 64-bit Linux binaries**: Zero Wine, zero Proton, and zero emulation overhead for RuneScape 3.
 3. **Supports all three Jagex ecosystem titles**: **RuneScape 3 (NXT Client)**, **Old School RuneScape** (RuneLite, HDOS, and the Official Client), and **RuneScape: Dragonwilds**.
 4. **Authenticates directly with Jagex** using standard OAuth 2.0 PKCE, with built-in support for Cloudflare Turnstile bot verification and Multi-Factor Authentication.
@@ -60,11 +61,11 @@ Unlike third-party wrappers or Wine prefixes, this launcher:
 
 If you want to play RuneScape on Linux today, you generally encounter three existing approaches: **TormStorm's Flatpak**, **Bolt Launcher**, or Jagex's **official legacy client / beta workarounds**.
 
-Here is how **Linux Jagex Launcher** fundamentally compares and what it does better or differently:
+Here is how **PatchCraft Launcher** compares and what it does differently:
 
 ### 📊 Feature Comparison Matrix
 
-| Feature / Capability | **Linux Jagex Launcher (This Project)** | **TormStorm's Flatpak (`com.jagex.Launcher`)** | **Bolt Launcher** | **Official Legacy Client / Jagex "Beta"** |
+| Feature / Capability | **PatchCraft Launcher (This Project)** | **TormStorm's Flatpak (`com.jagex.Launcher`)** | **Bolt Launcher** | **Official Legacy Client / Jagex "Beta"** |
 |:---|:---:|:---:|:---:|:---:|
 | **RuneScape 3 Execution** | **100% Native 64-bit Linux ELF** (Zero Wine / Zero Proton) | Windows `.exe` running under Wine / Proton DXVK | ⚠️ Limited / Unofficial workarounds | Native Linux `.deb` (Legacy, unmaintained) |
 | **Old School RuneScape** | **Multi-Client Dock** (RuneLite, HDOS, Official) | Official OSRS / RuneLite inside Wine prefix | RuneLite & HDOS native | Official legacy client only |
@@ -74,41 +75,41 @@ Here is how **Linux Jagex Launcher** fundamentally compares and what it does bet
 | **Wayland & Audio Auto-Fixes** | **Built-in System Doctor** + automatic Wayland & PipeWire fixes | Relies on Wine Wayland / X11 bridging | ❌ Not provided | ❌ Freezes on "Loading application resources" |
 | **Root Permissions Required?** | ❌ **Never** (100% rootless in userspace) | ❌ Flatpak sandbox | ❌ Rootless | ⚠️ Requires `sudo apt` / `dpkg` |
 | **Steam Deck & SteamOS** | **Full Gamepad Navigation + OSK + Grid Art Generator** | Bulky Wine Flatpak; no native gamepad UI | Minimal handheld integration | ❌ No SteamOS support |
-| **User Interface Fidelity** | **1:1 Official Jagex Launcher Replica** + Linux window controls | Official Windows UI (inside Wine window) | Custom utilitarian UI | No launcher interface |
+| **User Interface** | **Familiar desktop layout** + native Linux window controls | Official Windows UI (inside Wine window) | Custom utilitarian UI | No launcher interface |
 | **Resource Overhead** | **Zero-RAM Mode** (Auto-closes 1.5s after launch) | Heavy (Launcher + Wine + CEF persists) | Moderate | N/A |
 | **Integrated Auto-Updater** | **In-place AppImage hot-swap** + `.deb` downloader | Flatpak updates only | Manual / GitHub releases | ❌ Deprecated repository |
 
 ---
 
-### 🔍 Deep-Dive: What This Launcher Does Better
+### 🔍 Deep-Dive: What This Launcher Does Differently
 
 #### 1. Compared to TormStorm's Flatpak (`jagex-launcher-linux`)
 * **Bare-Metal Native Performance vs. Wine/Proton Overhead:**  
-  TormStorm's Flatpak packages the Windows `.exe` of the official Jagex Launcher inside a Wine prefix inside a Flatpak container. This means running a full Windows compatibility layer, Windows PE binaries, and executing RuneScape 3 through DXVK and Wine translation layers rather than native Vulkan/OpenGL. **Linux Jagex Launcher runs official 64-bit Linux native ELF binaries directly against your Linux kernel, Mesa/NVIDIA drivers, and PipeWire/PulseAudio with zero emulation layer and zero translation penalty.**
+  TormStorm's Flatpak packages the Windows `.exe` of the official Jagex Launcher inside a Wine prefix inside a Flatpak container. This means running a full Windows compatibility layer, Windows PE binaries, and executing RuneScape 3 through DXVK and Wine translation layers rather than native Vulkan/OpenGL. **PatchCraft Launcher runs official 64-bit Linux native ELF binaries directly against your Linux kernel, Mesa/NVIDIA drivers, and PipeWire/PulseAudio with zero emulation layer and zero translation penalty.**
 * **Native Filesystem vs. Sandboxed Wine `drive_c`:**  
-  Running RuneLite or other tools through Wine isolates their configuration files inside an emulated Windows `drive_c` sandbox. Linux Jagex Launcher runs all clients natively against your standard user profile (`~/.runelite`, `~/.config`), so your existing plugins, tile markers, bank tags, screenshots, and custom configurations work immediately without moving files or setting Flatpak permission overrides.
+  Running RuneLite or other tools through Wine isolates their configuration files inside an emulated Windows `drive_c` sandbox. PatchCraft Launcher runs all clients natively against your standard user profile (`~/.runelite`, `~/.config`), so your existing plugins, tile markers, bank tags, screenshots, and custom configurations work immediately without moving files or setting Flatpak permission overrides.
 * **Immunity to Wine CEF & Prefix Breakage:**  
-  Updates to Jagex's Windows launcher frequently break the Chromium Embedded Framework (CEF) runtime inside Wine, leading to white screens, frozen login windows, or failed authentications whenever Jagex pushes launcher updates. Linux Jagex Launcher uses a modern, native Linux Electron runtime that communicates cleanly with Jagex's OAuth endpoints and never suffers from Wine translation breakage.
+  Updates to Jagex's Windows launcher frequently break the Chromium Embedded Framework (CEF) runtime inside Wine, leading to white screens, frozen login windows, or failed authentications whenever Jagex pushes launcher updates. PatchCraft Launcher uses a modern, native Linux Electron runtime that communicates cleanly with Jagex's OAuth endpoints and never suffers from Wine translation breakage.
 
 #### 2. Compared to Bolt Launcher
 * **First-Class Native RuneScape 3 Support:**  
   Bolt was built predominantly around Old School RuneScape and RuneLite. It does not provide automated rootless deployment for the native RS3 NXT client, does not solve the modern OpenSSL 1.1 dependency conflict on Ubuntu 22.04, 24.04, and 26.04 LTS, and lacks graphics and audio workarounds for modern Linux display servers.
 * **The Complete Jagex Catalog in One Dock:**  
-  Linux Jagex Launcher supports the entire Jagex catalog in a single launcher interface: **RuneScape 3** (native ELF), **Old School RuneScape** (with an instant dropdown dock for RuneLite, HDOS, and the Official Client), and **RuneScape: Dragonwilds** (one-click Steam launch with live Steam RSS patch notes).
-* **Authentic 1:1 Jagex Launcher Experience:**  
-  Rather than a generic or minimalist utility launcher, this project faithfully recreates the official Jagex Launcher design: official promotional hero art and video banners, live maintenance PSA status banners, official news carousels, character switching with active membership status resolution, and left-sided Linux window controls matching GNOME/Ubuntu conventions.
-* **Steam Deck & Handheld First-Class Citizen:**  
+  PatchCraft Launcher supports all three titles in a single launcher interface: **RuneScape 3** (native ELF), **Old School RuneScape** (with an instant dropdown dock for RuneLite, HDOS, and the Official Client), and **RuneScape: Dragonwilds** (one-click Steam launch with live Steam RSS patch notes).
+* **Familiar Desktop Layout:**  
+  Ships with a familiar desktop game-launcher layout including promotional hero banners, live maintenance status notices, news carousels, character switching with active membership status resolution, and standard Linux window controls.
+* **Steam Deck & Handheld Support:**  
   Includes an out-of-the-box HTML5 Gamepad API controller navigation engine (bumpers switch games, D-pad navigates, face buttons trigger actions), Gamescope 1280×800 touch layout, automatic Steam on-screen keyboard (OSK) triggering, and a built-in one-click Steam shortcut & grid artwork generator.
 
 #### 3. Compared to Jagex's Official Legacy Client & Beta Workarounds
 * **Solves the Mandatory Jagex Account Dead-End:**  
-  Jagex's official native Linux client (`runescape-launcher` `.deb`) was abandoned before Jagex introduced mandatory Jagex Accounts. When Jagex mandated account migration, Linux players who upgraded were locked out because the legacy client only accepts legacy username/password credentials. **Linux Jagex Launcher provides the missing link**, executing full OAuth 2.0 PKCE authentication with Cloudflare Turnstile bot verification and passing the secure session token directly to the native Linux client.
+  Jagex's official native Linux client (`runescape-launcher` `.deb`) was abandoned before Jagex introduced mandatory Jagex Accounts. When Jagex mandated account migration, Linux players who upgraded were locked out because the legacy client only accepts legacy username/password credentials. **PatchCraft Launcher provides the missing link**, executing full OAuth 2.0 PKCE authentication with Cloudflare Turnstile bot verification and passing the secure session token directly to the native Linux client.
 * **Solves the Ubuntu 22.04, 24.04 & 26.04 `libssl1.1` Mismatch Safely:**  
   Modern Linux distributions dropped `libssl1.1` in favor of OpenSSL 3.x (`libssl3` / `libssl3t64`). Attempting to install Jagex's official `.deb` package fails with unmet dependencies, and force-installing outdated Ubuntu 20.04 packages with `dpkg` risks corrupting host package managers during system updates. Our launcher provisions isolated OpenSSL 1.1 compatibility libraries exclusively in userspace without ever modifying host system libraries.
 * **100% Rootless Installation:**  
-  The official Jagex documentation demands `sudo apt install`. Linux Jagex Launcher extracts, installs, updates, and runs the client entirely in userspace. You will never need to enter a root or `sudo` password.
+  The official Jagex documentation demands `sudo apt install`. PatchCraft Launcher extracts, installs, updates, and runs the client entirely in userspace. You will never need to enter a root or `sudo` password.
 * **Fixes the "Loading Application Resources" Freeze Out of the Box:**  
-  The legacy client notoriously hangs on modern Linux desktops due to Wayland compositor conflicts, PipeWire audio starvation, and GTK2 input method locks. Linux Jagex Launcher automatically configures the display server, input method, audio latency, and GPU compatibility settings required for smooth, crash-free launches.
+  The legacy client notoriously hangs on modern Linux desktops due to Wayland compositor conflicts, PipeWire audio starvation, and GTK2 input method locks. PatchCraft Launcher automatically configures the display server, input method, audio latency, and GPU compatibility settings required for smooth, crash-free launches.
 
 ---
 

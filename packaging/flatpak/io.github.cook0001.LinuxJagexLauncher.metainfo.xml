@@ -3,12 +3,12 @@
   <id>io.github.cook0001.LinuxJagexLauncher</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>LicenseRef-proprietary</project_license>
-  <name>Linux Jagex Launcher</name>
-  <summary>Play RuneScape games natively</summary>
+  <name>PatchCraft Launcher</name>
+  <summary>Unofficial Linux launcher for RuneScape and Jagex Accounts</summary>
 
   <description>
     <p>
-      An authentic, native Jagex Launcher for Linux designed to replicate the official Windows and macOS client experience with zero Wine or Proton overhead.
+      PatchCraft Launcher is an unofficial native Linux desktop launcher for RuneScape 3, Old School RuneScape (RuneLite, HDOS, and Official client), and RuneScape: Dragonwilds with zero Wine or Proton overhead.
     </p>
     <p>Key features include:</p>
     <ul>
@@ -55,7 +55,7 @@
   <url type="help">https://forms.gle/KvagBxcmVBB3Q721A</url>
 
   <developer id="io.github.cook0001">
-    <name>Daniel Cook</name>
+    <name>PatchCraft (@cook0001)</name>
   </developer>
 
   <content_rating type="oars-1.1" />

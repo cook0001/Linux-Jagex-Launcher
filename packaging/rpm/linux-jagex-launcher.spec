@@ -1,7 +1,7 @@
 Name:           linux-jagex-launcher
 Version:        1.5.1
 Release:        1%{?dist}
-Summary:        Authentic, native Jagex Launcher for Linux
+Summary:        Unofficial native Linux launcher for RuneScape & Jagex Accounts
 License:        Proprietary
 URL:            https://launcher.patchcraft.dev/
 Source0:        https://github.com/cook0001/Linux-Jagex-Launcher/releases/download/v%{version}/linux-jagex-launcher-%{version}.tar.gz
@@ -44,10 +44,11 @@ Conflicts:      jagex-launcher
 %global __requires_exclude ^(libffmpeg\\.so.*|libvk_swiftshader\\.so.*|libvulkan\\.so.*)$
 
 %description
-Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and
-Old School RuneScape (RuneLite, HDOS, and Official client) with direct
-OAuth 2.0 PKCE authentication, live world ping prober, multi-account
-switching, and native system tray integration.
+PatchCraft Launcher is an unofficial native Linux launcher supporting
+RuneScape 3, Old School RuneScape (RuneLite, HDOS, and Official client),
+and Dragonwilds with direct Jagex Account OAuth 2.0 PKCE authentication,
+live world ping prober, multi-account switching, and native system tray
+integration.
 
 %prep
 %setup -q -c -n %{name}-%{version}

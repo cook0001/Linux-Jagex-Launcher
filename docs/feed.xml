@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Linux Jagex Launcher — News &amp; Releases</title>
+    <title>PatchCraft Launcher — News &amp; Releases</title>
     <link>https://launcher.patchcraft.dev/</link>
     <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
-    <description>Official releases, packaging updates, and maintainer announcements for Linux Jagex Launcher.</description>
+    <description>Releases, packaging updates, and maintainer announcements for PatchCraft Launcher (unofficial Linux launcher for RuneScape &amp; Jagex Accounts).</description>
     <language>en-us</language>
     <lastBuildDate>Wed, 18 Nov 2026 12:00:00 +0000</lastBuildDate>
     <item>
@@ -20,7 +20,7 @@
 - Highlights: No Forced Change Yet: The redesign stays local while feedback is gathered — v1.5.1 remains the active stable release.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.5.1</title>
+      <title>PatchCraft Launcher v1.5.1</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.1</link>
       <guid isPermaLink="false">release-v1.5.1</guid>
       <pubDate>Tue, 17 Nov 2026 12:00:00 +0000</pubDate>
@@ -32,7 +32,7 @@
 - Changed: Hardened Release Packaging: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.5.0</title>
+      <title>PatchCraft Launcher v1.5.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.5.0</link>
       <guid isPermaLink="false">release-v1.5.0</guid>
       <pubDate>Sat, 14 Nov 2026 12:00:00 +0000</pubDate>
@@ -70,7 +70,7 @@
 - Highlights: Verified Checksums: Every release publishes SHA256SUMS.txt verified automatically by the built-in launcher updater.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.9</title>
+      <title>PatchCraft Launcher v1.4.9</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.9</link>
       <guid isPermaLink="false">release-v1.4.9</guid>
       <pubDate>Fri, 13 Nov 2026 12:00:00 +0000</pubDate>
@@ -81,7 +81,7 @@
 - Changed: Dependencies: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.8</title>
+      <title>PatchCraft Launcher v1.4.8</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.8</link>
       <guid isPermaLink="false">release-v1.4.8</guid>
       <pubDate>Thu, 12 Nov 2026 12:00:00 +0000</pubDate>
@@ -95,7 +95,7 @@
 - Fixed: Official Website UI, Responsive Layout &amp; Accessibility Overhaul: Removed the redundant macOS traffic-light titlebar stacked above the launcher's native Linux window frame, added a responsive mobile navigation popover menu, implemented accessible installation tabs with find-in-page auto-switching and scroll-edge fades, fixed code-block horizontal overflow and copy-button race conditions, corrected the Fedora Copr repository command (cook0001/linux-jagex-launcher), and added explicit image dimensions + LCP priority hints to eliminate layout shift.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.7</title>
+      <title>PatchCraft Launcher v1.4.7</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.7</link>
       <guid isPermaLink="false">release-v1.4.7</guid>
       <pubDate>Tue, 06 Oct 2026 12:00:00 +0000</pubDate>
@@ -107,7 +107,7 @@
 - Changed: Documentation &amp; UI Parity: Cleaned shell script output formatting across Steam Deck and standalone installers and updated distribution specifications across all packaging formats.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.6</title>
+      <title>PatchCraft Launcher v1.4.6</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.6</link>
       <guid isPermaLink="false">release-v1.4.6</guid>
       <pubDate>Sun, 04 Oct 2026 12:00:00 +0000</pubDate>
@@ -121,7 +121,7 @@
 - Fixed: Release Parity: Synchronized all distribution specifications (AppImage, Flatpak, Snap, Debian PPA, Fedora RPM/Copr, Arch AUR/Pacman, and Steam Deck turnkey installer) to v1.4.6.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.5</title>
+      <title>PatchCraft Launcher v1.4.5</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.5</link>
       <guid isPermaLink="false">release-v1.4.5</guid>
       <pubDate>Fri, 02 Oct 2026 12:00:00 +0000</pubDate>
@@ -133,7 +133,7 @@
 - Changed: Refactored updater UI modal with distinct distribution format detection and package-specific update instructions.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.4</title>
+      <title>PatchCraft Launcher v1.4.4</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.4</link>
       <guid isPermaLink="false">release-v1.4.4</guid>
       <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
@@ -145,7 +145,7 @@
 - Fixed: Launchpad PPA Version Synchronization: Bumped upstream release version to v1.4.4 to generate clean Debian source artifacts and resolve Launchpad PPA checksum conflicts.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.3</title>
+      <title>PatchCraft Launcher v1.4.3</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.3</link>
       <guid isPermaLink="false">release-v1.4.3</guid>
       <pubDate>Thu, 01 Oct 2026 12:00:00 +0000</pubDate>
@@ -165,7 +165,7 @@
 - Fixed: Release Parity: Synchronized all packaging formats across AppImage, Flatpak, Snap, Debian PPA, and AUR to v1.4.3.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.2</title>
+      <title>PatchCraft Launcher v1.4.2</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.2</link>
       <guid isPermaLink="false">release-v1.4.2</guid>
       <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
@@ -184,7 +184,7 @@
 - Added: In-App Snap Format Detection: Added native Snap package recognition to the auto-updater and runtime directory layout.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.1</title>
+      <title>PatchCraft Launcher v1.4.1</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.1</link>
       <guid isPermaLink="false">release-v1.4.1</guid>
       <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
@@ -198,7 +198,7 @@
 - Changed: Website Organization &amp; Visual Polish: Re-architected the project website with centered block containers, comfortable side padding, left-aligned typography, official game crests, and anonymous screenshots.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.4.0</title>
+      <title>PatchCraft Launcher v1.4.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.4.0</link>
       <guid isPermaLink="false">release-v1.4.0</guid>
       <pubDate>Wed, 30 Sep 2026 12:00:00 +0000</pubDate>
@@ -215,7 +215,7 @@
 - Changed: Updated automated updater to handle in-place AppImage updates with SHA-256 verification and distribution-aware notifications.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.3.0</title>
+      <title>PatchCraft Launcher v1.3.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.3.0</link>
       <guid isPermaLink="false">release-v1.3.0</guid>
       <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
@@ -229,7 +229,7 @@
 - Added: Mesa Compatibility &amp; DRI Fallback: Integrated settings toggles for OpenGL compatibility mode and legacy DRI driver fallbacks.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.2.0</title>
+      <title>PatchCraft Launcher v1.2.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.2.0</link>
       <guid isPermaLink="false">release-v1.2.0</guid>
       <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
@@ -242,7 +242,7 @@
 - Added: Mesa Threaded OpenGL: One-click toggle for threaded OpenGL rendering to maximize RS3 NXT frame rates on AMD and Intel Mesa drivers.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.1.0</title>
+      <title>PatchCraft Launcher v1.1.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.1.0</link>
       <guid isPermaLink="false">release-v1.1.0</guid>
       <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
@@ -255,7 +255,7 @@
 - Added: RS3 Diagnostic Engine: Automated diagnostic checker verifying graphics drivers, XWayland compatibility, userspace OpenSSL 1.1 compatibility libraries, and audio routing.</description>
     </item>
     <item>
-      <title>Linux Jagex Launcher v1.0.0</title>
+      <title>PatchCraft Launcher v1.0.0</title>
       <link>https://github.com/cook0001/Linux-Jagex-Launcher/releases/tag/v1.0.0</link>
       <guid isPermaLink="false">release-v1.0.0</guid>
       <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>

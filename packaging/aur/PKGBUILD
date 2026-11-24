@@ -3,7 +3,7 @@ pkgname=linux-jagex-launcher-bin
 _pkgname=jagex-launcher
 pkgver=1.5.1
 pkgrel=1
-pkgdesc="Authentic, native Jagex Launcher for Linux supporting RuneScape 3 and Old School RuneScape"
+pkgdesc="PatchCraft Launcher — unofficial native Linux launcher for RuneScape & Jagex Accounts"
 arch=('x86_64')
 url="https://launcher.patchcraft.dev/"
 license=('custom:proprietary')
@@ -34,18 +34,30 @@ package() {
   # Extract the deb payload
   bsdtar -xf data.tar.xz -C "${pkgdir}"
 
+  # Support both PatchCraft Launcher (new) and legacy Jagex Launcher payload paths
+  local app_dir="/opt/PatchCraft Launcher"
+  if [ ! -d "${pkgdir}${app_dir}" ] && [ -d "${pkgdir}/opt/Jagex Launcher" ]; then
+    app_dir="/opt/Jagex Launcher"
+  fi
+
   # Fix permissions
   find "${pkgdir}" -type d -exec chmod 755 {} +
-  chmod 755 "${pkgdir}/opt/Jagex Launcher/linux-jagex-launcher"
+  chmod 755 "${pkgdir}${app_dir}/linux-jagex-launcher"
 
   # Symlink to /usr/bin for terminal execution
   install -dm755 "${pkgdir}/usr/bin"
-  ln -sf "/opt/Jagex Launcher/linux-jagex-launcher" "${pkgdir}/usr/bin/linux-jagex-launcher"
-  ln -sf "/opt/Jagex Launcher/linux-jagex-launcher" "${pkgdir}/usr/bin/jagex-launcher"
+  ln -sf "${app_dir}/linux-jagex-launcher" "${pkgdir}/usr/bin/linux-jagex-launcher"
+  ln -sf "${app_dir}/linux-jagex-launcher" "${pkgdir}/usr/bin/jagex-launcher"
 
-  # Ensure license is installed to standard Arch license directory
+  # Ensure app and Electron/Chromium third-party licenses are installed
   install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
   if [ -f "${pkgdir}/usr/share/doc/${_pkgname}/copyright" ]; then
     install -Dm644 "${pkgdir}/usr/share/doc/${_pkgname}/copyright" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  fi
+  if [ -f "${pkgdir}${app_dir}/LICENSE.electron.txt" ]; then
+    install -Dm644 "${pkgdir}${app_dir}/LICENSE.electron.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.electron.txt"
+  fi
+  if [ -f "${pkgdir}${app_dir}/LICENSES.chromium.html" ]; then
+    install -Dm644 "${pkgdir}${app_dir}/LICENSES.chromium.html" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSES.chromium.html"
   fi
 }
