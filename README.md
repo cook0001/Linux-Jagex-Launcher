@@ -4,19 +4,19 @@
   <img src="docs/assets/icon.png" width="96" height="96" alt="PatchCraft Launcher Logo" />
   <h1>PatchCraft Launcher</h1>
   <p><strong>Unofficial native Linux launcher for RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds (Jagex Accounts).</strong></p>
-  <p><sub>Formerly Linux Jagex Launcher &mdash; existing package slugs (<code>linux-jagex-launcher</code>) remain unchanged for seamless upgrades. Not affiliated with Jagex Ltd.</sub></p>
+  <p><sub>Formerly Linux Jagex Launcher &mdash; existing package slugs (<code>patchcraft-launcher</code>) remain unchanged for seamless upgrades. Not affiliated with Jagex Ltd.</sub></p>
 
   <p>
     <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Patchcraft-Launcher?color=e5b352" alt="Latest Release" /></a>
     <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Patchcraft-Launcher/total?color=10b981" alt="Total Downloads" /></a>
-    <a href="https://snapcraft.io/linux-jagex-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/linux-jagex-launcher/badge.svg" /></a>
+    <a href="https://snapcraft.io/patchcraft-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/patchcraft-launcher/badge.svg" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
     <a href="https://github.com/cook0001/Patchcraft-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
     <a href="https://launcher.patchcraft.dev/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
   </p>
 
   <p>
-    <a href="https://snapcraft.io/linux-jagex-launcher">
+    <a href="https://snapcraft.io/patchcraft-launcher">
       <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" />
     </a>
   </p>
@@ -156,7 +156,7 @@ Here is how **PatchCraft Launcher** compares and what it does differently:
 ### 🛡️ Jagex Account Security & Privacy
 - **Direct OAuth 2.0 with PKCE**: Connects straight to `account.jagex.com`. The launcher never touches or logs your plain-text password.
 - **Interactive Cloudflare Turnstile Verification**: Built-in compliant webview allows you to complete Turnstile checkboxes and 2FA challenges effortlessly.
-- **100% Client-Side / Zero Telemetry**: No third-party servers, analytics, or tracking. Session credentials and profile data reside exclusively in local user config (`~/.config/linux-jagex-launcher/`).
+- **100% Client-Side / Zero Telemetry**: No third-party servers, analytics, or tracking. Session credentials and profile data reside exclusively in local user config (`~/.config/patchcraft-launcher/`).
 
 ---
 
@@ -224,7 +224,7 @@ The official Canonical Launchpad PPA provides native `.deb` packages built direc
 
 **1. Add the PPA repository:**
 ```bash
-sudo add-apt-repository ppa:danielcook2016/linux-jagex-launcher
+sudo add-apt-repository ppa:danielcook2016/patchcraft-launcher
 ```
 
 **2. Update package list and install:**
@@ -232,12 +232,12 @@ sudo add-apt-repository ppa:danielcook2016/linux-jagex-launcher
 sudo apt update
 ```
 ```bash
-sudo apt install -y linux-jagex-launcher
+sudo apt install -y patchcraft-launcher
 ```
 
 **3. Launch:**
 ```bash
-linux-jagex-launcher
+patchcraft-launcher
 ```
 
 > **Note for Ubuntu 24.04 & 26.04 ("Resolute Raccoon") users:** If `apt update` fails with `NO_PUBKEY 7373B12CE03BEB4B` or `The repository 'https://content.runescape.com/downloads/ubuntu trusty InRelease' is not signed`, remove Jagex's deprecated Ubuntu 14.04 (`trusty`) repo left behind from Jagex's old website instructions—Linux Jagex Launcher does not use it:
@@ -250,7 +250,7 @@ linux-jagex-launcher
 sudo apt remove linux-jagex-launcher
 ```
 ```bash
-sudo add-apt-repository --remove ppa:danielcook2016/linux-jagex-launcher
+sudo add-apt-repository --remove ppa:danielcook2016/patchcraft-launcher
 ```
 
 ---
@@ -265,11 +265,11 @@ curl -sSL https://launcher.patchcraft.dev/install.sh | bash
 **Or manual install via `apt`:**
 ```bash
 # Download latest .deb from Releases:
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/jagex-launcher_1.5.1_amd64.deb
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher_2.0.0_amd64.deb
 ```
 ```bash
 # Install package (apt automatically pulls all required system libraries):
-sudo apt install ./jagex-launcher_1.5.1_amd64.deb
+sudo apt install ./patchcraft-launcher_2.0.0_amd64.deb
 ```
 
 ---
@@ -280,15 +280,15 @@ Works on virtually any modern 64-bit Linux distribution (Ubuntu, Fedora, Arch, S
 
 ```bash
 # Download AppImage from Releases:
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/Jagex-Launcher-1.5.1.AppImage
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/PatchCraft-Launcher-2.0.0.AppImage
 ```
 ```bash
 # Make executable:
-chmod +x Jagex-Launcher-1.5.1.AppImage
+chmod +x PatchCraft-Launcher-2.0.0.AppImage
 ```
 ```bash
 # Run:
-./Jagex-Launcher-1.5.1.AppImage
+./PatchCraft-Launcher-2.0.0.AppImage
 ```
 
 ---
@@ -297,27 +297,27 @@ chmod +x Jagex-Launcher-1.5.1.AppImage
 
 Official Snap package built with `core24` strict confinement, automated background updates, and persistent game data storage in `$SNAP_USER_COMMON`:
 
-[![linux-jagex-launcher](https://snapcraft.io/linux-jagex-launcher/badge.svg)](https://snapcraft.io/linux-jagex-launcher)
+[![linux-jagex-launcher](https://snapcraft.io/patchcraft-launcher/badge.svg)](https://snapcraft.io/patchcraft-launcher)
 
-[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/linux-jagex-launcher)
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/patchcraft-launcher)
 
 **1. Install from Snap Store:**
 ```bash
-sudo snap install linux-jagex-launcher
+sudo snap install patchcraft-launcher
 ```
 
 **2. Optional permissions (controller & external storage):**
 ```bash
 # Connect gamepad/joystick interface for handheld controllers and Steam Deck:
-sudo snap connect linux-jagex-launcher:joystick
+sudo snap connect patchcraft-launcher:joystick
 
 # Connect removable media interface for micro-SD cards and external drives:
-sudo snap connect linux-jagex-launcher:removable-media
+sudo snap connect patchcraft-launcher:removable-media
 ```
 
 **3. Launch:**
 ```bash
-linux-jagex-launcher
+patchcraft-launcher
 ```
 
 ---
@@ -339,8 +339,8 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 **1. Download and install the standalone `.pacman` package from GitHub Releases:**
 ```bash
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x64.pacman
-sudo pacman -U ./linux-jagex-launcher-1.5.1.x64.pacman
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x64.pacman
+sudo pacman -U ./patchcraft-launcher-2.0.0.x64.pacman
 ```
 
 **2. Or build locally from the included `PKGBUILD`:**
@@ -356,13 +356,13 @@ makepkg -si
 
 **1. Download and install the native `.rpm` package from GitHub Releases:**
 ```bash
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x86_64.rpm
-sudo dnf install -y ./linux-jagex-launcher-1.5.1.x86_64.rpm
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x86_64.rpm
+sudo dnf install -y ./patchcraft-launcher-2.0.0.x86_64.rpm
 ```
 
 **2. Launch:**
 ```bash
-linux-jagex-launcher
+patchcraft-launcher
 ```
 
 ---
@@ -373,15 +373,15 @@ Extract and run anywhere in userspace without installing system packages:
 
 ```bash
 # 1. Download tarball and SHA256SUMS.txt from GitHub Releases:
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.tar.gz
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.tar.gz
 curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/SHA256SUMS.txt
 
 # 2. Verify SHA-256 checksum integrity:
 sha256sum -c SHA256SUMS.txt --ignore-missing
 
 # 3. Extract and launch:
-tar -xzf linux-jagex-launcher-1.5.1.tar.gz
-./linux-jagex-launcher-1.5.1/linux-jagex-launcher
+tar -xzf patchcraft-launcher-2.0.0.tar.gz
+./patchcraft-launcher-2.0.0/patchcraft-launcher
 ```
 
 ---

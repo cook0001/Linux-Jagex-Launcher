@@ -1,7 +1,7 @@
 # Maintainer: PatchCraft <support@patchcraft.dev>
 pkgname=patchcraft-launcher-bin
 _pkgname=patchcraft-launcher
-pkgver=1.5.1
+pkgver=2.0.0
 pkgrel=1
 pkgdesc="PatchCraft Launcher — unofficial native Linux launcher for RuneScape & Jagex Accounts"
 arch=('x86_64')
@@ -29,7 +29,7 @@ provides=('patchcraft-launcher' 'linux-jagex-launcher' 'jagex-launcher')
 conflicts=('patchcraft-launcher' 'linux-jagex-launcher' 'jagex-launcher')
 replaces=('linux-jagex-launcher-bin')
 source=("https://github.com/cook0001/Patchcraft-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
-sha256sums=('ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857')
+sha256sums=('43130f594db88557120d31cb12da5e368eba577cb902fa6959532510857341cd')
 
 package() {
   # Extract the deb payload

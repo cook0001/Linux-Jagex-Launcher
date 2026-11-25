@@ -1,5 +1,5 @@
 Name:           patchcraft-launcher
-Version:        1.5.1
+Version:        2.0.0
 Release:        1%{?dist}
 Summary:        Unofficial native Linux launcher for RuneScape & Jagex Accounts
 License:        Proprietary
@@ -114,6 +114,9 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/dev.
 %{_datadir}/icons/hicolor/*/apps/dev.patchcraft.Launcher.png
 
 %changelog
+* Tue Nov 24 2026 Daniel Cook <danielcook2016@outlook.com> - 2.0.0-1
+- Release v2.0.0: Forge Rail & Direct Character Roster UI: Rebuilt the desktop and Steam Deck shell around a 3-column layout with a collapsible left rail (RuneScape 3, Old School, Dragonwilds, World Ping, Live Logs, Resources, Community, and Settings) and a pinned launch panel with per-character Play/Stop controls, inline Active Clients, and clickable MEM/F2P overrides; Built-In Theme Presets: Added three offline-first theme presets in Settings -> General (PatchCraft, Obsidian & Brass, and Slate & Teal) using native system typography with zero external font dependencies; In-App Community Hub & Discussions: Added inline Community workspace tabs for Launcher News, live GitHub Discussions browsing and replies, and direct issue reporting
+
 * Tue Nov 17 2026 Daniel Cook <danielcook2016@outlook.com> - 1.5.1-1
 - Release v1.5.1: Direct In-App & Web Issue Reporting: Added direct bug report and feedback submission with Turnstile spam protection and downloadable Markdown diagnostic bundles alongside refreshed GitHub Issue templates; Website & Visual Refresh: Updated https://launcher.patchcraft.dev/ with clean desktop screenshots, revised hero copy, improved layout spacing, and aligned Privacy Policy and licensing notices; Hardened Release Packaging: Strengthened application runtime integrity and binary packaging protections across all desktop distribution formats
 

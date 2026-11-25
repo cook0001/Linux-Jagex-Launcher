@@ -44,7 +44,7 @@ echo "==> Checking latest release from GitHub..."
 RELEASE_JSON=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null || true)
 LATEST_TAG=$(printf '%s\n' "$RELEASE_JSON" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1 || true)
 if [ -z "$LATEST_TAG" ]; then
-  LATEST_TAG="v1.5.1"
+  LATEST_TAG="v2.0.0"
 fi
 VERSION="${LATEST_TAG#v}"
 

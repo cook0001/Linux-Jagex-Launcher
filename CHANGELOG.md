@@ -1,9 +1,30 @@
 # Changelog
 
-All notable changes to the **Linux Jagex Launcher** project will be documented in this file.
+All notable changes to the **PatchCraft Launcher** project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.0] - 2026-11-24
+
+### Added
+- **Forge Rail & Direct Character Roster UI**: Rebuilt the desktop and Steam Deck shell around a 3-column layout with a collapsible left rail (`RuneScape 3`, `Old School`, `Dragonwilds`, `World Ping`, `Live Logs`, `Resources`, `Community`, and `Settings`) and a pinned launch panel with per-character Play/Stop controls, inline Active Clients, and clickable `MEM`/`F2P` overrides.
+- **Built-In Theme Presets**: Added three offline-first theme presets in Settings -> General (`PatchCraft`, `Obsidian & Brass`, and `Slate & Teal`) using native system typography with zero external font dependencies.
+- **In-App Community Hub & Discussions**: Added inline `Community` workspace tabs for Launcher News, live GitHub Discussions browsing and replies, and direct issue reporting.
+- **Expanded Curated Resources**: Added resource logos and expanded community tool directories for RuneScape 3, Old School RuneScape, and Dragonwilds.
+
+### Changed
+- **PatchCraft Launcher Rebrand**: Renamed package slugs, desktop IDs (`dev.patchcraft.launcher`), CLI command (`patchcraft-launcher`), and runtime paths while preserving legacy `linux-jagex-launcher` CLI symlinks and upgrade compatibility.
+- **Inline Workspace Tools & Settings**: Moved World Ping, Live Logs, Resources, Community, and Settings & Doctor out of overlay modals into full workspace views with updated gamepad navigation (`LB`/`RB` and `X`/`Y`/`A`/`B`/`Start`).
+- **Website & Documentation**: Updated `https://launcher.patchcraft.dev/` with fresh v2.0.0 desktop screenshots and synced release feeds.
+
+### Fixed
+- **Dragonwilds Steam Patch Feed**: Decoded XML entities before stripping HTML markup so raw `<p class="bb_paragraph">` tags no longer appear in Steam news cards.
+- **External Protocol Links**: Allowed `steam://` links alongside `http://` and `https://` in external link handling for Steam Deck on-screen keyboard and Dragonwilds launches.
+- **Resources SVG Rendering**: Fixed trusted inline SVG icons in the Resources view rendering as escaped text instead of vector icons.
+- **Login Window Lifecycle**: Resolved embedded Jagex login promises cleanly when the login window is closed or already open, and kept the login user-agent aligned with the bundled Chromium version.
+
+---
 
 ## [1.5.1] - 2026-11-17
 

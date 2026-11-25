@@ -6,7 +6,27 @@
     <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Releases, packaging updates, and maintainer announcements for PatchCraft Launcher (unofficial Linux launcher for RuneScape &amp; Jagex Accounts).</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 17 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 24 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <item>
+      <title>PatchCraft Launcher v2.0.0</title>
+      <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.0</link>
+      <guid isPermaLink="false">release-v2.0.0</guid>
+      <pubDate>Tue, 24 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Forge Rail &amp; Direct Character Roster UI: Rebuilt the desktop and Steam Deck shell around a 3-column layout with a collapsible left rail (RuneScape 3, Old School, Dragonwilds, World Ping, Live Logs,...
+
+- Added: Forge Rail &amp; Direct Character Roster UI: Rebuilt the desktop and Steam Deck shell around a 3-column layout with a collapsible left rail (RuneScape 3, Old School, Dragonwilds, World Ping, Live Logs, Resources, Community, and Settings) and a pinned launch panel with per-character Play/Stop controls, inline Active Clients, and clickable MEM/F2P overrides.
+- Added: Built-In Theme Presets: Added three offline-first theme presets in Settings -&gt; General (PatchCraft, Obsidian &amp; Brass, and Slate &amp; Teal) using native system typography with zero external font dependencies.
+- Added: In-App Community Hub &amp; Discussions: Added inline Community workspace tabs for Launcher News, live GitHub Discussions browsing and replies, and direct issue reporting.
+- Added: Expanded Curated Resources: Added resource logos and expanded community tool directories for RuneScape 3, Old School RuneScape, and Dragonwilds.
+- Changed: PatchCraft Launcher Rebrand: Renamed package slugs, desktop IDs (dev.patchcraft.launcher), CLI command (patchcraft-launcher), and runtime paths while preserving legacy linux-jagex-launcher CLI symlinks and upgrade compatibility.
+- Changed: Inline Workspace Tools &amp; Settings: Moved World Ping, Live Logs, Resources, Community, and Settings &amp; Doctor out of overlay modals into full workspace views with updated gamepad navigation (LB/RB and X/Y/A/B/Start).
+- Changed: Website &amp; Documentation: Updated https://launcher.patchcraft.dev/ with fresh v2.0.0 desktop screenshots and synced release feeds.
+- Fixed: Dragonwilds Steam Patch Feed: Decoded XML entities before stripping HTML markup so raw &lt;p class="bb_paragraph"&gt; tags no longer appear in Steam news cards.
+- Fixed: External Protocol Links: Allowed steam:// links alongside http:// and https:// in external link handling for Steam Deck on-screen keyboard and Dragonwilds launches.
+- Fixed: Resources SVG Rendering: Fixed trusted inline SVG icons in the Resources view rendering as escaped text instead of vector icons.
+- Fixed: Login Window Lifecycle: Resolved embedded Jagex login promises cleanly when the login window is closed or already open, and kept the login user-agent aligned with the bundled Chromium version.</description>
+    </item>
     <item>
       <title>PatchCraft Launcher v1.5.1</title>
       <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.1</link>
