@@ -20,11 +20,11 @@
       "title": "Arch (.pacman) & Fedora (.rpm) Packages Hosted Directly on GitHub Releases",
       "date": "2026-11-13",
       "badge": "Advisory",
-      "pinned": true,
-      "summary": "Due to upstream AUR downtime, native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.",
+      "pinned": false,
+      "summary": "Native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.",
       "bullets": [
-        "**Arch Linux**: Install the `.x64.pacman` package from GitHub Releases using `sudo pacman -U` or package via `packaging/aur/PKGBUILD` (`linux-jagex-launcher-bin`).",
-        "**Fedora & RHEL**: Install the `.x86_64.rpm` package directly with `dnf` or use the `cook0001/linux-jagex-launcher` Copr repository.",
+        "**Arch Linux**: Install the `.x64.pacman` package from GitHub Releases using `sudo pacman -U` or build locally via `packaging/aur/PKGBUILD`.",
+        "**Fedora & RHEL**: Install the `.x86_64.rpm` package directly with `sudo dnf install -y` from GitHub Releases.",
         "**Verified Checksums**: Every release publishes `SHA256SUMS.txt` verified automatically by the built-in launcher updater."
       ],
       "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/latest",

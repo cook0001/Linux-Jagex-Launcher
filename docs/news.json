@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T01:55:55.688Z",
+  "generatedAt": "2026-11-25T02:41:28.115Z",
   "siteUrl": "https://launcher.patchcraft.dev/",
   "publicRepo": "cook0001/Patchcraft-Launcher",
   "latestVersion": "2.0.0",
@@ -148,31 +148,6 @@
       "ctaLabel": "View Launchpad PPA"
     },
     {
-      "id": "announcement-2026-11-13-arch-fedora-github-packages",
-      "kind": "announcement",
-      "categoryLabel": "Announcement",
-      "version": null,
-      "title": "Arch (.pacman) & Fedora (.rpm) Packages Hosted Directly on GitHub Releases",
-      "dateIso": "2026-11-13",
-      "displayDate": "Nov 13, 2026",
-      "badge": "Advisory",
-      "pinned": true,
-      "summary": "Due to upstream AUR downtime, native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.",
-      "highlightCount": 3,
-      "sections": [
-        {
-          "heading": "Highlights",
-          "bullets": [
-            "**Arch Linux**: Install the `.x64.pacman` package from GitHub Releases using `sudo pacman -U` or package via `packaging/aur/PKGBUILD` (`linux-jagex-launcher-bin`).",
-            "**Fedora & RHEL**: Install the `.x86_64.rpm` package directly with `dnf` or use the `cook0001/linux-jagex-launcher` Copr repository.",
-            "**Verified Checksums**: Every release publishes `SHA256SUMS.txt` verified automatically by the built-in launcher updater."
-          ]
-        }
-      ],
-      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/latest",
-      "ctaLabel": "Browse Release Packages"
-    },
-    {
       "id": "release-v1.4.9",
       "kind": "release",
       "categoryLabel": "Release",
@@ -200,6 +175,31 @@
       ],
       "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.9",
       "ctaLabel": "View v1.4.9 on GitHub"
+    },
+    {
+      "id": "announcement-2026-11-13-arch-fedora-github-packages",
+      "kind": "announcement",
+      "categoryLabel": "Announcement",
+      "version": null,
+      "title": "Arch (.pacman) & Fedora (.rpm) Packages Hosted Directly on GitHub Releases",
+      "dateIso": "2026-11-13",
+      "displayDate": "Nov 13, 2026",
+      "badge": "Advisory",
+      "pinned": false,
+      "summary": "Native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.",
+      "highlightCount": 3,
+      "sections": [
+        {
+          "heading": "Highlights",
+          "bullets": [
+            "**Arch Linux**: Install the `.x64.pacman` package from GitHub Releases using `sudo pacman -U` or build locally via `packaging/aur/PKGBUILD`.",
+            "**Fedora & RHEL**: Install the `.x86_64.rpm` package directly with `sudo dnf install -y` from GitHub Releases.",
+            "**Verified Checksums**: Every release publishes `SHA256SUMS.txt` verified automatically by the built-in launcher updater."
+          ]
+        }
+      ],
+      "url": "https://github.com/cook0001/Patchcraft-Launcher/releases/latest",
+      "ctaLabel": "Browse Release Packages"
     },
     {
       "id": "release-v1.4.8",

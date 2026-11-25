@@ -4,19 +4,19 @@
   <img src="docs/assets/icon.png" width="96" height="96" alt="PatchCraft Launcher Logo" />
   <h1>PatchCraft Launcher</h1>
   <p><strong>Unofficial native Linux launcher for RuneScape 3, Old School RuneScape, and RuneScape: Dragonwilds (Jagex Accounts).</strong></p>
-  <p><sub>Formerly Linux Jagex Launcher &mdash; existing package slugs (<code>patchcraft-launcher</code>) remain unchanged for seamless upgrades. Not affiliated with Jagex Ltd.</sub></p>
+  <p><sub>Formerly Linux Jagex Launcher &mdash; packages use the <code>patchcraft-launcher</code> slug with legacy <code>linux-jagex-launcher</code> CLI symlinks preserved; the Snap Store listing currently remains under <code>linux-jagex-launcher</code>. Not affiliated with Jagex Ltd.</sub></p>
 
   <p>
     <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/v/release/cook0001/Patchcraft-Launcher?color=e5b352" alt="Latest Release" /></a>
     <a href="https://github.com/cook0001/Patchcraft-Launcher/releases"><img src="https://img.shields.io/github/downloads/cook0001/Patchcraft-Launcher/total?color=10b981" alt="Total Downloads" /></a>
-    <a href="https://snapcraft.io/patchcraft-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/patchcraft-launcher/badge.svg" /></a>
+    <a href="https://snapcraft.io/linux-jagex-launcher"><img alt="linux-jagex-launcher" src="https://snapcraft.io/linux-jagex-launcher/badge.svg" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-Proprietary-red.svg" alt="License: Proprietary" /></a>
     <a href="https://github.com/cook0001/Patchcraft-Launcher"><img src="https://img.shields.io/badge/Platform-Linux-orange.svg" alt="Platform: Linux" /></a>
     <a href="https://launcher.patchcraft.dev/"><img src="https://img.shields.io/badge/Website-Online-00e1d9.svg" alt="Website" /></a>
   </p>
 
   <p>
-    <a href="https://snapcraft.io/patchcraft-launcher">
+    <a href="https://snapcraft.io/linux-jagex-launcher">
       <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" />
     </a>
   </p>
@@ -247,7 +247,7 @@ patchcraft-launcher
 
 **To uninstall or remove the PPA:**
 ```bash
-sudo apt remove linux-jagex-launcher
+sudo apt remove patchcraft-launcher
 ```
 ```bash
 sudo add-apt-repository --remove ppa:danielcook2016/patchcraft-launcher
@@ -297,27 +297,27 @@ chmod +x PatchCraft-Launcher-2.0.0.AppImage
 
 Official Snap package built with `core24` strict confinement, automated background updates, and persistent game data storage in `$SNAP_USER_COMMON`:
 
-[![linux-jagex-launcher](https://snapcraft.io/patchcraft-launcher/badge.svg)](https://snapcraft.io/patchcraft-launcher)
+[![linux-jagex-launcher](https://snapcraft.io/linux-jagex-launcher/badge.svg)](https://snapcraft.io/linux-jagex-launcher)
 
-[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/patchcraft-launcher)
+[![Get it from the Snap Store](https://snapcraft.io/en/dark/install.svg)](https://snapcraft.io/linux-jagex-launcher)
 
 **1. Install from Snap Store:**
 ```bash
-sudo snap install patchcraft-launcher
+sudo snap install linux-jagex-launcher
 ```
 
 **2. Optional permissions (controller & external storage):**
 ```bash
 # Connect gamepad/joystick interface for handheld controllers and Steam Deck:
-sudo snap connect patchcraft-launcher:joystick
+sudo snap connect linux-jagex-launcher:joystick
 
 # Connect removable media interface for micro-SD cards and external drives:
-sudo snap connect patchcraft-launcher:removable-media
+sudo snap connect linux-jagex-launcher:removable-media
 ```
 
 **3. Launch:**
 ```bash
-patchcraft-launcher
+linux-jagex-launcher
 ```
 
 ---

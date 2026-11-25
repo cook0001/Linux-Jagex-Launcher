@@ -93,7 +93,7 @@
               </a>
               <a href="https://oblast.patchcraft.dev/">
                 <strong>OBLAST: The Union</strong>
-                <span>Soviet grand strategy (v1.0.1)</span>
+                <span>1928–1991 Soviet grand strategy (v1.0.1)</span>
               </a>
               <a href="https://oclp.patchcraft.dev/">
                 <strong>OCLP R&amp;D Hub</strong>
@@ -201,7 +201,7 @@
             <span>Steam Deck Setup</span>
           </button>
 
-          <a href="https://snapcraft.io/patchcraft-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
+          <a href="https://snapcraft.io/linux-jagex-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
             <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" width="182" height="56">
           </a>
         </div>
@@ -395,16 +395,16 @@
         <div class="section-header section-header--left">
           <h2 class="section-title">How It Works on Linux</h2>
           <p class="section-desc">
-            Familiar Jagex layout on top, predictable Linux tooling underneath.
+            Forge Rail &amp; Direct Character Roster UI on top, predictable Linux tooling underneath.
           </p>
         </div>
 
         <div class="spec-grid">
           <div class="spec-cell">
             <span class="spec-label">Interface</span>
-            <h3 class="spec-heading">Familiar Jagex layout</h3>
+            <h3 class="spec-heading">Forge Rail &amp; Character Roster</h3>
             <p class="spec-body">
-              Matches the official launcher with live event artwork, Jagex maintenance notices, and standard desktop window controls.
+              3-column desktop and Steam Deck layout with collapsible left rail, per-character Play/Stop controls, inline workspace views, and 3 built-in offline themes.
             </p>
           </div>
 
@@ -457,7 +457,7 @@
         <div class="section-header section-header--left">
           <h2 class="section-title">Install on Linux</h2>
           <p class="section-desc">
-            Pick your distribution or package format below. Existing package slugs (<code>patchcraft-launcher</code>) remain unchanged for seamless upgrades.
+            Pick your distribution or package format below. Packages use the <code>patchcraft-launcher</code> slug with legacy <code>linux-jagex-launcher</code> CLI symlinks preserved; the Snap Store listing currently remains under <code>linux-jagex-launcher</code>.
           </p>
         </div>
 
@@ -783,11 +783,11 @@
                   Official Canonical Snap package for Ubuntu, Debian, Fedora, Arch, and all snap-enabled distributions. Fully sandboxed with persistent multi-gigabyte cache storage in <code>$SNAP_USER_COMMON</code>.
                 </p>
                 <div class="snap-store-cta">
-                  <a href="https://snapcraft.io/patchcraft-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
+                  <a href="https://snapcraft.io/linux-jagex-launcher" class="snap-store-badge" target="_blank" rel="noopener noreferrer">
                     <img alt="Get it from the Snap Store" src="https://snapcraft.io/en/dark/install.svg" width="182" height="56" loading="lazy">
                   </a>
-                  <a href="https://snapcraft.io/patchcraft-launcher" class="snap-status-badge" target="_blank" rel="noopener noreferrer">
-                    <img alt="linux-jagex-launcher" src="https://snapcraft.io/patchcraft-launcher/badge.svg" width="255" height="20" loading="lazy">
+                  <a href="https://snapcraft.io/linux-jagex-launcher" class="snap-status-badge" target="_blank" rel="noopener noreferrer">
+                    <img alt="linux-jagex-launcher" src="https://snapcraft.io/linux-jagex-launcher/badge.svg" width="255" height="20" loading="lazy">
                   </a>
                 </div>
               </div>
@@ -802,7 +802,7 @@
                   <div class="step-content">
                     <span class="step-text">Install directly from the <strong>Snap Store</strong>:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>sudo snap install patchcraft-launcher</code></pre>
+                      <pre class="code-block"><code>sudo snap install linux-jagex-launcher</code></pre>
                       <button type="button" class="btn-copy-code" aria-label="Copy snap install command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
@@ -816,7 +816,7 @@
                   <div class="step-content">
                     <span class="step-text">Optional: Connect controller &amp; external storage plugs (for handhelds &amp; SD cards):</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>sudo snap connect patchcraft-launcher:joystick &amp;&amp; sudo snap connect patchcraft-launcher:removable-media</code></pre>
+                      <pre class="code-block"><code>sudo snap connect linux-jagex-launcher:joystick &amp;&amp; sudo snap connect linux-jagex-launcher:removable-media</code></pre>
                       <button type="button" class="btn-copy-code" aria-label="Copy snap connect plugs command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
@@ -830,7 +830,7 @@
                   <div class="step-content">
                     <span class="step-text">Launch from your application menu or terminal:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>patchcraft-launcher</code></pre>
+                      <pre class="code-block"><code>linux-jagex-launcher</code></pre>
                       <button type="button" class="btn-copy-code" aria-label="Copy Snap launch command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
@@ -1003,18 +1003,6 @@
               <a class="news-ext-link" href="https://launchpad.net/~danielcook2016/+archive/ubuntu/linux-jagex-launcher" target="_blank" rel="noopener noreferrer">View Launchpad PPA <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
-            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-13-arch-fedora-github-packages" data-kind="announcement" data-date="2026-11-13" data-pinned="true" data-badge="Advisory" hidden data-extra="true">
-              <div class="news-card-meta">
-              <div class="news-badges"><span class="news-badge news-badge--announcement">Advisory</span><span class="news-badge news-badge--pinned">Pinned</span></div>
-              <time class="news-date" datetime="2026-11-13">Nov 13, 2026</time>
-              </div>
-              <h3 class="news-card-title">Arch (.pacman) &amp; Fedora (.rpm) Packages Hosted Directly on GitHub Releases</h3>
-              <p class="news-card-summary">Due to upstream AUR downtime, native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.</p>
-              <details class="news-details"><summary class="news-details-summary">Details (3 points)</summary><div class="news-details-body"><div class="news-detail-group"><p class="news-detail-heading">Highlights</p><ul class="news-detail-list" role="list"><li><strong>Arch Linux</strong>: Install the <code>.x64.pacman</code> package from GitHub Releases using <code>sudo pacman -U</code> or package via <code>packaging/aur/PKGBUILD</code> (<code>linux-jagex-launcher-bin</code>).</li><li><strong>Fedora &amp; RHEL</strong>: Install the <code>.x86_64.rpm</code> package directly with <code>dnf</code> or use the <code>cook0001/linux-jagex-launcher</code> Copr repository.</li><li><strong>Verified Checksums</strong>: Every release publishes <code>SHA256SUMS.txt</code> verified automatically by the built-in launcher updater.</li></ul></div></div></details>
-              <div class="news-card-actions">
-              <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/latest" target="_blank" rel="noopener noreferrer">Browse Release Packages <span aria-hidden="true">&#8599;</span></a>
-              </div>
-              </article>
             <article class="news-card news-card--release" data-news-id="release-v1.4.9" data-kind="release" data-date="2026-11-13" data-pinned="false" data-badge="v1.4.9" data-version="1.4.9" hidden data-extra="true">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--release">v1.4.9</span></div>
@@ -1025,6 +1013,18 @@
               <details class="news-details"><summary class="news-details-summary">Release notes (2 changes)</summary><div class="news-details-body"><div class="news-detail-group"><p class="news-detail-heading">Fixed</p><ul class="news-detail-list" role="list"><li>Resolve root-cause bugs across auth, launcher, updater, diagnostics, and renderer</li></ul></div><div class="news-detail-group"><p class="news-detail-heading">Changed</p><ul class="news-detail-list" role="list"><li><strong>Dependencies</strong>: Resolve minimatch Dependabot alert, update Electron/Vite/Oxlint, and bump Flatpak runtime to 26.08</li></ul></div></div></details>
               <div class="news-card-actions">
               <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.4.9" target="_blank" rel="noopener noreferrer">View v1.4.9 on GitHub <span aria-hidden="true">&#8599;</span></a>
+              </div>
+              </article>
+            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-13-arch-fedora-github-packages" data-kind="announcement" data-date="2026-11-13" data-pinned="false" data-badge="Advisory" hidden data-extra="true">
+              <div class="news-card-meta">
+              <div class="news-badges"><span class="news-badge news-badge--announcement">Advisory</span></div>
+              <time class="news-date" datetime="2026-11-13">Nov 13, 2026</time>
+              </div>
+              <h3 class="news-card-title">Arch (.pacman) &amp; Fedora (.rpm) Packages Hosted Directly on GitHub Releases</h3>
+              <p class="news-card-summary">Native Arch Linux (.x64.pacman) and Fedora/RHEL (.x86_64.rpm) packages alongside AppImage, .deb, and portable .tar.gz archives are hosted directly on every GitHub Release.</p>
+              <details class="news-details"><summary class="news-details-summary">Details (3 points)</summary><div class="news-details-body"><div class="news-detail-group"><p class="news-detail-heading">Highlights</p><ul class="news-detail-list" role="list"><li><strong>Arch Linux</strong>: Install the <code>.x64.pacman</code> package from GitHub Releases using <code>sudo pacman -U</code> or build locally via <code>packaging/aur/PKGBUILD</code>.</li><li><strong>Fedora &amp; RHEL</strong>: Install the <code>.x86_64.rpm</code> package directly with <code>sudo dnf install -y</code> from GitHub Releases.</li><li><strong>Verified Checksums</strong>: Every release publishes <code>SHA256SUMS.txt</code> verified automatically by the built-in launcher updater.</li></ul></div></div></details>
+              <div class="news-card-actions">
+              <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/latest" target="_blank" rel="noopener noreferrer">Browse Release Packages <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
             <article class="news-card news-card--release" data-news-id="release-v1.4.8" data-kind="release" data-date="2026-11-12" data-pinned="false" data-badge="v1.4.8" data-version="1.4.8" hidden data-extra="true">
@@ -1425,7 +1425,7 @@
           <a href="https://patchcraft.dev/" target="_blank" rel="noopener noreferrer">PatchCraft</a>
           <a href="https://github.com/cook0001/Patchcraft-Launcher" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://github.com/cook0001/Patchcraft-Launcher/releases" target="_blank" rel="noopener noreferrer">Releases</a>
-          <a href="https://snapcraft.io/patchcraft-launcher" target="_blank" rel="noopener noreferrer">Snap Store</a>
+          <a href="https://snapcraft.io/linux-jagex-launcher" target="_blank" rel="noopener noreferrer">Snap Store</a>
           <a href="https://github.com/cook0001/Patchcraft-Launcher/blob/main/PRIVACY.md" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
           <a href="https://github.com/cook0001/Patchcraft-Launcher/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License</a>
           <a href="https://patchcraft.dev/legal.html">Legal &amp; Attributions</a>
@@ -1433,7 +1433,7 @@
       </div>
 
       <div class="disclaimer-box">
-        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. PatchCraft Launcher (formerly Linux Jagex Launcher; package slug <code>patchcraft-launcher</code>) is an independent, unofficial freeware project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
+        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. PatchCraft Launcher (formerly Linux Jagex Launcher; package slug <code>patchcraft-launcher</code>, Snap Store slug <code>linux-jagex-launcher</code>) is an independent, unofficial freeware project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
       </div>
     </div>
   </footer>
