@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.cook0001.LinuxJagexLauncher</id>
+  <id>dev.patchcraft.Launcher</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>LicenseRef-proprietary</project_license>
   <name>PatchCraft Launcher</name>
@@ -22,7 +22,7 @@
     </ul>
   </description>
 
-  <launchable type="desktop-id">io.github.cook0001.LinuxJagexLauncher.desktop</launchable>
+  <launchable type="desktop-id">dev.patchcraft.Launcher.desktop</launchable>
 
   <branding>
     <color type="primary" scheme_preference="light">#e5b352</color>
@@ -54,7 +54,7 @@
   <url type="vcs-browser">https://github.com/cook0001/Patchcraft-Launcher</url>
   <url type="help">https://forms.gle/KvagBxcmVBB3Q721A</url>
 
-  <developer id="io.github.cook0001">
+  <developer id="dev.patchcraft">
     <name>PatchCraft (@cook0001)</name>
   </developer>
 

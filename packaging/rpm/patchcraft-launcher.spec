@@ -1,12 +1,12 @@
-Name:           linux-jagex-launcher
+Name:           patchcraft-launcher
 Version:        1.5.1
 Release:        1%{?dist}
 Summary:        Unofficial native Linux launcher for RuneScape & Jagex Accounts
 License:        Proprietary
 URL:            https://launcher.patchcraft.dev/
-Source0:        https://github.com/cook0001/Patchcraft-Launcher/releases/download/v%{version}/linux-jagex-launcher-%{version}.tar.gz
-Source1:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.desktop
-Source2:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
+Source0:        https://github.com/cook0001/Patchcraft-Launcher/releases/download/v%{version}/patchcraft-launcher-%{version}.tar.gz
+Source1:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/dev.patchcraft.Launcher.desktop
+Source2:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/packaging/flatpak/dev.patchcraft.Launcher.metainfo.xml
 Source3:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/512x512.png
 Source4:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/256x256.png
 Source5:        https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v%{version}/resources/icons/128x128.png
@@ -35,8 +35,12 @@ Recommends:     gamemode
 Recommends:     mangohud
 
 # Package Aliases & Upgrade Conflicts
+Provides:       linux-jagex-launcher = %{version}-%{release}
 Provides:       jagex-launcher = %{version}-%{release}
+Conflicts:      linux-jagex-launcher
 Conflicts:      jagex-launcher
+Obsoletes:      linux-jagex-launcher < 2.0.0
+Obsoletes:      jagex-launcher < 2.0.0
 
 # Turn off binary strip and debuginfo generation for pre-built Electron binary
 %global __strip /bin/true
@@ -59,53 +63,55 @@ integration.
 %install
 rm -rf %{buildroot}
 
-# 1. Install application bundle into /opt/linux-jagex-launcher
+# 1. Install application bundle into /opt/patchcraft-launcher
 install -d -m 0755 %{buildroot}/opt/%{name}
 cp -a * %{buildroot}/opt/%{name}/
-chmod 0755 %{buildroot}/opt/%{name}/linux-jagex-launcher
+chmod 0755 %{buildroot}/opt/%{name}/patchcraft-launcher
 if [ -f %{buildroot}/opt/%{name}/chrome-sandbox ]; then
     chmod 4755 %{buildroot}/opt/%{name}/chrome-sandbox
 fi
 
 # 2. Symlink binaries to /usr/bin for immediate terminal execution
 install -d -m 0755 %{buildroot}%{_bindir}
-ln -sf /opt/%{name}/linux-jagex-launcher %{buildroot}%{_bindir}/%{name}
-ln -sf /opt/%{name}/linux-jagex-launcher %{buildroot}%{_bindir}/jagex-launcher
+ln -sf /opt/%{name}/patchcraft-launcher %{buildroot}%{_bindir}/%{name}
+ln -sf /opt/%{name}/patchcraft-launcher %{buildroot}%{_bindir}/linux-jagex-launcher
+ln -sf /opt/%{name}/patchcraft-launcher %{buildroot}%{_bindir}/jagex-launcher
 
 # 3. Install Desktop Entry
 install -d -m 0755 %{buildroot}%{_datadir}/applications
-install -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/applications/io.github.cook0001.LinuxJagexLauncher.desktop
+install -m 0644 %{SOURCE1} %{buildroot}%{_datadir}/applications/dev.patchcraft.Launcher.desktop
 
 # 4. Install AppStream MetaInfo
 install -d -m 0755 %{buildroot}%{_metainfodir}
-install -m 0644 %{SOURCE2} %{buildroot}%{_metainfodir}/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
+install -m 0644 %{SOURCE2} %{buildroot}%{_metainfodir}/dev.patchcraft.Launcher.metainfo.xml
 
 # 5. Install Hicolor Icon Theme suite
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
-install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/dev.patchcraft.Launcher.png
 
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
-install -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/dev.patchcraft.Launcher.png
 
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-install -m 0644 %{SOURCE5} %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE5} %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/dev.patchcraft.Launcher.png
 
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/64x64/apps
-install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE6} %{buildroot}%{_datadir}/icons/hicolor/64x64/apps/dev.patchcraft.Launcher.png
 
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
-install -m 0644 %{SOURCE7} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE7} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/dev.patchcraft.Launcher.png
 
 install -d -m 0755 %{buildroot}%{_datadir}/icons/hicolor/16x16/apps
-install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/io.github.cook0001.LinuxJagexLauncher.png
+install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/dev.patchcraft.Launcher.png
 
 %files
 /opt/%{name}
 %{_bindir}/%{name}
+%{_bindir}/linux-jagex-launcher
 %{_bindir}/jagex-launcher
-%{_datadir}/applications/io.github.cook0001.LinuxJagexLauncher.desktop
-%{_metainfodir}/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
-%{_datadir}/icons/hicolor/*/apps/io.github.cook0001.LinuxJagexLauncher.png
+%{_datadir}/applications/dev.patchcraft.Launcher.desktop
+%{_metainfodir}/dev.patchcraft.Launcher.metainfo.xml
+%{_datadir}/icons/hicolor/*/apps/dev.patchcraft.Launcher.png
 
 %changelog
 * Tue Nov 17 2026 Daniel Cook <danielcook2016@outlook.com> - 1.5.1-1

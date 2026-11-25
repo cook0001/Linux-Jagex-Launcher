@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 set -e
 
-# Linux Jagex Launcher - Steam Deck & SteamOS Fast Automated Installer
+# PatchCraft Launcher - Steam Deck & SteamOS Fast Automated Installer
 # Works 100% rootless in userspace. Never touches read-only system partitions.
 
 REPO="cook0001/Patchcraft-Launcher"
-APP_NAME="Jagex Launcher"
+APP_NAME="PatchCraft Launcher"
 APPLICATIONS_DIR="${HOME}/Applications"
 DESKTOP_DIR="${HOME}/.local/share/applications"
 ICONS_DIR="${HOME}/.local/share/icons/hicolor/512x512/apps"
-LAUNCHER_DATA_DIR="${HOME}/.local/share/linux-jagex-launcher"
+LAUNCHER_DATA_DIR="${HOME}/.local/share/patchcraft-launcher"
 
-echo "==> Linux Jagex Launcher - Steam Deck Setup"
+echo "==> PatchCraft Launcher - Steam Deck Setup"
 
 # Check architecture
 ARCH=$(uname -m)
@@ -41,16 +41,24 @@ mkdir -p "${ICONS_DIR}"
 mkdir -p "${LAUNCHER_DATA_DIR}/grid"
 
 echo "==> Checking latest release from GitHub..."
-LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' || true)
+RELEASE_JSON=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null || true)
+LATEST_TAG=$(printf '%s\n' "$RELEASE_JSON" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1 || true)
 if [ -z "$LATEST_TAG" ]; then
   LATEST_TAG="v1.5.1"
 fi
 VERSION="${LATEST_TAG#v}"
 
-TARGET_APPIMAGE="${APPLICATIONS_DIR}/Jagex-Launcher.AppImage"
-DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/Jagex-Launcher-${VERSION}.AppImage"
+TARGET_APPIMAGE="${APPLICATIONS_DIR}/PatchCraft-Launcher.AppImage"
+DOWNLOAD_URL=$(printf '%s\n' "$RELEASE_JSON" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/' | grep -E '\.AppImage$' | grep -vi 'arm64' | head -n1 || true)
+if [ -z "$DOWNLOAD_URL" ]; then
+  if [ "$VERSION" = "1.5.1" ]; then
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/Jagex-Launcher-${VERSION}.AppImage"
+  else
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/PatchCraft-Launcher-${VERSION}.AppImage"
+  fi
+fi
 
-echo "==> Downloading Jagex Launcher ${LATEST_TAG} to ~/Applications/..."
+echo "==> Downloading PatchCraft Launcher ${LATEST_TAG} to ~/Applications/..."
 curl -fsSL -o "${TARGET_APPIMAGE}.part" "${DOWNLOAD_URL}"
 mv "${TARGET_APPIMAGE}.part" "${TARGET_APPIMAGE}"
 chmod 0755 "${TARGET_APPIMAGE}"
@@ -60,22 +68,22 @@ echo "==> Fetching Steam Deck artwork and icons..."
 ICON_URL="https://launcher.patchcraft.dev/assets/icon.png"
 HERO_URL="https://launcher.patchcraft.dev/assets/banner.png"
 
-curl -fsSL -o "${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png" "${ICON_URL}" || true
+curl -fsSL -o "${ICONS_DIR}/dev.patchcraft.Launcher.png" "${ICON_URL}" || true
 curl -fsSL -o "${LAUNCHER_DATA_DIR}/icon.png" "${ICON_URL}" || true
 curl -fsSL -o "${LAUNCHER_DATA_DIR}/banner.png" "${HERO_URL}" || true
 
 # Create standard .desktop file
-DESKTOP_FILE="${DESKTOP_DIR}/io.github.cook0001.LinuxJagexLauncher.desktop"
+DESKTOP_FILE="${DESKTOP_DIR}/dev.patchcraft.Launcher.desktop"
 cat <<EOF > "${DESKTOP_FILE}"
 [Desktop Entry]
 Name=${APP_NAME}
-Comment=Authentic Linux Jagex Launcher for RuneScape 3, Old School RuneScape, and Dragonwilds
+Comment=Unofficial native Linux launcher for RuneScape 3, Old School RuneScape, and Dragonwilds (Jagex Accounts)
 Exec="${TARGET_APPIMAGE}" %U
-Icon=${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png
+Icon=${ICONS_DIR}/dev.patchcraft.Launcher.png
 Terminal=false
 Type=Application
 Categories=Game;
-StartupWMClass=linux-jagex-launcher
+StartupWMClass=patchcraft-launcher
 MimeType=x-scheme-handler/jagex;x-scheme-handler/jagex-launcher;
 PrefersNonDefaultGPU=true
 X-KDE-SubstituteUID=false
@@ -179,7 +187,7 @@ fi
 
 # Send desktop notification if available
 if command -v notify-send >/dev/null 2>&1; then
-  notify-send -i "${ICONS_DIR}/io.github.cook0001.LinuxJagexLauncher.png" "Jagex Launcher Installed" "Ready to play! Return to Gaming Mode to launch." 2>/dev/null || true
+  notify-send -i "${ICONS_DIR}/dev.patchcraft.Launcher.png" "PatchCraft Launcher Installed" "Ready to play! Return to Gaming Mode to launch." 2>/dev/null || true
 fi
 
 echo ""

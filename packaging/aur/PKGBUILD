@@ -1,6 +1,6 @@
 # Maintainer: PatchCraft <support@patchcraft.dev>
-pkgname=linux-jagex-launcher-bin
-_pkgname=jagex-launcher
+pkgname=patchcraft-launcher-bin
+_pkgname=patchcraft-launcher
 pkgver=1.5.1
 pkgrel=1
 pkgdesc="PatchCraft Launcher — unofficial native Linux launcher for RuneScape & Jagex Accounts"
@@ -25,8 +25,9 @@ optdepends=(
   'gamemode: Feral GameMode support for CPU governor and process scheduling'
   'mangohud: Real-time hardware and FPS overlay'
 )
-provides=('linux-jagex-launcher' 'jagex-launcher')
-conflicts=('linux-jagex-launcher' 'jagex-launcher')
+provides=('patchcraft-launcher' 'linux-jagex-launcher' 'jagex-launcher')
+conflicts=('patchcraft-launcher' 'linux-jagex-launcher' 'jagex-launcher')
+replaces=('linux-jagex-launcher-bin')
 source=("https://github.com/cook0001/Patchcraft-Launcher/releases/download/v${pkgver}/${_pkgname}_${pkgver}_amd64.deb")
 sha256sums=('ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857')
 
@@ -39,20 +40,27 @@ package() {
   if [ ! -d "${pkgdir}${app_dir}" ] && [ -d "${pkgdir}/opt/Jagex Launcher" ]; then
     app_dir="/opt/Jagex Launcher"
   fi
+  local bin_name="patchcraft-launcher"
+  if [ ! -f "${pkgdir}${app_dir}/${bin_name}" ] && [ -f "${pkgdir}${app_dir}/linux-jagex-launcher" ]; then
+    bin_name="linux-jagex-launcher"
+  fi
 
   # Fix permissions
   find "${pkgdir}" -type d -exec chmod 755 {} +
-  chmod 755 "${pkgdir}${app_dir}/linux-jagex-launcher"
+  chmod 755 "${pkgdir}${app_dir}/${bin_name}"
 
-  # Symlink to /usr/bin for terminal execution
+  # Symlink to /usr/bin for terminal execution (including legacy aliases)
   install -dm755 "${pkgdir}/usr/bin"
-  ln -sf "${app_dir}/linux-jagex-launcher" "${pkgdir}/usr/bin/linux-jagex-launcher"
-  ln -sf "${app_dir}/linux-jagex-launcher" "${pkgdir}/usr/bin/jagex-launcher"
+  ln -sf "${app_dir}/${bin_name}" "${pkgdir}/usr/bin/patchcraft-launcher"
+  ln -sf "${app_dir}/${bin_name}" "${pkgdir}/usr/bin/linux-jagex-launcher"
+  ln -sf "${app_dir}/${bin_name}" "${pkgdir}/usr/bin/jagex-launcher"
 
   # Ensure app and Electron/Chromium third-party licenses are installed
   install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
   if [ -f "${pkgdir}/usr/share/doc/${_pkgname}/copyright" ]; then
     install -Dm644 "${pkgdir}/usr/share/doc/${_pkgname}/copyright" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  elif [ -f "${pkgdir}/usr/share/doc/jagex-launcher/copyright" ]; then
+    install -Dm644 "${pkgdir}/usr/share/doc/jagex-launcher/copyright" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
   fi
   if [ -f "${pkgdir}${app_dir}/LICENSE.electron.txt" ]; then
     install -Dm644 "${pkgdir}${app_dir}/LICENSE.electron.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.electron.txt"

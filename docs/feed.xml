@@ -6,19 +6,7 @@
     <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Releases, packaging updates, and maintainer announcements for PatchCraft Launcher (unofficial Linux launcher for RuneScape &amp; Jagex Accounts).</description>
     <language>en-us</language>
-    <lastBuildDate>Wed, 18 Nov 2026 12:00:00 +0000</lastBuildDate>
-    <item>
-      <title>Preview the Proposed Jagex-Style UI Redesign &amp; Vote in Discussion #2</title>
-      <link>https://github.com/cook0001/Patchcraft-Launcher/discussions/2</link>
-      <guid isPermaLink="false">announcement-2026-11-18-ui-redesign-feedback</guid>
-      <pubDate>Wed, 18 Nov 2026 12:00:00 +0000</pubDate>
-      <category>Announcement</category>
-      <description>Before shipping the new Jagex-inspired top-bar layout, we are collecting community feedback on GitHub Discussions and launcher.patchcraft.dev. Check out the screenshots and tell us whether you prefer the new style or the current sidebar.
-
-- Highlights: Side-by-Side Preview: View screenshots of the RS3, Old School, Dragonwilds, and Settings redesign in Discussion #2 or in the Feedback &amp; Discussions section below.
-- Highlights: Live Discussions: Vote, comment on existing threads, or submit UI feedback straight from #feedback without needing a GitHub account.
-- Highlights: No Forced Change Yet: The redesign stays local while feedback is gathered — v1.5.1 remains the active stable release.</description>
-    </item>
+    <lastBuildDate>Tue, 17 Nov 2026 12:00:00 +0000</lastBuildDate>
     <item>
       <title>PatchCraft Launcher v1.5.1</title>
       <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.1</link>

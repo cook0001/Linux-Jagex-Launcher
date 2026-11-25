@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# Linux Jagex Launcher - Installer for Debian / Ubuntu / Mint / Pop!_OS
+# PatchCraft Launcher - Installer for Debian / Ubuntu / Mint / Pop!_OS
 REPO="cook0001/Patchcraft-Launcher"
 APT_ETC_DIR="${APT_ETC_DIR:-/etc/apt}"
 
@@ -70,7 +70,7 @@ cleanup_legacy_jagex_apt() {
   echo "    https://content.runescape.com/downloads/ubuntu"
   echo "    This unmaintained repository fails OpenPGP verification on modern Ubuntu"
   echo "    (NO_PUBKEY 7373B12CE03BEB4B / InRelease is not signed) and is not needed"
-  echo "    because Linux Jagex Launcher extracts the RS3 client rootlessly in userspace."
+  echo "    because PatchCraft Launcher extracts the RS3 client rootlessly in userspace."
   echo "--> Removing deprecated Jagex APT source entry..."
 
   local key_candidates=(
@@ -107,7 +107,7 @@ cleanup_legacy_jagex_apt() {
 }
 
 main() {
-  echo "==> Linux Jagex Launcher Installer"
+  echo "==> PatchCraft Launcher Installer"
 
   # Check architecture
   ARCH=$(uname -m)
@@ -128,15 +128,25 @@ main() {
   trap 'rm -rf "$TMP_DIR"' EXIT
 
   echo "--> Fetching latest release information..."
-  LATEST_TAG=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' || true)
+  RELEASE_JSON=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null || true)
+  LATEST_TAG=$(printf '%s\n' "$RELEASE_JSON" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1 || true)
 
   if [ -z "$LATEST_TAG" ]; then
     LATEST_TAG="v1.5.1"
   fi
 
   VERSION="${LATEST_TAG#v}"
-  DEB_NAME="jagex-launcher_${VERSION}_amd64.deb"
-  DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/${DEB_NAME}"
+  DOWNLOAD_URL=$(printf '%s\n' "$RELEASE_JSON" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/' | grep -E '_amd64\.deb$' | head -n1 || true)
+  if [ -z "$DOWNLOAD_URL" ]; then
+    if [ "$VERSION" = "1.5.1" ]; then
+      DEB_NAME="jagex-launcher_${VERSION}_amd64.deb"
+    else
+      DEB_NAME="patchcraft-launcher_${VERSION}_amd64.deb"
+    fi
+    DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/${DEB_NAME}"
+  else
+    DEB_NAME=$(basename "$DOWNLOAD_URL")
+  fi
 
   echo "--> Downloading ${DEB_NAME} (${LATEST_TAG})..."
   curl -fsSL -o "${TMP_DIR}/${DEB_NAME}" "$DOWNLOAD_URL"
@@ -151,7 +161,11 @@ main() {
 
   echo ""
   echo "Installation complete!"
-  echo "Launch the application from your application launcher or by running: jagex-launcher"
+  if command -v patchcraft-launcher >/dev/null 2>&1; then
+    echo "Launch the application from your application launcher or by running: patchcraft-launcher"
+  else
+    echo "Launch the application from your application launcher or by running: jagex-launcher"
+  fi
 }
 
 if [ "${JAGEX_INSTALLER_SOURCE_ONLY:-0}" != "1" ]; then

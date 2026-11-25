@@ -2,11 +2,11 @@
 Name=PatchCraft Launcher
 GenericName=Unofficial RuneScape Launcher
 Comment=Unofficial native Linux launcher for RuneScape 3, Old School RuneScape, and Dragonwilds (Jagex Accounts)
-Exec=linux-jagex-launcher %U
-Icon=io.github.cook0001.LinuxJagexLauncher
+Exec=patchcraft-launcher %U
+Icon=dev.patchcraft.Launcher
 Terminal=false
 Type=Application
 Categories=Game;RolePlaying;
 MimeType=x-scheme-handler/jagex;x-scheme-handler/runescape;
-StartupWMClass=linux-jagex-launcher
-Keywords=runescape;runescape3;rs3;osrs;jagex;runelite;hdos;dragonwilds;steamdeck;steamos;electron;game;
+StartupWMClass=patchcraft-launcher
+Keywords=runescape;runescape3;rs3;osrs;jagex;runelite;hdos;dragonwilds;patchcraft;steamdeck;steamos;electron;game;

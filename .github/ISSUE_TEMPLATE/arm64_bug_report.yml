@@ -48,10 +48,10 @@ body:
       label: ARM64 Installation Format
       description: Which ARM64 package are you running?
       options:
-        - AppImage (Jagex-Launcher-*-arm64.AppImage)
+        - AppImage (PatchCraft-Launcher-*-arm64.AppImage)
         - Debian / Ubuntu package (.deb arm64)
         - Portable Tarball (.tar.gz arm64)
-        - Snap Package (linux-jagex-launcher beta arm64)
+        - Snap Package (patchcraft-launcher beta arm64)
         - Custom / Other package
     validations:
       required: true

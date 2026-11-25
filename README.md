@@ -38,10 +38,8 @@
 
   <br />
 
-  <img src="docs/assets/screenshot-rs3.png" alt="Linux Jagex Launcher running RuneScape 3 on Linux" width="900" style="border-radius: 10px; border: 1px solid rgba(229,179,82,0.3);" />
+  <img src="docs/assets/screenshot-rs3.png" alt="PatchCraft Launcher running RuneScape 3 on Linux" width="900" style="border-radius: 10px; border: 1px solid rgba(229,179,82,0.3);" />
 </div>
-
-> **UI Redesign Feedback Wanted:** Preview the proposed Jagex-style top-bar layout and vote in [Discussion #2](https://github.com/cook0001/Patchcraft-Launcher/discussions/2) or at [launcher.patchcraft.dev/#redesign-preview](https://launcher.patchcraft.dev/#redesign-preview).
 
 ---
 
@@ -337,46 +335,35 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 ---
 
-### Option 6: Arch Linux / Manjaro / EndeavourOS (AUR & Standalone Pacman)
+### Option 6: Arch Linux / Manjaro / EndeavourOS (Native Pacman)
 
-**Method A: Standalone Pacman Package (No AUR helper needed):**
+**1. Download and install the standalone `.pacman` package from GitHub Releases:**
 ```bash
-# 1. Download standalone package from GitHub Releases:
 curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x64.pacman
-
-# 2. Install with pacman:
 sudo pacman -U ./linux-jagex-launcher-1.5.1.x64.pacman
 ```
 
-**Method B: Install via AUR Helper:**
+**2. Or build locally from the included `PKGBUILD`:**
 ```bash
-# Using yay:
-yay -S linux-jagex-launcher-bin
-
-# Using paru:
-paru -S linux-jagex-launcher-bin
+mkdir -p /tmp/patchcraft-pkg && cd /tmp/patchcraft-pkg
+curl -LO https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/main/packaging/aur/PKGBUILD
+makepkg -si
 ```
 
 ---
 
-### Option 7: Fedora / Red Hat / Nobara / Bazzite (Fedora Copr & Native RPM)
+### Option 7: Fedora / Red Hat / Nobara / Bazzite (Native RPM)
 
-**1. Enable the official Copr repository:**
+**1. Download and install the native `.rpm` package from GitHub Releases:**
 ```bash
-sudo dnf copr enable cook0001/linux-jagex-launcher
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x86_64.rpm
+sudo dnf install -y ./linux-jagex-launcher-1.5.1.x86_64.rpm
 ```
 
-**2. Install Linux Jagex Launcher:**
-```bash
-sudo dnf install -y linux-jagex-launcher
-```
-
-**3. Launch:**
+**2. Launch:**
 ```bash
 linux-jagex-launcher
 ```
-
-*(Alternatively, download the standalone `.rpm` directly from the [GitHub Releases page](https://github.com/cook0001/Patchcraft-Launcher/releases) and install via `sudo dnf install ./linux-jagex-launcher-1.5.1.x86_64.rpm`)*
 
 ---
 
@@ -518,7 +505,7 @@ Running the launcher with `sudo` will cause files in `~/.local/share`, `~/.confi
 
 ## 💬 Community Feedback
 
-Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Patchcraft-Launcher/discussions) (including the [UI Redesign Poll in Discussion #2](https://github.com/cook0001/Patchcraft-Launcher/discussions/2)), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
+Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Patchcraft-Launcher/discussions), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
 
 ---
 

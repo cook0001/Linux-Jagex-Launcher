@@ -1,37 +1,12 @@
 {
-  "generatedAt": "2026-11-24T11:59:02.047Z",
+  "generatedAt": "2026-11-25T01:42:56.404Z",
   "siteUrl": "https://launcher.patchcraft.dev/",
   "publicRepo": "cook0001/Patchcraft-Launcher",
   "latestVersion": "1.5.1",
-  "totalCount": 19,
+  "totalCount": 18,
   "releaseCount": 16,
-  "announcementCount": 3,
+  "announcementCount": 2,
   "items": [
-    {
-      "id": "announcement-2026-11-18-ui-redesign-feedback",
-      "kind": "announcement",
-      "categoryLabel": "Announcement",
-      "version": null,
-      "title": "Preview the Proposed Jagex-Style UI Redesign & Vote in Discussion #2",
-      "dateIso": "2026-11-18",
-      "displayDate": "Nov 18, 2026",
-      "badge": "Feedback",
-      "pinned": true,
-      "summary": "Before shipping the new Jagex-inspired top-bar layout, we are collecting community feedback on GitHub Discussions and launcher.patchcraft.dev. Check out the screenshots and tell us whether you prefer the new style or the current sidebar.",
-      "highlightCount": 3,
-      "sections": [
-        {
-          "heading": "Highlights",
-          "bullets": [
-            "**Side-by-Side Preview**: View screenshots of the RS3, Old School, Dragonwilds, and Settings redesign in Discussion #2 or in the Feedback & Discussions section below.",
-            "**Live Discussions**: Vote, comment on existing threads, or submit UI feedback straight from `#feedback` without needing a GitHub account.",
-            "**No Forced Change Yet**: The redesign stays local while feedback is gathered — `v1.5.1` remains the active stable release."
-          ]
-        }
-      ],
-      "url": "https://github.com/cook0001/Patchcraft-Launcher/discussions/2",
-      "ctaLabel": "Vote & Comment in Discussion #2"
-    },
     {
       "id": "release-v1.5.1",
       "kind": "release",

@@ -1,4 +1,4 @@
-pkgbase = linux-jagex-launcher-bin
+pkgbase = patchcraft-launcher-bin
 	pkgdesc = PatchCraft Launcher — unofficial native Linux launcher for RuneScape & Jagex Accounts
 	pkgver = 1.5.1
 	pkgrel = 1
@@ -19,11 +19,14 @@ pkgbase = linux-jagex-launcher-bin
 	optdepends = java-runtime: Java runtime required to play RuneLite and HDOS
 	optdepends = gamemode: Feral GameMode support for CPU governor and process scheduling
 	optdepends = mangohud: Real-time hardware and FPS overlay
+	provides = patchcraft-launcher
 	provides = linux-jagex-launcher
 	provides = jagex-launcher
+	conflicts = patchcraft-launcher
 	conflicts = linux-jagex-launcher
 	conflicts = jagex-launcher
-	source = https://github.com/cook0001/Patchcraft-Launcher/releases/download/v1.5.1/jagex-launcher_1.5.1_amd64.deb
+	replaces = linux-jagex-launcher-bin
+	source = https://github.com/cook0001/Patchcraft-Launcher/releases/download/v1.5.1/patchcraft-launcher_1.5.1_amd64.deb
 	sha256sums = ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857
 
-pkgname = linux-jagex-launcher-bin
+pkgname = patchcraft-launcher-bin

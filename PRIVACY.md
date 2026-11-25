@@ -1,7 +1,7 @@
 # Privacy Policy
 
 **Effective Date:** September 28, 2026  
-**Project:** PatchCraft Launcher (formerly Linux Jagex Launcher; package slug `linux-jagex-launcher`)  
+**Project:** PatchCraft Launcher (`patchcraft-launcher`, formerly `linux-jagex-launcher`)  
 **Repository:** [https://github.com/cook0001/Patchcraft-Launcher](https://github.com/cook0001/Patchcraft-Launcher)
 
 Your privacy and account security are our highest priority. **PatchCraft Launcher** is an unofficial Linux launcher for RuneScape &amp; Jagex Accounts built with a zero-telemetry, client-side only security model.
@@ -23,8 +23,9 @@ Your privacy and account security are our highest priority. **PatchCraft Launche
 - **Local Credential Storage**:
   - Authenticated session tokens and character lists are stored exclusively on your local machine in your user directory:
     ```
-    ~/.config/linux-jagex-launcher/
+    ~/.config/patchcraft-launcher/
     ```
+    *(Existing `~/.config/linux-jagex-launcher/` and `~/.local/share/linux-jagex-launcher/` profiles are migrated automatically on first launch.)*
   - Standard Linux filesystem permissions (`0700` / `0600`) restrict access strictly to your local user account.
 
 ---

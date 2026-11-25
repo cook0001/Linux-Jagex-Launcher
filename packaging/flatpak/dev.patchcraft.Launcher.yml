@@ -1,4 +1,4 @@
-app-id: io.github.cook0001.LinuxJagexLauncher
+app-id: dev.patchcraft.Launcher
 base: org.electronjs.Electron2.BaseApp
 base-version: '26.08'
 runtime: org.freedesktop.Platform
@@ -6,7 +6,7 @@ runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.openjdk21
-command: linux-jagex-launcher
+command: patchcraft-launcher
 
 finish-args:
   # Display & Graphics Acceleration (OpenGL, Vulkan, Wayland & X11)
@@ -22,9 +22,11 @@ finish-args:
   # Network (OAuth 2.0 PKCE, client updates, CDN feeds)
   - --share=network
 
-  # File Access for Launcher Data, RS3 Cache, and RuneLite/HDOS Settings
-  - --filesystem=xdg-data/linux-jagex-launcher:create
-  - --filesystem=xdg-config/linux-jagex-launcher:create
+  # File Access for Launcher Data, Legacy Migration, RS3 Cache, and RuneLite/HDOS Settings
+  - --filesystem=xdg-data/patchcraft-launcher:create
+  - --filesystem=xdg-config/patchcraft-launcher:create
+  - --filesystem=xdg-data/linux-jagex-launcher:rw
+  - --filesystem=xdg-config/linux-jagex-launcher:rw
   - --filesystem=~/.runelite:create
   - --filesystem=~/.hdos:create
   - --filesystem=~/.jagex_launcher:create
@@ -65,33 +67,33 @@ modules:
         commit: e04bd3433fd84e1861bf258ea37928d9845e6a86
 
   # Main Application module (sourced from pre-compiled public release archive)
-  - name: linux-jagex-launcher
+  - name: patchcraft-launcher
     buildsystem: simple
     build-commands:
       - install -Dm755 -d /app/bin
-      - install -Dm755 -d /app/share/linux-jagex-launcher
-      - cp -a app-bundle/. /app/share/linux-jagex-launcher/
-      - chmod 755 /app/share/linux-jagex-launcher/linux-jagex-launcher
-      - ln -sf /app/share/linux-jagex-launcher/linux-jagex-launcher /app/bin/linux-jagex-launcher
+      - install -Dm755 -d /app/share/patchcraft-launcher
+      - cp -a app-bundle/. /app/share/patchcraft-launcher/
+      - chmod 755 /app/share/patchcraft-launcher/patchcraft-launcher
+      - ln -sf /app/share/patchcraft-launcher/patchcraft-launcher /app/bin/patchcraft-launcher
       # Install FreeDesktop Metadata and Icons
-      - install -Dm644 io.github.cook0001.LinuxJagexLauncher.desktop /app/share/applications/io.github.cook0001.LinuxJagexLauncher.desktop
-      - install -Dm644 io.github.cook0001.LinuxJagexLauncher.metainfo.xml /app/share/metainfo/io.github.cook0001.LinuxJagexLauncher.metainfo.xml
-      - install -Dm644 icon-512.png /app/share/icons/hicolor/512x512/apps/io.github.cook0001.LinuxJagexLauncher.png
-      - install -Dm644 icon-256.png /app/share/icons/hicolor/256x256/apps/io.github.cook0001.LinuxJagexLauncher.png
-      - install -Dm644 icon-128.png /app/share/icons/hicolor/128x128/apps/io.github.cook0001.LinuxJagexLauncher.png
-      - install -Dm644 icon-64.png /app/share/icons/hicolor/64x64/apps/io.github.cook0001.LinuxJagexLauncher.png
-      - install -Dm644 icon-32.png /app/share/icons/hicolor/32x32/apps/io.github.cook0001.LinuxJagexLauncher.png
+      - install -Dm644 dev.patchcraft.Launcher.desktop /app/share/applications/dev.patchcraft.Launcher.desktop
+      - install -Dm644 dev.patchcraft.Launcher.metainfo.xml /app/share/metainfo/dev.patchcraft.Launcher.metainfo.xml
+      - install -Dm644 icon-512.png /app/share/icons/hicolor/512x512/apps/dev.patchcraft.Launcher.png
+      - install -Dm644 icon-256.png /app/share/icons/hicolor/256x256/apps/dev.patchcraft.Launcher.png
+      - install -Dm644 icon-128.png /app/share/icons/hicolor/128x128/apps/dev.patchcraft.Launcher.png
+      - install -Dm644 icon-64.png /app/share/icons/hicolor/64x64/apps/dev.patchcraft.Launcher.png
+      - install -Dm644 icon-32.png /app/share/icons/hicolor/32x32/apps/dev.patchcraft.Launcher.png
     sources:
       - type: archive
-        url: https://github.com/cook0001/Patchcraft-Launcher/releases/download/v1.5.1/linux-jagex-launcher-1.5.1.tar.gz
+        url: https://github.com/cook0001/Patchcraft-Launcher/releases/download/v1.5.1/patchcraft-launcher-1.5.1.tar.gz
         sha256: a0ccd859b5455baf1e828a5a9ba29a6bb3f36c7feadfb6f293713ceb30d0eb86
         dest: app-bundle
         only-arches:
           - x86_64
       - type: file
-        path: io.github.cook0001.LinuxJagexLauncher.desktop
+        path: dev.patchcraft.Launcher.desktop
       - type: file
-        path: io.github.cook0001.LinuxJagexLauncher.metainfo.xml
+        path: dev.patchcraft.Launcher.metainfo.xml
       - type: file
         url: https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/v1.5.1/resources/icons/512x512.png
         dest-filename: icon-512.png

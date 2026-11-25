@@ -275,17 +275,13 @@
 
         <div class="mockup-window">
           <div class="mockup-body">
-            <img id="gallery-image" src="assets/screenshot-rs3.png?v=1.5.1" alt="PatchCraft Launcher running RuneScape 3 natively on Linux" width="1080" height="720" fetchpriority="high">
+            <img id="gallery-image" src="assets/screenshot-rs3.png?v=2.0.0-ui" alt="PatchCraft Launcher running RuneScape 3 natively on Linux" width="1080" height="720" fetchpriority="high">
           </div>
           <div class="mockup-footer">
             <span class="mockup-caption" id="gallery-caption">RuneScape 3 &mdash; Official 64-bit NXT Linux Client</span>
             <span class="mockup-badge" id="gallery-badge">Native Linux ELF</span>
           </div>
         </div>
-        <p class="showcase-feedback-callout">
-          <span>Want to help shape the next release?</span>
-          <a href="#redesign-preview" class="inline-link">Preview the proposed Jagex-style UI redesign &amp; vote in Discussion #2 &rarr;</a>
-        </p>
       </div>
     </section>
 
@@ -490,7 +486,7 @@
                 <polyline points="4 17 10 11 4 5"></polyline>
                 <line x1="12" y1="19" x2="20" y2="19"></line>
               </svg>
-              <span>Arch / AUR</span>
+              <span>Arch / Pacman</span>
             </button>
 
             <button type="button" id="tab-btn-deck" class="install-tab-btn" role="tab" aria-selected="false" onclick="switchInstallTab('deck', this)">
@@ -615,17 +611,17 @@
             </div>
           </div>
 
-          <!-- Tab 2: Fedora & RHEL (Copr & Native RPM) -->
+          <!-- Tab 2: Fedora & RHEL (Native RPM) -->
           <div id="tab-panel-fedora" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-fedora" hidden="until-found">
             <div class="install-panel-body">
               <div class="install-panel-header">
                 <div class="panel-badge-group">
-                  <span class="badge gold">Fedora Copr</span>
-                  <span class="badge green">Automatic Updates via DNF</span>
+                  <span class="badge gold">Native RPM</span>
+                  <span class="badge green">Built-In App Updater</span>
                   <span class="badge subtle">Fedora 40+ &amp; RHEL / Nobara / Bazzite</span>
                 </div>
                 <p class="panel-intro">
-                  The official <strong>Fedora Copr repository</strong> provides packages built natively in Fedora's build infrastructure. Updates are delivered automatically via <code>sudo dnf upgrade</code>, or you can install the standalone <code>.rpm</code> directly.
+                  Install the standalone native <code>.rpm</code> package directly via DNF. System dependencies are resolved automatically, and future releases can be applied from the launcher's built-in updater.
                 </p>
               </div>
 
@@ -633,10 +629,10 @@
                 <div class="step-item">
                   <span class="step-num">1</span>
                   <div class="step-content">
-                    <span class="step-text">Enable the official Fedora Copr repository:</span>
+                    <span class="step-text">Download and install the native <code>.rpm</code> package:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>sudo dnf copr enable -y cook0001/linux-jagex-launcher</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy dnf copr enable command" onclick="copyCode(this)">
+                      <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x86_64.rpm &amp;&amp; sudo dnf install -y ./linux-jagex-launcher-1.5.1.x86_64.rpm</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy standalone rpm install command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
                       </button>
@@ -646,20 +642,6 @@
 
                 <div class="step-item">
                   <span class="step-num">2</span>
-                  <div class="step-content">
-                    <span class="step-text">Install the launcher package:</span>
-                    <div class="code-wrapper">
-                      <pre class="code-block"><code>sudo dnf install -y linux-jagex-launcher</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy dnf install command" onclick="copyCode(this)">
-                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="step-item">
-                  <span class="step-num">3</span>
                   <div class="step-content">
                     <span class="step-text">Launch from your application menu or terminal:</span>
                     <div class="code-wrapper">
@@ -672,35 +654,20 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Direct .rpm fallback accordion -->
-              <details class="sub-accordion">
-                <summary>Prefer direct standalone .rpm installation?</summary>
-                <div class="sub-accordion-content">
-                  <p>Download and install the standalone <code>.rpm</code> package directly with DNF:</p>
-                  <div class="code-wrapper">
-                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/linux-jagex-launcher-1.5.1.x86_64.rpm &amp;&amp; sudo dnf install -y ./linux-jagex-launcher-1.5.1.x86_64.rpm</code></pre>
-                    <button type="button" class="btn-copy-code" aria-label="Copy standalone rpm install command" onclick="copyCode(this)">
-                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                      <span>Copy</span>
-                    </button>
-                  </div>
-                </div>
-              </details>
             </div>
           </div>
 
-          <!-- Tab 3: Arch Linux & Manjaro (Pacman & AUR) -->
+          <!-- Tab 3: Arch Linux & Manjaro (Native Pacman) -->
           <div id="tab-panel-arch" class="install-panel" role="tabpanel" aria-labelledby="tab-btn-arch" hidden="until-found">
             <div class="install-panel-body">
               <div class="install-panel-header">
                 <div class="panel-badge-group">
-                  <span class="badge gold">Standalone Pacman &amp; AUR</span>
+                  <span class="badge gold">Native Pacman</span>
                   <span class="badge green">Arch Linux, Manjaro &amp; EndeavourOS</span>
-                  <span class="badge subtle">Direct Offline or AUR Install</span>
+                  <span class="badge subtle">Direct Release Package</span>
                 </div>
                 <p class="panel-intro">
-                  Install via standalone native <code>.pacman</code> binary package for instant setup, through an AUR helper, or with the local <code>makepkg</code> script:
+                  Install directly from the native <code>.pacman</code> release archive using <code>pacman -U</code>, or build locally from the included <code>PKGBUILD</code>.
                 </p>
               </div>
 
@@ -722,38 +689,10 @@
                 <div class="step-item">
                   <span class="step-num">2</span>
                   <div class="step-content">
-                    <span class="step-text">Using <strong>yay</strong> (AUR helper):</span>
+                    <span class="step-text">Launch from your application menu or terminal:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>yay -S linux-jagex-launcher-bin</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy yay install command" onclick="copyCode(this)">
-                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="step-item">
-                  <span class="step-num">3</span>
-                  <div class="step-content">
-                    <span class="step-text">Using <strong>paru</strong> (Rust AUR helper):</span>
-                    <div class="code-wrapper">
-                      <pre class="code-block"><code>paru -S linux-jagex-launcher-bin</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy paru install command" onclick="copyCode(this)">
-                        <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                        <span>Copy</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="step-item">
-                  <span class="step-num">4</span>
-                  <div class="step-content">
-                    <span class="step-text">Manual <code>makepkg</code> install from AUR:</span>
-                    <div class="code-wrapper">
-                      <pre class="code-block"><code>git clone https://aur.archlinux.org/linux-jagex-launcher-bin.git &amp;&amp; cd linux-jagex-launcher-bin &amp;&amp; makepkg -si</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy manual makepkg AUR command" onclick="copyCode(this)">
+                      <pre class="code-block"><code>linux-jagex-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Arch launch command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
                       </button>
@@ -761,6 +700,20 @@
                   </div>
                 </div>
               </div>
+
+              <details class="sub-accordion">
+                <summary>Prefer building locally with PKGBUILD &amp; makepkg?</summary>
+                <div class="sub-accordion-content">
+                  <p>Fetch the release <code>PKGBUILD</code> from GitHub and package locally:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>mkdir -p /tmp/patchcraft-pkg &amp;&amp; cd /tmp/patchcraft-pkg &amp;&amp; curl -LO https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/main/packaging/aur/PKGBUILD &amp;&amp; makepkg -si</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy manual makepkg command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -1000,21 +953,7 @@
           <div id="news-feed-root" class="news-feed-root">
             <!-- NEWS_FEED_START -->
             <div id="news-featured-slot" class="news-featured-slot">
-              <article class="news-card news-card--announcement news-card--featured" data-news-id="announcement-2026-11-18-ui-redesign-feedback" data-kind="announcement" data-date="2026-11-18" data-pinned="true" data-badge="Feedback">
-              <div class="news-card-meta">
-              <div class="news-badges"><span class="news-badge news-badge--announcement">Feedback</span><span class="news-badge news-badge--pinned">Pinned</span></div>
-              <time class="news-date" datetime="2026-11-18">Nov 18, 2026</time>
-              </div>
-              <h3 class="news-card-title">Preview the Proposed Jagex-Style UI Redesign &amp; Vote in Discussion #2</h3>
-              <p class="news-card-summary">Before shipping the new Jagex-inspired top-bar layout, we are collecting community feedback on GitHub Discussions and launcher.patchcraft.dev. Check out the screenshots and tell us whether you prefer the new style or the current sidebar.</p>
-              <details class="news-details"><summary class="news-details-summary">Details (3 points)</summary><div class="news-details-body"><div class="news-detail-group"><p class="news-detail-heading">Highlights</p><ul class="news-detail-list" role="list"><li><strong>Side-by-Side Preview</strong>: View screenshots of the RS3, Old School, Dragonwilds, and Settings redesign in Discussion #2 or in the Feedback &amp; Discussions section below.</li><li><strong>Live Discussions</strong>: Vote, comment on existing threads, or submit UI feedback straight from <code>#feedback</code> without needing a GitHub account.</li><li><strong>No Forced Change Yet</strong>: The redesign stays local while feedback is gathered — <code>v1.5.1</code> remains the active stable release.</li></ul></div></div></details>
-              <div class="news-card-actions">
-              <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/discussions/2" target="_blank" rel="noopener noreferrer">Vote &amp; Comment in Discussion #2 <span aria-hidden="true">&#8599;</span></a>
-              </div>
-              </article>
-            </div>
-            <div id="news-grid" class="news-grid">
-            <article class="news-card news-card--release" data-news-id="release-v1.5.1" data-kind="release" data-date="2026-11-17" data-pinned="false" data-badge="v1.5.1" data-version="1.5.1">
+              <article class="news-card news-card--release news-card--featured" data-news-id="release-v1.5.1" data-kind="release" data-date="2026-11-17" data-pinned="false" data-badge="v1.5.1" data-version="1.5.1">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--release">v1.5.1</span></div>
               <time class="news-date" datetime="2026-11-17">Nov 17, 2026</time>
@@ -1026,6 +965,8 @@
               <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.1" target="_blank" rel="noopener noreferrer">View v1.5.1 on GitHub <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
+            </div>
+            <div id="news-grid" class="news-grid">
             <article class="news-card news-card--release" data-news-id="release-v1.5.0" data-kind="release" data-date="2026-11-14" data-pinned="false" data-badge="v1.5.0" data-version="1.5.0">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--release">v1.5.0</span></div>
@@ -1050,7 +991,7 @@
               <a class="news-ext-link" href="https://launchpad.net/~danielcook2016/+archive/ubuntu/linux-jagex-launcher" target="_blank" rel="noopener noreferrer">View Launchpad PPA <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
-            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-13-arch-fedora-github-packages" data-kind="announcement" data-date="2026-11-13" data-pinned="true" data-badge="Advisory" hidden data-extra="true">
+            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-13-arch-fedora-github-packages" data-kind="announcement" data-date="2026-11-13" data-pinned="true" data-badge="Advisory">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--announcement">Advisory</span><span class="news-badge news-badge--pinned">Pinned</span></div>
               <time class="news-date" datetime="2026-11-13">Nov 13, 2026</time>
@@ -1232,7 +1173,7 @@
               </article>
             </div>
             <div id="news-more-bar" class="news-more-bar">
-            <button id="news-show-more-btn" type="button" class="btn-secondary btn-compact" aria-expanded="false">Show older updates (15 more)</button>
+            <button id="news-show-more-btn" type="button" class="btn-secondary btn-compact" aria-expanded="false">Show older updates (14 more)</button>
             </div>
             <!-- NEWS_FEED_END -->
           </div>
@@ -1338,49 +1279,20 @@
           </div>
           <h2 class="feedback-title">Help Shape PatchCraft Launcher</h2>
           <p class="feedback-desc">
-            Preview the upcoming Jagex-style UI redesign, browse and join live GitHub Discussions, or submit bug reports and feature ideas below without needing a GitHub account.
+            Browse and join live GitHub Discussions, or submit bug reports and feature ideas below without needing a GitHub account.
           </p>
-
-          <!-- Proposed UI Redesign Preview -->
-          <div id="redesign-preview" class="redesign-preview-card">
-            <div class="redesign-preview-head">
-              <div>
-                <span class="redesign-preview-pill">Proposed UI Redesign Preview &bull; Not Shipped Yet</span>
-                <h3 class="redesign-preview-title">Should we update to the new official Jagex top-bar layout?</h3>
-                <p class="redesign-preview-desc">We are keeping this redesign local until the community weighs in. Compare the screenshots below and share your vote.</p>
-              </div>
-              <a href="https://github.com/cook0001/Patchcraft-Launcher/discussions/2" class="btn-primary btn-compact" target="_blank" rel="noopener noreferrer">
-                <span>Vote in Discussion #2 &#8599;</span>
-              </a>
-            </div>
-
-            <div class="redesign-preview-tabs" role="group" aria-label="Redesign screenshot preview">
-              <button type="button" class="showcase-pill redesign-tab-btn" data-preview-tab="rs3" aria-pressed="true">RuneScape 3</button>
-              <button type="button" class="showcase-pill redesign-tab-btn" data-preview-tab="osrs" aria-pressed="false">Old School</button>
-              <button type="button" class="showcase-pill redesign-tab-btn" data-preview-tab="dw" aria-pressed="false">Dragonwilds</button>
-              <button type="button" class="showcase-pill redesign-tab-btn" data-preview-tab="settings" aria-pressed="false">Settings</button>
-            </div>
-
-            <div class="redesign-preview-frame">
-              <img id="redesign-preview-image" src="assets/preview-rs3.png?v=1.5.1" alt="Proposed Jagex-style RuneScape 3 launcher redesign preview" width="1080" height="720" loading="lazy">
-            </div>
-            <div class="redesign-preview-foot">
-              <span id="redesign-preview-caption">RuneScape 3 &mdash; Top navigation hub, Tools &amp; News menu, and right-hand launch rail</span>
-              <span id="redesign-preview-badge" class="mockup-badge">Local Preview Build</span>
-            </div>
-          </div>
 
           <!-- Remote Community Links Strip (hydrated from links.json) -->
           <div id="web-featured-links" class="web-featured-links" aria-label="Featured community links">
-            <a class="web-featured-link-card" href="https://github.com/cook0001/Patchcraft-Launcher/discussions/2" target="_blank" rel="noopener noreferrer">
-              <span class="web-featured-link-badge">Feedback</span>
-              <strong class="web-featured-link-title">UI Redesign Poll &amp; Preview (Discussion #2) &#8599;</strong>
-              <span class="web-featured-link-desc">Compare the proposed Jagex-style desktop layout against the current sidebar and vote.</span>
-            </a>
             <a class="web-featured-link-card" href="https://github.com/cook0001/Patchcraft-Launcher/discussions" target="_blank" rel="noopener noreferrer">
               <span class="web-featured-link-badge">Live</span>
               <strong class="web-featured-link-title">GitHub Discussions Hub &#8599;</strong>
-              <span class="web-featured-link-desc">Ask questions, propose ideas, vote in community polls, and share Linux tips.</span>
+              <span class="web-featured-link-desc">Ask questions, propose ideas, vote in community polls, and share Linux or Steam Deck tips.</span>
+            </a>
+            <a class="web-featured-link-card" href="https://forms.gle/KvagBxcmVBB3Q721A" target="_blank" rel="noopener noreferrer">
+              <span class="web-featured-link-badge">Survey</span>
+              <strong class="web-featured-link-title">Linux Launcher Feedback Survey &#8599;</strong>
+              <span class="web-featured-link-desc">Share quick structured feedback via Google Forms without needing a GitHub account.</span>
             </a>
           </div>
 
@@ -1399,16 +1311,7 @@
 
             <div id="web-discussions-list" class="web-discussions-list">
               <article class="web-discussion-card">
-                <div class="web-discussion-meta">
-                  <span class="news-badge news-badge--announcement">Q&amp;A</span>
-                  <span class="web-discussion-num">#2</span>
-                  <span class="web-discussion-author">by @cook0001</span>
-                </div>
-                <h4 class="web-discussion-title">Do you like the design of the current launcher or would you like the UI updated to the current Official Jagex design?</h4>
-                <p class="web-discussion-excerpt">[4 preview screenshots] Vote and share feedback on whether to switch to the updated Jagex-style layout.</p>
-                <div class="web-discussion-footer">
-                  <a href="https://github.com/cook0001/Patchcraft-Launcher/discussions/2" class="news-ext-link" target="_blank" rel="noopener noreferrer">Vote &amp; Reply on GitHub &#8599;</a>
-                </div>
+                <p class="web-discussion-excerpt">Loading active community threads from GitHub Discussions...</p>
               </article>
             </div>
           </div>
@@ -1416,7 +1319,7 @@
           <div id="feedback-form-shell" class="feedback-form-shell" data-endpoint="https://reports.patchcraft.dev/api/report" data-discussions-endpoint="https://reports.patchcraft.dev/api/discussions" data-turnstile-sitekey="0x4AAAAAAGGRwouunmHdGAeh">
             <form id="web-feedback-form" class="feedback-form" novalidate>
               <div id="web-discussion-reply-banner" class="web-discussion-reply-banner" hidden>
-                <span id="web-discussion-reply-label">Replying to Discussion #2</span>
+                <span id="web-discussion-reply-label">Replying to Discussion</span>
                 <button type="button" id="web-discussion-reply-clear" class="web-discussion-reply-clear">Switch to New Thread</button>
               </div>
 
@@ -1426,7 +1329,7 @@
                   <select id="web-feedback-category" name="category">
                     <option value="bug">Bug Report (GitHub Issue)</option>
                     <option value="feature">Feature Request (GitHub Issue)</option>
-                    <option value="discussion">UI Feedback / Discussion (GitHub Discussions)</option>
+                    <option value="discussion">General Discussion (GitHub Discussions)</option>
                   </select>
                 </div>
                 <div class="feedback-field">
@@ -1437,7 +1340,7 @@
                     <option value="hdos">Old School (HDOS)</option>
                     <option value="official">Old School (Official)</option>
                     <option value="dragonwilds">RuneScape: Dragonwilds</option>
-                    <option value="launcher">Launcher / UI Redesign / Website</option>
+                    <option value="launcher">Launcher / UI / Website</option>
                   </select>
                 </div>
               </div>
@@ -1455,7 +1358,7 @@
 
               <div class="feedback-field">
                 <label for="web-feedback-desc" id="web-feedback-desc-label">Details / Steps to Reproduce</label>
-                <textarea id="web-feedback-desc" name="description" rows="4" maxlength="4000" placeholder="Describe what happened or what you'd like added (tip: for full GPU/log diagnostics, use Issues -> Submit In-App inside the launcher)..." required></textarea>
+                <textarea id="web-feedback-desc" name="description" rows="4" maxlength="4000" placeholder="Describe what happened or what you'd like added (tip: for full GPU/log diagnostics, use Community -> Report Issue inside the launcher)..." required></textarea>
               </div>
 
               <div id="web-turnstile-slot" class="web-turnstile-slot" hidden></div>
@@ -1464,8 +1367,8 @@
                 <button id="web-feedback-submit" type="submit" class="btn-primary">
                   <span>Submit Report Directly</span>
                 </button>
-                <a id="web-feedback-gh-link" href="https://github.com/cook0001/Patchcraft-Launcher/discussions/2" class="btn-secondary" target="_blank" rel="noopener noreferrer">
-                  <span>Open Discussion #2 &#8599;</span>
+                <a id="web-feedback-gh-link" href="https://github.com/cook0001/Patchcraft-Launcher/discussions" class="btn-secondary" target="_blank" rel="noopener noreferrer">
+                  <span>Browse Discussions &#8599;</span>
                 </a>
                 <a href="https://forms.gle/KvagBxcmVBB3Q721A" class="btn-secondary" target="_blank" rel="noopener noreferrer">
                   <span>Google Form Survey</span>
@@ -1749,20 +1652,20 @@
     // Showcase Gallery Switcher with metadata sync & non-racing transition
     const GALLERY_META = {
       rs3: {
-        src: 'assets/screenshot-rs3.png?v=1.5.1',
-        alt: 'Linux Jagex Launcher running RuneScape 3 natively on Linux',
+        src: 'assets/screenshot-rs3.png?v=2.0.0-ui',
+        alt: 'PatchCraft Launcher running RuneScape 3 natively on Linux',
         caption: 'RuneScape 3 \u2014 Official 64-bit NXT Linux Client',
         badge: 'Native Linux ELF'
       },
       osrs: {
-        src: 'assets/screenshot-osrs.png?v=1.5.1',
-        alt: 'Linux Jagex Launcher Old School RuneScape view with RuneLite, HDOS, and Official client selector',
+        src: 'assets/screenshot-osrs.png?v=2.0.0-ui',
+        alt: 'PatchCraft Launcher Old School RuneScape view with RuneLite, HDOS, and Official client selector',
         caption: 'Old School RuneScape \u2014 Multi-Client Dock (RuneLite, HDOS & Official)',
         badge: 'RuneLite \u2022 HDOS \u2022 Official'
       },
       dragonwilds: {
-        src: 'assets/screenshot-dragonwilds.png?v=1.5.1',
-        alt: 'Linux Jagex Launcher RuneScape: Dragonwilds view with Steam integration and live patch feed',
+        src: 'assets/screenshot-dragonwilds.png?v=2.0.0-ui',
+        alt: 'PatchCraft Launcher RuneScape: Dragonwilds view with Steam integration and live patch feed',
         caption: 'RuneScape: Dragonwilds \u2014 Direct Steam Protocol & Live RSS Feed',
         badge: 'Steam Integration'
       }
@@ -2230,55 +2133,6 @@
       });
     })();
 
-    // Proposed UI Redesign Preview Tabs
-    (function initRedesignPreview() {
-      const REDESIGN_PREVIEW_META = {
-        rs3: {
-          src: 'assets/preview-rs3.png?v=1.5.1',
-          alt: 'Proposed Jagex-style RuneScape 3 launcher redesign preview',
-          caption: 'RuneScape 3 \u2014 Top navigation hub, Tools & News menu, and right-hand launch rail',
-          badge: 'Local Preview Build',
-        },
-        osrs: {
-          src: 'assets/preview-osrs.png?v=1.5.1',
-          alt: 'Proposed Jagex-style Old School RuneScape launcher redesign preview',
-          caption: 'Old School RuneScape \u2014 Compact client selector, account rail, and update cards',
-          badge: 'Local Preview Build',
-        },
-        dw: {
-          src: 'assets/preview-dw.png?v=1.5.1',
-          alt: 'Proposed Jagex-style Dragonwilds launcher redesign preview',
-          caption: 'RuneScape: Dragonwilds \u2014 Steam trailer showcase, system requirements, and Play action',
-          badge: 'Local Preview Build',
-        },
-        settings: {
-          src: 'assets/preview-settings.png?v=1.5.1',
-          alt: 'Proposed Jagex-style launcher Settings dialog preview',
-          caption: 'Launcher & Game Settings \u2014 General, RuneScape 3, and Old School configuration modal',
-          badge: 'Local Preview Build',
-        },
-      };
-
-      const buttons = Array.from(document.querySelectorAll('.redesign-tab-btn[data-preview-tab]'));
-      const img = document.getElementById('redesign-preview-image');
-      const captionEl = document.getElementById('redesign-preview-caption');
-      const badgeEl = document.getElementById('redesign-preview-badge');
-      if (!buttons.length || !img) return;
-
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const key = btn.dataset.previewTab || 'rs3';
-          const meta = REDESIGN_PREVIEW_META[key];
-          if (!meta) return;
-          buttons.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
-          img.src = meta.src;
-          img.alt = meta.alt;
-          if (captionEl) captionEl.textContent = meta.caption;
-          if (badgeEl) badgeEl.textContent = meta.badge;
-        });
-      });
-    })();
-
     // Featured Remote Community Links (loaded from docs/links.json)
     (function initFeaturedLinks() {
       const container = document.getElementById('web-featured-links');
@@ -2429,7 +2283,7 @@
         if (titleEl) {
           titleEl.required = !isReplyingToThread;
           titleEl.placeholder = isDiscussion
-            ? 'e.g., Feedback on the proposed Jagex-style top bar'
+            ? 'e.g., Idea for per-character launch presets or theme tweaks'
             : category === 'feature'
               ? 'e.g., Add per-character launch quick-switch'
               : 'e.g., Crash when launching RS3 on Fedora 41 Wayland';
@@ -2443,10 +2297,10 @@
         }
         if (descEl) {
           descEl.placeholder = isReplyingToThread
-            ? 'Share what you like, dislike, or want changed on the proposed UI redesign...'
+            ? 'Share your reply to this discussion thread...'
             : isDiscussion
-              ? 'Share your thoughts, poll suggestion, or question for the community...'
-              : "Describe what happened or what you'd like added (tip: for full GPU/log diagnostics, use Issues -> Submit In-App inside the launcher)...";
+              ? 'Share your thoughts, feature idea, or question for the community...'
+              : "Describe what happened or what you'd like added (tip: for full GPU/log diagnostics, use Community -> Report Issue inside the launcher)...";
         }
         const submitSpan = submitBtn.querySelector('span');
         if (submitSpan) {
@@ -2465,8 +2319,8 @@
             ghLinkBtn.href = 'https://github.com/cook0001/Patchcraft-Launcher/discussions/new?category=ideas';
             if (span) span.textContent = 'Start on GitHub \u2197';
           } else {
-            ghLinkBtn.href = 'https://github.com/cook0001/Patchcraft-Launcher/discussions/2';
-            if (span) span.textContent = 'Open Discussion #2 \u2197';
+            ghLinkBtn.href = 'https://github.com/cook0001/Patchcraft-Launcher/discussions';
+            if (span) span.textContent = 'Browse Discussions \u2197';
           }
         }
       }
@@ -2671,9 +2525,9 @@
             'https://api.github.com/repos/cook0001/Patchcraft-Launcher/discussions?per_page=6&sort=updated&direction=desc',
             { headers: { Accept: 'application/vnd.github+json' } }
           );
-          if (!ghRes.ok) return;
+          if (!ghRes.ok) throw new Error(`GitHub Discussions HTTP ${ghRes.status}`);
           const raw = await ghRes.json();
-          if (!Array.isArray(raw)) return;
+          if (!Array.isArray(raw)) throw new Error('Unexpected GitHub Discussions payload');
           discussions = raw.map((d) => ({
             number: Number(d?.number || 0),
             title: String(d?.title || ''),
@@ -2687,13 +2541,17 @@
           }));
         }
 
-        if (Array.isArray(discussions) && discussions.length > 0) {
+        if (Array.isArray(discussions)) {
           try {
             sessionStorage.setItem(DISCUSSIONS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: discussions }));
           } catch {
             // Ignore quota errors
           }
-          renderDiscussionCards(discussions);
+          if (discussions.length > 0) {
+            renderDiscussionCards(discussions);
+          } else {
+            renderEmptyDiscussionsState('No active discussions yet. Start a thread below or open GitHub Discussions.');
+          }
           if (discussionsStatusEl) {
             discussionsStatusEl.textContent = 'Synced with GitHub Discussions';
             discussionsStatusEl.classList.add('is-live');
@@ -2701,9 +2559,21 @@
         }
       }
 
+      function renderEmptyDiscussionsState(message) {
+        if (!discussionsListEl) return;
+        const card = document.createElement('article');
+        card.className = 'web-discussion-card';
+        const text = document.createElement('p');
+        text.className = 'web-discussion-excerpt';
+        text.textContent = message;
+        card.appendChild(text);
+        discussionsListEl.replaceChildren(card);
+      }
+
       loadLiveDiscussions().catch(() => {
+        renderEmptyDiscussionsState('Live discussions could not be loaded right now. Open GitHub Discussions directly to browse or start a thread.');
         if (discussionsStatusEl) {
-          discussionsStatusEl.textContent = 'Discussion #2 featured (live refresh unavailable)';
+          discussionsStatusEl.textContent = 'Live refresh unavailable';
         }
       });
 
