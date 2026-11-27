@@ -53,7 +53,7 @@
   }
   </script>
 
-  <link rel="stylesheet" href="style.css?v=2.0.0">
+  <link rel="stylesheet" href="style.css?v=2.0.0-media">
 </head>
 <body>
 
@@ -271,11 +271,20 @@
             </svg>
             <span>RuneScape: Dragonwilds</span>
           </button>
+
+          <button type="button" class="showcase-pill" aria-pressed="false" onclick="switchGallery('demo', this)">
+            <svg aria-hidden="true" class="game-crest-icon" viewBox="0 0 24 24" fill="none" width="18" height="18">
+              <circle cx="12" cy="12" r="10" stroke="#e5b352" stroke-width="1.8" fill="#131924"/>
+              <polygon points="10,8 16.5,12 10,16" fill="#e5b352"/>
+            </svg>
+            <span>Video Walkthrough</span>
+          </button>
         </div>
 
         <div class="mockup-window">
           <div class="mockup-body">
             <img id="gallery-image" src="assets/screenshot-rs3.png?v=2.0.0" alt="PatchCraft Launcher running RuneScape 3 natively on Linux" width="1080" height="720" fetchpriority="high">
+            <video id="gallery-video" src="assets/launcher-demo.mp4?v=2.0.0" poster="assets/screenshot-rs3.png?v=2.0.0" width="1080" height="720" controls playsinline muted loop preload="metadata" hidden></video>
           </div>
           <div class="mockup-footer">
             <span class="mockup-caption" id="gallery-caption">RuneScape 3 &mdash; Official 64-bit NXT Linux Client</span>
@@ -793,7 +802,7 @@
               </div>
 
               <div class="snap-banner-frame">
-                <img src="assets/banner.png" alt="PatchCraft Launcher Banner" class="snap-banner-img" width="1440" height="810" loading="lazy">
+                <img src="assets/banner.png?v=2.0.0" alt="PatchCraft Launcher Banner" class="snap-banner-img" width="2160" height="720" loading="lazy">
               </div>
 
               <div class="install-steps">
@@ -1433,7 +1442,7 @@
       </div>
 
       <div class="disclaimer-box">
-        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. PatchCraft Launcher (formerly Linux Jagex Launcher; package slug <code>patchcraft-launcher</code>, Snap Store slug <code>linux-jagex-launcher</code>) is an independent, unofficial freeware project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
+        <strong>Trademark Disclaimer:</strong> RuneScape, Old School RuneScape, and Jagex are registered trademarks of Jagex Limited in the United Kingdom, the United States, and other countries. PatchCraft Launcher (formerly Linux Jagex Launcher; package slug <code>patchcraft-launcher</code>) is an independent, unofficial freeware project and is not affiliated with, endorsed, sponsored, or specifically approved by Jagex Limited. All client assets, icons, and trademarks belong to their respective owners.
       </div>
     </div>
   </footer>
@@ -1680,6 +1689,11 @@
         alt: 'PatchCraft Launcher RuneScape: Dragonwilds view with Steam integration and live patch feed',
         caption: 'RuneScape: Dragonwilds \u2014 Direct Steam Protocol & Live RSS Feed',
         badge: 'Steam Integration'
+      },
+      demo: {
+        isVideo: true,
+        caption: 'PatchCraft Launcher v2.0.0 \u2014 Forge Rail UI, Multi-Client Switching & Theme Presets',
+        badge: '26s HD Walkthrough'
       }
     };
     let galleryTransitionToken = 0;
@@ -1698,7 +1712,24 @@
       if (badgeEl) badgeEl.textContent = meta.badge;
 
       const img = document.getElementById('gallery-image');
-      if (!img || img.getAttribute('src') === meta.src) return;
+      const video = document.getElementById('gallery-video');
+      if (!img) return;
+
+      if (meta.isVideo) {
+        if (!video) return;
+        img.hidden = true;
+        video.hidden = false;
+        video.play().catch(() => {});
+        return;
+      }
+
+      if (video && !video.hidden) {
+        video.pause();
+        video.hidden = true;
+      }
+      img.hidden = false;
+
+      if (img.getAttribute('src') === meta.src) return;
 
       const currentToken = ++galleryTransitionToken;
       img.style.opacity = '0.35';

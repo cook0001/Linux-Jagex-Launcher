@@ -742,12 +742,17 @@ h1[tabindex="-1"]:focus {
   background: #0b1019;
 }
 
-.mockup-body img {
+.mockup-body img,
+.mockup-body video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mockup-body [hidden] {
+  display: none;
 }
 
 .mockup-footer {
@@ -1212,14 +1217,14 @@ h1[tabindex="-1"]:focus {
   overflow: hidden;
   border: 1px solid rgba(229, 179, 82, 0.25);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  max-block-size: 210px;
+  background: #080c13;
 }
 
 .snap-banner-img {
   width: 100%;
-  height: 210px;
+  height: auto;
+  aspect-ratio: 3 / 1;
   object-fit: cover;
-  object-position: center 35%;
   display: block;
 }
 
@@ -2462,12 +2467,6 @@ details:not([open])::details-content {
 
   .faq-answer {
     padding: 0 1.15rem 1.2rem 1.15rem;
-  }
-
-  .snap-banner-frame,
-  .snap-banner-img {
-    max-block-size: 150px;
-    height: 150px;
   }
 
   .feedback-buttons,
