@@ -1,6 +1,21 @@
 {
   "announcements": [
     {
+      "id": "announcement-2026-11-27-rpm-arch-repos-live",
+      "title": "Official Signed Fedora RPM & Arch Pacman Repositories Live",
+      "date": "2026-11-27",
+      "badge": "Distribution",
+      "pinned": true,
+      "summary": "PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.",
+      "bullets": [
+        "**Fedora / RHEL / Nobara / openSUSE**: Add `https://repo.patchcraft.dev/rpm/patchcraft.repo` and install via `sudo dnf install -y patchcraft-launcher` for automatic GPG-verified `dnf upgrade` updates.",
+        "**Arch Linux / CachyOS / EndeavourOS / Manjaro**: Import `https://repo.patchcraft.dev/gpg.asc`, add `[patchcraft]` (`https://repo.patchcraft.dev/arch/$arch`), and install with `sudo pacman -Syu patchcraft-launcher` — no AUR helper required.",
+        "**Full GPG Verification**: Packages, RPM `repomd.xml.asc`, and Pacman `patchcraft.db.sig` databases are all signed and verified end-to-end."
+      ],
+      "url": "https://repo.patchcraft.dev/index.html",
+      "ctaLabel": "View Package Repos"
+    },
+    {
       "id": "announcement-2026-11-14-ubuntu-ppa-snap-live",
       "title": "Ubuntu Launchpad PPA (26.04, 24.04, 22.04) & Snap Store Live",
       "date": "2026-11-14",

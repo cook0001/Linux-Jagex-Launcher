@@ -625,12 +625,12 @@
             <div class="install-panel-body">
               <div class="install-panel-header">
                 <div class="panel-badge-group">
-                  <span class="badge gold">Native RPM</span>
-                  <span class="badge green">Built-In App Updater</span>
-                  <span class="badge subtle">Fedora 40+ &amp; RHEL / Nobara / Bazzite</span>
+                  <span class="badge gold">Signed RPM Repo</span>
+                  <span class="badge green">Automatic DNF Updates</span>
+                  <span class="badge subtle">Fedora 40+ &amp; RHEL / Nobara / openSUSE</span>
                 </div>
                 <p class="panel-intro">
-                  Install the standalone native <code>.rpm</code> package directly via DNF. System dependencies are resolved automatically, and future releases can be applied from the launcher's built-in updater.
+                  Add the GPG-signed PatchCraft RPM repository for automatic updates via <code>dnf upgrade</code> (or <code>zypper up</code> on openSUSE). System dependencies are resolved automatically.
                 </p>
               </div>
 
@@ -638,10 +638,10 @@
                 <div class="step-item">
                   <span class="step-num">1</span>
                   <div class="step-content">
-                    <span class="step-text">Download and install the native <code>.rpm</code> package:</span>
+                    <span class="step-text">Add the signed PatchCraft repository and install:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x86_64.rpm &amp;&amp; sudo dnf install -y ./patchcraft-launcher-2.0.0.x86_64.rpm</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy standalone rpm install command" onclick="copyCode(this)">
+                      <pre class="code-block"><code>sudo curl -fsSL https://repo.patchcraft.dev/rpm/patchcraft.repo -o /etc/yum.repos.d/patchcraft.repo &amp;&amp; sudo dnf install -y patchcraft-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Fedora RPM repo install command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
                       </button>
@@ -663,6 +663,28 @@
                   </div>
                 </div>
               </div>
+
+              <details class="sub-accordion">
+                <summary>Using openSUSE or prefer the standalone .rpm package?</summary>
+                <div class="sub-accordion-content">
+                  <p><strong>openSUSE Tumbleweed / Leap (Zypper):</strong></p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>sudo zypper ar -f https://repo.patchcraft.dev/rpm/patchcraft.repo &amp;&amp; sudo zypper refresh &amp;&amp; sudo zypper install -y patchcraft-launcher</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy openSUSE zypper install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="sub-accordion-note">Or download and install the standalone <code>.rpm</code> release package directly:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x86_64.rpm &amp;&amp; sudo dnf install -y ./patchcraft-launcher-2.0.0.x86_64.rpm</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy standalone rpm install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -671,12 +693,12 @@
             <div class="install-panel-body">
               <div class="install-panel-header">
                 <div class="panel-badge-group">
-                  <span class="badge gold">Native Pacman</span>
-                  <span class="badge green">Arch Linux, Manjaro &amp; EndeavourOS</span>
-                  <span class="badge subtle">Direct Release Package</span>
+                  <span class="badge gold">Signed Pacman Repo</span>
+                  <span class="badge green">Automatic pacman -Syu Updates</span>
+                  <span class="badge subtle">Arch Linux, CachyOS, EndeavourOS &amp; Manjaro</span>
                 </div>
                 <p class="panel-intro">
-                  Install directly from the native <code>.pacman</code> release archive using <code>pacman -U</code>, or build locally from the included <code>PKGBUILD</code>.
+                  Add the GPG-signed PatchCraft Pacman binary repository for automatic updates via <code>sudo pacman -Syu</code> — no AUR helper required.
                 </p>
               </div>
 
@@ -684,10 +706,10 @@
                 <div class="step-item">
                   <span class="step-num">1</span>
                   <div class="step-content">
-                    <span class="step-text"><strong>Standalone Pacman Binary Package</strong> (fastest direct install):</span>
+                    <span class="step-text">Import and trust the PatchCraft signing key:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x64.pacman &amp;&amp; sudo pacman -U ./patchcraft-launcher-2.0.0.x64.pacman</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy pacman install command" onclick="copyCode(this)">
+                      <pre class="code-block"><code>curl -fsSL https://repo.patchcraft.dev/gpg.asc -o /tmp/patchcraft.asc &amp;&amp; sudo pacman-key --add /tmp/patchcraft.asc &amp;&amp; sudo pacman-key --lsign-key "$(gpg --show-keys --with-colons /tmp/patchcraft.asc | awk -F: '$1=="fpr"{print $10; exit}')" &amp;&amp; rm -f /tmp/patchcraft.asc</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Arch signing key import command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
                       </button>
@@ -698,10 +720,11 @@
                 <div class="step-item">
                   <span class="step-num">2</span>
                   <div class="step-content">
-                    <span class="step-text">Launch from your application menu or terminal:</span>
+                    <span class="step-text">Register the <code>[patchcraft]</code> repository and install:</span>
                     <div class="code-wrapper">
-                      <pre class="code-block"><code>patchcraft-launcher</code></pre>
-                      <button type="button" class="btn-copy-code" aria-label="Copy Arch launch command" onclick="copyCode(this)">
+                      <pre class="code-block"><code>grep -q '^\[patchcraft\]' /etc/pacman.conf || printf '\n[patchcraft]\nServer = https://repo.patchcraft.dev/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu patchcraft-launcher</code></pre>
+                      <button type="button" class="btn-copy-code" aria-label="Copy Arch Pacman repo install command" onclick="copyCode(this)">
                         <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                         <span>Copy</span>
                       </button>
@@ -711,9 +734,17 @@
               </div>
 
               <details class="sub-accordion">
-                <summary>Prefer building locally with PKGBUILD &amp; makepkg?</summary>
+                <summary>Prefer a standalone .pacman download or local PKGBUILD?</summary>
                 <div class="sub-accordion-content">
-                  <p>Fetch the release <code>PKGBUILD</code> from GitHub and package locally:</p>
+                  <p>Install directly from the standalone release package with <code>pacman -U</code>:</p>
+                  <div class="code-wrapper">
+                    <pre class="code-block"><code>curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x64.pacman &amp;&amp; sudo pacman -U ./patchcraft-launcher-2.0.0.x64.pacman</code></pre>
+                    <button type="button" class="btn-copy-code" aria-label="Copy pacman install command" onclick="copyCode(this)">
+                      <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <p class="sub-accordion-note">Or fetch the release <code>PKGBUILD</code> from GitHub and package locally with <code>makepkg</code>:</p>
                   <div class="code-wrapper">
                     <pre class="code-block"><code>mkdir -p /tmp/patchcraft-pkg &amp;&amp; cd /tmp/patchcraft-pkg &amp;&amp; curl -LO https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/main/packaging/aur/PKGBUILD &amp;&amp; makepkg -si</code></pre>
                     <button type="button" class="btn-copy-code" aria-label="Copy manual makepkg command" onclick="copyCode(this)">
@@ -970,7 +1001,21 @@
           <div id="news-feed-root" class="news-feed-root">
             <!-- NEWS_FEED_START -->
             <div id="news-featured-slot" class="news-featured-slot">
-              <article class="news-card news-card--release news-card--featured" data-news-id="release-v2.0.0" data-kind="release" data-date="2026-11-24" data-pinned="false" data-badge="v2.0.0" data-version="2.0.0">
+              <article class="news-card news-card--announcement news-card--featured" data-news-id="announcement-2026-11-27-rpm-arch-repos-live" data-kind="announcement" data-date="2026-11-27" data-pinned="true" data-badge="Distribution">
+              <div class="news-card-meta">
+              <div class="news-badges"><span class="news-badge news-badge--announcement">Distribution</span><span class="news-badge news-badge--pinned">Pinned</span></div>
+              <time class="news-date" datetime="2026-11-27">Nov 27, 2026</time>
+              </div>
+              <h3 class="news-card-title">Official Signed Fedora RPM &amp; Arch Pacman Repositories Live</h3>
+              <p class="news-card-summary">PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.</p>
+              <details class="news-details"><summary class="news-details-summary">Details (3 points)</summary><div class="news-details-body"><div class="news-detail-group"><p class="news-detail-heading">Highlights</p><ul class="news-detail-list" role="list"><li><strong>Fedora / RHEL / Nobara / openSUSE</strong>: Add <code>https://repo.patchcraft.dev/rpm/patchcraft.repo</code> and install via <code>sudo dnf install -y patchcraft-launcher</code> for automatic GPG-verified <code>dnf upgrade</code> updates.</li><li><strong>Arch Linux / CachyOS / EndeavourOS / Manjaro</strong>: Import <code>https://repo.patchcraft.dev/gpg.asc</code>, add <code>[patchcraft]</code> (<code>https://repo.patchcraft.dev/arch/$arch</code>), and install with <code>sudo pacman -Syu patchcraft-launcher</code> — no AUR helper required.</li><li><strong>Full GPG Verification</strong>: Packages, RPM <code>repomd.xml.asc</code>, and Pacman <code>patchcraft.db.sig</code> databases are all signed and verified end-to-end.</li></ul></div></div></details>
+              <div class="news-card-actions">
+              <a class="news-ext-link" href="https://repo.patchcraft.dev/index.html" target="_blank" rel="noopener noreferrer">View Package Repos <span aria-hidden="true">&#8599;</span></a>
+              </div>
+              </article>
+            </div>
+            <div id="news-grid" class="news-grid">
+            <article class="news-card news-card--release" data-news-id="release-v2.0.0" data-kind="release" data-date="2026-11-24" data-pinned="false" data-badge="v2.0.0" data-version="2.0.0">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--release">v2.0.0</span></div>
               <time class="news-date" datetime="2026-11-24">Nov 24, 2026</time>
@@ -982,8 +1027,6 @@
               <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.0" target="_blank" rel="noopener noreferrer">View v2.0.0 on GitHub <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
-            </div>
-            <div id="news-grid" class="news-grid">
             <article class="news-card news-card--release" data-news-id="release-v1.5.1" data-kind="release" data-date="2026-11-17" data-pinned="false" data-badge="v1.5.1" data-version="1.5.1">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--release">v1.5.1</span></div>
@@ -1008,7 +1051,7 @@
               <a class="news-ext-link" href="https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.5.0" target="_blank" rel="noopener noreferrer">View v1.5.0 on GitHub <span aria-hidden="true">&#8599;</span></a>
               </div>
               </article>
-            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-14-ubuntu-ppa-snap-live" data-kind="announcement" data-date="2026-11-14" data-pinned="false" data-badge="Distribution">
+            <article class="news-card news-card--announcement" data-news-id="announcement-2026-11-14-ubuntu-ppa-snap-live" data-kind="announcement" data-date="2026-11-14" data-pinned="false" data-badge="Distribution" hidden data-extra="true">
               <div class="news-card-meta">
               <div class="news-badges"><span class="news-badge news-badge--announcement">Distribution</span></div>
               <time class="news-date" datetime="2026-11-14">Nov 14, 2026</time>
@@ -1202,7 +1245,7 @@
               </article>
             </div>
             <div id="news-more-bar" class="news-more-bar">
-            <button id="news-show-more-btn" type="button" class="btn-secondary btn-compact" aria-expanded="false">Show older updates (15 more)</button>
+            <button id="news-show-more-btn" type="button" class="btn-secondary btn-compact" aria-expanded="false">Show older updates (16 more)</button>
             </div>
             <!-- NEWS_FEED_END -->
           </div>

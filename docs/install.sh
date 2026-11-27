@@ -119,8 +119,8 @@ main() {
   # Detect package manager
   if ! command -v apt-get >/dev/null 2>&1; then
     echo "Warning: apt-get not found. This installer is intended for Debian/Ubuntu-based distributions." >&2
-    echo "Please download the universal AppImage or install from AUR:"
-    echo "https://github.com/${REPO}/releases/latest"
+    echo "For Fedora/RHEL/openSUSE or Arch Linux, use the signed RPM/Pacman repositories at:"
+    echo "https://repo.patchcraft.dev/index.html (or see https://launcher.patchcraft.dev/)"
     exit 1
   fi
 

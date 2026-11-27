@@ -194,7 +194,7 @@ Here is how **PatchCraft Launcher** compares and what it does differently:
 ### 🔄 Integrated Auto Updater
 - **Direct In-App AppImage Updates**: When running as an AppImage, queries GitHub Releases directly, downloads update binaries with real-time streaming progress, validates SHA256 checksums, and performs seamless in-place hot-swapping and restart.
 - **Debian / Ubuntu (.deb) Downloader**: Automatically downloads updated `.deb` packages to `~/Downloads` and outputs copy-paste installation commands.
-- **Distribution-Aware Notifications**: Respectfully detects Flatpak (`flathub`) and Arch Linux (`AUR`) environments, informing users when upstream package updates are available without conflicting with system package managers.
+- **Distribution-Aware Notifications**: Respectfully detects Flatpak, Snap, RPM, and Arch Pacman environments, informing users when upstream package updates are available without conflicting with system package managers.
 - **Startup Auto-Check & Version Management**: Configure automatic background checks in Settings -> General or check on-demand anytime, with support for skipping specific versions.
 
 ---
@@ -336,34 +336,44 @@ Once complete, return to **Gaming Mode** and launch directly from your Non-Steam
 
 ---
 
-### Option 6: Arch Linux / Manjaro / EndeavourOS (Native Pacman)
+### Option 6: Arch Linux / CachyOS / EndeavourOS / Manjaro (Signed Pacman Repo)
 
-**1. Download and install the standalone `.pacman` package from GitHub Releases:**
+**1. Import and trust the PatchCraft signing key:**
+```bash
+curl -fsSL https://repo.patchcraft.dev/gpg.asc -o /tmp/patchcraft.asc && sudo pacman-key --add /tmp/patchcraft.asc && sudo pacman-key --lsign-key "$(gpg --show-keys --with-colons /tmp/patchcraft.asc | awk -F: '$1=="fpr"{print $10; exit}')" && rm -f /tmp/patchcraft.asc
+```
+
+**2. Add the `[patchcraft]` repository and install (automatic `pacman -Syu` updates):**
+```bash
+grep -q '^\[patchcraft\]' /etc/pacman.conf || printf '\n[patchcraft]\nServer = https://repo.patchcraft.dev/arch/$arch\n' | sudo tee -a /etc/pacman.conf
+sudo pacman -Syu patchcraft-launcher
+```
+
+**Or install the standalone `.pacman` release package directly:**
 ```bash
 curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x64.pacman
 sudo pacman -U ./patchcraft-launcher-2.0.0.x64.pacman
 ```
 
-**2. Or build locally from the included `PKGBUILD`:**
-```bash
-mkdir -p /tmp/patchcraft-pkg && cd /tmp/patchcraft-pkg
-curl -LO https://raw.githubusercontent.com/cook0001/Patchcraft-Launcher/main/packaging/aur/PKGBUILD
-makepkg -si
-```
-
 ---
 
-### Option 7: Fedora / Red Hat / Nobara / Bazzite (Native RPM)
+### Option 7: Fedora / Nobara / RHEL / openSUSE (Signed RPM Repo)
 
-**1. Download and install the native `.rpm` package from GitHub Releases:**
+**1. Add the signed PatchCraft repository and install (automatic `dnf upgrade` updates):**
+```bash
+sudo curl -fsSL https://repo.patchcraft.dev/rpm/patchcraft.repo -o /etc/yum.repos.d/patchcraft.repo
+sudo dnf install -y patchcraft-launcher
+```
+
+**openSUSE Tumbleweed / Leap (`zypper`):**
+```bash
+sudo zypper ar -f https://repo.patchcraft.dev/rpm/patchcraft.repo && sudo zypper refresh && sudo zypper install -y patchcraft-launcher
+```
+
+**Or install the standalone `.rpm` release package directly:**
 ```bash
 curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x86_64.rpm
 sudo dnf install -y ./patchcraft-launcher-2.0.0.x86_64.rpm
-```
-
-**2. Launch:**
-```bash
-patchcraft-launcher
 ```
 
 ---

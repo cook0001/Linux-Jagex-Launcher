@@ -6,7 +6,19 @@
     <atom:link href="https://launcher.patchcraft.dev/feed.xml" rel="self" type="application/rss+xml"/>
     <description>Releases, packaging updates, and maintainer announcements for PatchCraft Launcher (unofficial Linux launcher for RuneScape &amp; Jagex Accounts).</description>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 12:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Official Signed Fedora RPM &amp; Arch Pacman Repositories Live</title>
+      <link>https://repo.patchcraft.dev/index.html</link>
+      <guid isPermaLink="false">announcement-2026-11-27-rpm-arch-repos-live</guid>
+      <pubDate>Fri, 27 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Announcement</category>
+      <description>PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.
+
+- Highlights: Fedora / RHEL / Nobara / openSUSE: Add https://repo.patchcraft.dev/rpm/patchcraft.repo and install via sudo dnf install -y patchcraft-launcher for automatic GPG-verified dnf upgrade updates.
+- Highlights: Arch Linux / CachyOS / EndeavourOS / Manjaro: Import https://repo.patchcraft.dev/gpg.asc, add [patchcraft] (https://repo.patchcraft.dev/arch/$arch), and install with sudo pacman -Syu patchcraft-launcher — no AUR helper required.
+- Highlights: Full GPG Verification: Packages, RPM repomd.xml.asc, and Pacman patchcraft.db.sig databases are all signed and verified end-to-end.</description>
+    </item>
     <item>
       <title>PatchCraft Launcher v2.0.0</title>
       <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.0</link>

@@ -1,12 +1,37 @@
 {
-  "generatedAt": "2026-11-25T02:41:28.115Z",
+  "generatedAt": "2026-11-27T14:23:00.193Z",
   "siteUrl": "https://launcher.patchcraft.dev/",
   "publicRepo": "cook0001/Patchcraft-Launcher",
   "latestVersion": "2.0.0",
-  "totalCount": 19,
+  "totalCount": 20,
   "releaseCount": 17,
-  "announcementCount": 2,
+  "announcementCount": 3,
   "items": [
+    {
+      "id": "announcement-2026-11-27-rpm-arch-repos-live",
+      "kind": "announcement",
+      "categoryLabel": "Announcement",
+      "version": null,
+      "title": "Official Signed Fedora RPM & Arch Pacman Repositories Live",
+      "dateIso": "2026-11-27",
+      "displayDate": "Nov 27, 2026",
+      "badge": "Distribution",
+      "pinned": true,
+      "summary": "PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.",
+      "highlightCount": 3,
+      "sections": [
+        {
+          "heading": "Highlights",
+          "bullets": [
+            "**Fedora / RHEL / Nobara / openSUSE**: Add `https://repo.patchcraft.dev/rpm/patchcraft.repo` and install via `sudo dnf install -y patchcraft-launcher` for automatic GPG-verified `dnf upgrade` updates.",
+            "**Arch Linux / CachyOS / EndeavourOS / Manjaro**: Import `https://repo.patchcraft.dev/gpg.asc`, add `[patchcraft]` (`https://repo.patchcraft.dev/arch/$arch`), and install with `sudo pacman -Syu patchcraft-launcher` — no AUR helper required.",
+            "**Full GPG Verification**: Packages, RPM `repomd.xml.asc`, and Pacman `patchcraft.db.sig` databases are all signed and verified end-to-end."
+          ]
+        }
+      ],
+      "url": "https://repo.patchcraft.dev/index.html",
+      "ctaLabel": "View Package Repos"
+    },
     {
       "id": "release-v2.0.0",
       "kind": "release",
