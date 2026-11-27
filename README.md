@@ -33,6 +33,7 @@
     <a href="#-faq--troubleshooting">FAQ</a> •
     <a href="https://github.com/cook0001/Patchcraft-Launcher/discussions" target="_blank">Discussions</a> •
     <a href="https://forms.gle/KvagBxcmVBB3Q721A" target="_blank">Feedback Form</a> •
+    <a href="https://ko-fi.com/patchcraft" target="_blank">Support (Ko-fi)</a> •
     <a href="PRIVACY.md">Privacy Policy</a>
   </p>
 
@@ -506,6 +507,8 @@ Running the launcher with `sudo` will cause files in `~/.local/share`, `~/.confi
 ## 💬 Community Feedback
 
 Have feature suggestions, UI thoughts, performance reports, or distro compatibility feedback? Join the conversation on [GitHub Discussions](https://github.com/cook0001/Patchcraft-Launcher/discussions), submit directly at [launcher.patchcraft.dev/#feedback](https://launcher.patchcraft.dev/#feedback), or fill out our [Community Feedback Survey](https://forms.gle/KvagBxcmVBB3Q721A).
+
+PatchCraft Launcher is 100% free with no paywalled features. If you'd like to help cover hosting (`patchcraft.dev`) and ongoing Linux/Steam Deck maintenance, optional tips are welcome on [Ko-fi](https://ko-fi.com/patchcraft).
 
 ---
 

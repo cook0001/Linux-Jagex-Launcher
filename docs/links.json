@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-24",
+  "updatedAt": "2026-11-26",
   "publicRepo": "cook0001/Patchcraft-Launcher",
   "discussionsUrl": "https://github.com/cook0001/Patchcraft-Launcher/discussions",
   "links": [
@@ -12,6 +12,16 @@
       "url": "https://github.com/cook0001/Patchcraft-Launcher/discussions",
       "category": "Discussions",
       "badge": "Live",
+      "featured": true
+    },
+    {
+      "id": "support-ko-fi",
+      "game": "all",
+      "title": "Support PatchCraft on Ko-fi",
+      "description": "Optional voluntary tips to help cover hosting (patchcraft.dev) and ongoing Linux & Steam Deck maintenance.",
+      "url": "https://ko-fi.com/patchcraft",
+      "category": "Support",
+      "badge": "Optional",
       "featured": true
     },
     {
