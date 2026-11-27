@@ -3,7 +3,7 @@ Proprietary Software License and Terms of Service
 Copyright (c) 2026 Daniel Cook. All rights reserved.
 
 1. Grant of License:
-Subject to the terms and conditions of this Agreement, Daniel Cook ("Licensor") hereby grants you a personal, non-exclusive, non-transferable, revocable license to install and execute the binary executable version of PatchCraft Launcher (distributed under legacy package slug `linux-jagex-launcher`, "Software") solely for personal, non-commercial use on compatible Linux personal computers and gaming devices.
+Subject to the terms and conditions of this Agreement, Daniel Cook ("Licensor") hereby grants you a personal, non-exclusive, non-transferable, revocable license to install and execute the binary executable version of PatchCraft Launcher (distributed under legacy package slug `linux-jagex-launcher`, "Software") solely for personal, non-commercial use on compatible Linux personal computers and gaming devices. Licensor expressly authorizes unmodified redistribution of official binary releases through Licensor-maintained distribution channels, including GitHub Releases, Flathub, Canonical Snap Store, and Launchpad PPA.
 
 2. Restrictions:
 You may not, and you agree not to, directly or indirectly:
