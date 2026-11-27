@@ -86,7 +86,7 @@ modules:
     sources:
       - type: archive
         url: https://github.com/cook0001/Patchcraft-Launcher/releases/download/v2.0.0/patchcraft-launcher-2.0.0.tar.gz
-        sha256: a0ccd859b5455baf1e828a5a9ba29a6bb3f36c7feadfb6f293713ceb30d0eb86
+        sha256: 6f34e9ee3be2f51d7bdf9bb056bb61fa8a2a871081fd63b0198c5aab3c036ddf
         dest: app-bundle
         only-arches:
           - x86_64

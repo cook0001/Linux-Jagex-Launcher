@@ -27,6 +27,6 @@ pkgbase = patchcraft-launcher-bin
 	conflicts = jagex-launcher
 	replaces = linux-jagex-launcher-bin
 	source = https://github.com/cook0001/Patchcraft-Launcher/releases/download/v2.0.0/patchcraft-launcher_2.0.0_amd64.deb
-	sha256sums = ce8f491c3e38dae68834938e9f4ed1f93e9894c0ae8460c44217b35ab6438857
+	sha256sums = 7c9ee9a74ca88713ffe77908567e3256eb5680bc9b6d5e06d4a03bfb930cebcc
 
 pkgname = patchcraft-launcher-bin
