@@ -1228,6 +1228,22 @@ h1[tabindex="-1"]:focus {
   display: block;
 }
 
+.snap-embed-frame {
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.snap-embed-iframe {
+  display: block;
+  width: 100%;
+  height: 540px;
+  border: 0;
+}
+
 .install-steps {
   display: flex;
   flex-direction: column;
