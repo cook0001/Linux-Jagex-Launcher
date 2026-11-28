@@ -2,15 +2,15 @@
   "announcements": [
     {
       "id": "announcement-2026-11-27-rpm-arch-repos-live",
-      "title": "Official Signed Fedora RPM & Arch Pacman Repositories Live",
+      "title": "Signed Fedora RPM, Arch Pacman & Flatpak Repositories Live",
       "date": "2026-11-27",
       "badge": "Distribution",
       "pinned": true,
-      "summary": "PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.",
+      "summary": "PatchCraft Launcher is now available through GPG-signed RPM, Pacman, and Flatpak repositories at repo.patchcraft.dev for automatic updates across Fedora, Arch, SteamOS, and Flatpak-enabled Linux desktops.",
       "bullets": [
-        "**Fedora / RHEL / Nobara / openSUSE**: Add `https://repo.patchcraft.dev/rpm/patchcraft.repo` and install via `sudo dnf install -y patchcraft-launcher` for automatic GPG-verified `dnf upgrade` updates.",
-        "**Arch Linux / CachyOS / EndeavourOS / Manjaro**: Import `https://repo.patchcraft.dev/gpg.asc`, add `[patchcraft]` (`https://repo.patchcraft.dev/arch/$arch`), and install with `sudo pacman -Syu patchcraft-launcher` — no AUR helper required.",
-        "**Full GPG Verification**: Packages, RPM `repomd.xml.asc`, and Pacman `patchcraft.db.sig` databases are all signed and verified end-to-end."
+        "**Flatpak**: Install with `flatpak install --user https://repo.patchcraft.dev/flatpak/patchcraft.flatpakref` (bundles OpenSSL 1.1, Java 21, and GTK2 with automatic `flatpak update` support).",
+        "**Fedora / RHEL / Nobara / openSUSE**: Add `https://repo.patchcraft.dev/rpm/patchcraft.repo` and install via `sudo dnf install -y patchcraft-launcher`.",
+        "**Arch Linux / CachyOS / EndeavourOS / Manjaro**: Import `https://repo.patchcraft.dev/gpg.asc`, add `[patchcraft]` (`https://repo.patchcraft.dev/arch/$arch`), and install with `sudo pacman -Syu patchcraft-launcher`."
       ],
       "url": "https://repo.patchcraft.dev/index.html",
       "ctaLabel": "View Package Repos"

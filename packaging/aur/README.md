@@ -35,8 +35,8 @@ Future releases upgrade automatically with `sudo pacman -Syu`.
 Download directly from [GitHub Releases](https://github.com/cook0001/Patchcraft-Launcher/releases) and install with `pacman -U`:
 
 ```bash
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x64.pacman
-sudo pacman -U ./patchcraft-launcher-2.0.0.x64.pacman
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.1.x64.pacman
+sudo pacman -U ./patchcraft-launcher-2.0.1.x64.pacman
 ```
 
 ### Local Build with `PKGBUILD` and `makepkg`

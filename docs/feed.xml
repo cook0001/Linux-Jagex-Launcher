@@ -8,16 +8,31 @@
     <language>en-us</language>
     <lastBuildDate>Fri, 27 Nov 2026 12:00:00 +0000</lastBuildDate>
     <item>
-      <title>Official Signed Fedora RPM &amp; Arch Pacman Repositories Live</title>
+      <title>Signed Fedora RPM, Arch Pacman &amp; Flatpak Repositories Live</title>
       <link>https://repo.patchcraft.dev/index.html</link>
       <guid isPermaLink="false">announcement-2026-11-27-rpm-arch-repos-live</guid>
       <pubDate>Fri, 27 Nov 2026 12:00:00 +0000</pubDate>
       <category>Announcement</category>
-      <description>PatchCraft Launcher v2.0.0 is now live on signed native DNF/Zypper and Pacman repositories at repo.patchcraft.dev, delivering automatic updates on Fedora, Nobara, RHEL, openSUSE, Arch Linux, CachyOS, EndeavourOS, and Manjaro.
+      <description>PatchCraft Launcher is now available through GPG-signed RPM, Pacman, and Flatpak repositories at repo.patchcraft.dev for automatic updates across Fedora, Arch, SteamOS, and Flatpak-enabled Linux desktops.
 
-- Highlights: Fedora / RHEL / Nobara / openSUSE: Add https://repo.patchcraft.dev/rpm/patchcraft.repo and install via sudo dnf install -y patchcraft-launcher for automatic GPG-verified dnf upgrade updates.
-- Highlights: Arch Linux / CachyOS / EndeavourOS / Manjaro: Import https://repo.patchcraft.dev/gpg.asc, add [patchcraft] (https://repo.patchcraft.dev/arch/$arch), and install with sudo pacman -Syu patchcraft-launcher — no AUR helper required.
-- Highlights: Full GPG Verification: Packages, RPM repomd.xml.asc, and Pacman patchcraft.db.sig databases are all signed and verified end-to-end.</description>
+- Highlights: Flatpak: Install with flatpak install --user https://repo.patchcraft.dev/flatpak/patchcraft.flatpakref (bundles OpenSSL 1.1, Java 21, and GTK2 with automatic flatpak update support).
+- Highlights: Fedora / RHEL / Nobara / openSUSE: Add https://repo.patchcraft.dev/rpm/patchcraft.repo and install via sudo dnf install -y patchcraft-launcher.
+- Highlights: Arch Linux / CachyOS / EndeavourOS / Manjaro: Import https://repo.patchcraft.dev/gpg.asc, add [patchcraft] (https://repo.patchcraft.dev/arch/$arch), and install with sudo pacman -Syu patchcraft-launcher.</description>
+    </item>
+    <item>
+      <title>PatchCraft Launcher v2.0.1</title>
+      <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.1</link>
+      <guid isPermaLink="false">release-v2.0.1</guid>
+      <pubDate>Fri, 27 Nov 2026 12:00:00 +0000</pubDate>
+      <category>Release</category>
+      <description>Self-Hosted Flatpak Repository: Added GPG-signed Flatpak repository publishing at https://repo.patchcraft.dev/flatpak/ with bundled OpenSSL 1.1, Java 21, and GTK2 (flatpak install --user...
+
+- Added: Self-Hosted Flatpak Repository: Added GPG-signed Flatpak repository publishing at https://repo.patchcraft.dev/flatpak/ with bundled OpenSSL 1.1, Java 21, and GTK2 (flatpak install --user https://repo.patchcraft.dev/flatpak/patchcraft.flatpakref).
+- Added: Vector App Icon: Replaced the raster app emblem with a flat-vector Penguin Knight SVG (resources/icon.svg) exported across all package icon sizes.
+- Changed: Launcher UI Cleanup: Moved to a neutral dark charcoal palette, separated RS3/OSRS hero artwork from title copy so text never overlaps game banners, moved the Dragonwilds trailer button to the lower-right corner, and simplified status chrome.
+- Changed: Website, README &amp; Store Banner: Streamlined README.md, launcher.patchcraft.dev, and 3:1 store banners, adding Flatpak repository installation instructions alongside PPA, RPM, Pacman, Snap, Steam Deck, and AppImage.
+- Fixed: Sandboxed World Ping: Replaced host ping subprocesses with pure userspace TCP connect probes so World Ping works reliably inside Flatpak and Snap sandboxes.
+- Fixed: Flatpak Sandbox Compatibility: Fixed sandbox XDG directory handling, desktop integration guards, bundled Java discovery for OSRS, Steam shortcut detection, and Flatpak update instructions.</description>
     </item>
     <item>
       <title>PatchCraft Launcher v2.0.0</title>
@@ -273,20 +288,6 @@
 - Added: Integrated Auto-Updater: In-app release checking, streaming download progress, and format detection.
 - Added: RuneScape: Dragonwilds Support: Integrated Steam launch protocol (steam://run/1374490) and live Steam RSS patch feeds.
 - Added: RS3 Diagnostic Engine: Automated diagnostic checker verifying graphics drivers, XWayland compatibility, userspace OpenSSL 1.1 compatibility libraries, and audio routing.</description>
-    </item>
-    <item>
-      <title>PatchCraft Launcher v1.0.0</title>
-      <link>https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v1.0.0</link>
-      <guid isPermaLink="false">release-v1.0.0</guid>
-      <pubDate>Mon, 28 Sep 2026 12:00:00 +0000</pubDate>
-      <category>Release</category>
-      <description>Initial Stable Release: Native 64-bit Linux execution of RuneScape 3 NXT with zero Wine/Proton overhead; Multi-Client Dock for OSRS: Seamless switching between RuneLite, HDOS, and the Official OSRS client;...
-
-- Added: Initial Stable Release: Native 64-bit Linux execution of RuneScape 3 NXT with zero Wine/Proton overhead.
-- Added: Multi-Client Dock for OSRS: Seamless switching between RuneLite, HDOS, and the Official OSRS client.
-- Added: Jagex Account Authentication: Full OAuth 2.0 PKCE authentication with Cloudflare Turnstile webview support.
-- Added: Isolated OpenSSL 1.1 Compatibility: Userspace libssl1.1 provisioning resolving Ubuntu 22.04 and 24.04 library mismatches.
-- Added: Zero-RAM Mode: Auto-closing launcher 1.5 seconds after game launch.</description>
     </item>
   </channel>
 </rss>

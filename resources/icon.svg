@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#282f3a"/>
+      <stop offset="100%" stop-color="#171b22"/>
+    </linearGradient>
+    <linearGradient id="ring-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e5bc65"/>
+      <stop offset="55%" stop-color="#c89436"/>
+      <stop offset="100%" stop-color="#96681c"/>
+    </linearGradient>
+    <linearGradient id="steel-light" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9aa6b8"/>
+      <stop offset="55%" stop-color="#6b7788"/>
+      <stop offset="100%" stop-color="#48515e"/>
+    </linearGradient>
+    <linearGradient id="steel-dark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5b6575"/>
+      <stop offset="100%" stop-color="#323944"/>
+    </linearGradient>
+    <linearGradient id="plume-grad" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e26243"/>
+      <stop offset="100%" stop-color="#a53024"/>
+    </linearGradient>
+    <linearGradient id="beak-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f2b238"/>
+      <stop offset="100%" stop-color="#c97d14"/>
+    </linearGradient>
+    <clipPath id="emblem-clip">
+      <circle cx="256" cy="256" r="218"/>
+    </clipPath>
+  </defs>
+
+  <!-- Outer forged emblem ring -->
+  <circle cx="256" cy="256" r="240" fill="url(#ring-gold)"/>
+  <circle cx="256" cy="256" r="224" fill="#111419"/>
+  <circle cx="256" cy="256" r="218" fill="url(#bg-grad)"/>
+
+  <!-- Subtle inner compass rivets -->
+  <circle cx="256" cy="24" r="5" fill="#f7dfa0"/>
+  <circle cx="256" cy="488" r="5" fill="#7c5414"/>
+  <circle cx="24" cy="256" r="5" fill="#e5bc65"/>
+  <circle cx="488" cy="256" r="5" fill="#96681c"/>
+
+  <!-- Clipped emblem interior -->
+  <g clip-path="url(#emblem-clip)">
+    <!-- Subtle geometric backdrop shield silhouette -->
+    <path d="M256 64 L398 122 V252 C398 344 338 416 256 452 C174 416 114 344 114 252 V122 Z"
+          fill="#202630" stroke="#313946" stroke-width="4"/>
+
+    <!-- Helmet plume sweeping left -->
+    <path d="M236 118 C196 106 146 118 112 162 C136 154 158 156 174 166 C144 176 124 198 112 222 C142 204 174 192 212 186 Z"
+          fill="url(#plume-grad)"/>
+    <path d="M228 128 C196 122 158 134 134 160 C158 152 180 154 202 162 Z"
+          fill="#f0a84b" opacity="0.65"/>
+
+    <!-- Armored chest and shoulders -->
+    <path d="M104 468 C108 378 144 316 196 296 L256 306 L318 296 C366 316 396 378 402 468 Z"
+          fill="url(#steel-dark)"/>
+    <!-- Left pauldron (layered steel plates) -->
+    <path d="M114 374 C118 318 156 286 206 286 C214 312 214 344 202 374 Z"
+          fill="url(#steel-light)" stroke="#232830" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M126 340 C148 326 178 322 208 328" fill="none" stroke="#2c333e" stroke-width="5" stroke-linecap="round"/>
+    <path d="M120 364 C146 352 176 348 202 354" fill="none" stroke="#2c333e" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- Breastplate center ridge & gold gorget -->
+    <path d="M188 300 L256 314 L322 300 L334 468 L178 468 Z"
+          fill="url(#steel-light)" stroke="#232830" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M256 314 L256 468" stroke="#363e4a" stroke-width="5"/>
+    <path d="M256 314 L322 300 L334 468 L256 468 Z" fill="#181c23" opacity="0.28"/>
+    <path d="M196 292 Q256 322 316 292 L322 308 Q256 338 190 308 Z"
+          fill="url(#ring-gold)" stroke="#232830" stroke-width="4" stroke-linejoin="round"/>
+
+    <!-- Penguin neck & head -->
+    <path d="M192 292 C192 224 216 178 264 178 C306 178 324 212 324 252 C324 282 312 296 294 304 C266 314 222 312 192 292 Z"
+          fill="#1b2028"/>
+    <!-- White cheek and throat patch -->
+    <path d="M236 208 C264 198 298 206 310 232 C318 250 314 280 296 296 C272 306 244 304 228 288 C222 260 222 224 236 208 Z"
+          fill="#f2f4f7"/>
+    <!-- Subtle warm throat tint -->
+    <path d="M242 288 C260 298 284 298 300 288 C294 300 272 306 246 298 Z"
+          fill="#e2a63b"/>
+
+    <!-- Penguin beak -->
+    <path d="M306 228 L374 242 L310 256 Z"
+          fill="url(#beak-grad)" stroke="#232830" stroke-width="4.5" stroke-linejoin="round"/>
+    <path d="M308 246 L364 244 L310 258 Z"
+          fill="#a9620d"/>
+
+    <!-- Penguin eye -->
+    <circle cx="282" cy="226" r="11" fill="#14181f"/>
+    <circle cx="286" cy="222" r="3.6" fill="#ffffff"/>
+
+    <!-- Knight sallet helmet -->
+    <path d="M174 244 C174 166 210 116 268 116 C318 116 344 150 346 196 L312 198 C296 192 276 192 252 204 L240 254 L208 268 L174 244 Z"
+          fill="url(#steel-light)" stroke="#232830" stroke-width="5.5" stroke-linejoin="round"/>
+    <!-- Helmet crest ridge -->
+    <path d="M226 124 C258 106 300 114 326 146"
+          fill="none" stroke="#c3cddb" stroke-width="6" stroke-linecap="round"/>
+    <!-- Helmet gold trim & visor slots -->
+    <path d="M180 218 C220 190 278 178 342 188"
+          fill="none" stroke="url(#ring-gold)" stroke-width="7" stroke-linecap="round"/>
+    <line x1="252" y1="156" x2="258" y2="176" stroke="#232830" stroke-width="5" stroke-linecap="round"/>
+    <line x1="272" y1="152" x2="278" y2="172" stroke="#232830" stroke-width="5" stroke-linecap="round"/>
+    <line x1="292" y1="152" x2="298" y2="172" stroke="#232830" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="222" cy="236" r="4.5" fill="#e5bc65"/>
+
+    <!-- Diagonal broadsword (right side) -->
+    <g transform="translate(332, 344) rotate(26)">
+      <!-- Blade -->
+      <path d="M0 -214 L18 -178 L16 14 L-16 14 L-18 -178 Z"
+            fill="#e2e8f0" stroke="#1c2128" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M0 -214 L18 -178 L16 14 L0 14 Z" fill="#98a5b7"/>
+      <line x1="0" y1="-172" x2="0" y2="8" stroke="#5c6778" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Crossguard -->
+      <rect x="-44" y="10" width="88" height="16" rx="6"
+            fill="url(#ring-gold)" stroke="#1c2128" stroke-width="5"/>
+      <!-- Grip -->
+      <rect x="-11" y="26" width="22" height="58" rx="4"
+            fill="#664329" stroke="#1c2128" stroke-width="5"/>
+      <line x1="-10" y1="44" x2="10" y2="40" stroke="#3c2617" stroke-width="4"/>
+      <line x1="-10" y1="62" x2="10" y2="58" stroke="#3c2617" stroke-width="4"/>
+      <!-- Pommel -->
+      <circle cx="0" cy="94" r="14"
+              fill="url(#ring-gold)" stroke="#1c2128" stroke-width="5"/>
+    </g>
+
+    <!-- Gauntlet holding the sword grip -->
+    <path d="M294 374 C312 362 342 366 352 384 C360 400 352 424 330 432 L292 426 Z"
+          fill="url(#steel-light)" stroke="#232830" stroke-width="5" stroke-linejoin="round"/>
+    <line x1="306" y1="388" x2="342" y2="394" stroke="#2c333e" stroke-width="4" stroke-linecap="round"/>
+    <line x1="304" y1="406" x2="338" y2="412" stroke="#2c333e" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

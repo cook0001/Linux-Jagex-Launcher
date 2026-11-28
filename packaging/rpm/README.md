@@ -32,8 +32,8 @@ sudo zypper install -y patchcraft-launcher
 If you prefer a one-off download from [GitHub Releases](https://github.com/cook0001/Patchcraft-Launcher/releases):
 
 ```bash
-curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.0.x86_64.rpm
-sudo dnf install -y ./patchcraft-launcher-2.0.0.x86_64.rpm
+curl -LO https://github.com/cook0001/Patchcraft-Launcher/releases/latest/download/patchcraft-launcher-2.0.1.x86_64.rpm
+sudo dnf install -y ./patchcraft-launcher-2.0.1.x86_64.rpm
 ```
 
 ## Local RPM Building

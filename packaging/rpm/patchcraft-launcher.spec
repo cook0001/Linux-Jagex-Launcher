@@ -1,5 +1,5 @@
 Name:           patchcraft-launcher
-Version:        2.0.0
+Version:        2.0.1
 Release:        1%{?dist}
 Summary:        Unofficial native Linux launcher for RuneScape & Jagex Accounts
 License:        Proprietary
@@ -114,6 +114,9 @@ install -m 0644 %{SOURCE8} %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/dev.
 %{_datadir}/icons/hicolor/*/apps/dev.patchcraft.Launcher.png
 
 %changelog
+* Fri Nov 27 2026 Daniel Cook <danielcook2016@outlook.com> - 2.0.1-1
+- Release v2.0.1: Self-Hosted Flatpak Repository: Added GPG-signed Flatpak repository publishing at https://repo.patchcraft.dev/flatpak/ with bundled OpenSSL 1.1, Java 21, and GTK2 (flatpak install --user https://repo.patchcraft.dev/flatpak/patchcraft.flatpakref); Vector App Icon: Replaced the raster app emblem with a flat-vector Penguin Knight SVG (resources/icon.svg) exported across all package icon sizes; Launcher UI Cleanup: Moved to a neutral dark charcoal palette, separated RS3/OSRS hero artwork from title copy so text never overlaps game banners, moved the Dragonwilds trailer button to the lower-right corner, and simplified status chrome
+
 * Tue Nov 24 2026 Daniel Cook <danielcook2016@outlook.com> - 2.0.0-1
 - Release v2.0.0: Forge Rail & Direct Character Roster UI: Rebuilt the desktop and Steam Deck shell around a 3-column layout with a collapsible left rail (RuneScape 3, Old School, Dragonwilds, World Ping, Live Logs, Resources, Community, and Settings) and a pinned launch panel with per-character Play/Stop controls, inline Active Clients, and clickable MEM/F2P overrides; Built-In Theme Presets: Added three offline-first theme presets in Settings -> General (PatchCraft, Obsidian & Brass, and Slate & Teal) using native system typography with zero external font dependencies; In-App Community Hub & Discussions: Added inline Community workspace tabs for Launcher News, live GitHub Discussions browsing and replies, and direct issue reporting
 

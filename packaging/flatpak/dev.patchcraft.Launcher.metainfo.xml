@@ -2,31 +2,28 @@
 <component type="desktop-application">
   <id>dev.patchcraft.Launcher</id>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>LicenseRef-proprietary</project_license>
+  <project_license>LicenseRef-proprietary=https://github.com/cook0001/Patchcraft-Launcher/blob/main/LICENSE</project_license>
   <name>PatchCraft Launcher</name>
-  <summary>Unofficial Linux launcher for RuneScape and Jagex Accounts</summary>
+  <summary>Native Linux RuneScape launcher</summary>
 
   <description>
     <p>
-      PatchCraft Launcher is an unofficial native Linux desktop launcher for RuneScape 3, Old School RuneScape (RuneLite, HDOS, and Official client), and RuneScape: Dragonwilds with zero Wine or Proton overhead.
+      PatchCraft Launcher is an unofficial native Linux desktop launcher for RuneScape 3, Old School RuneScape (RuneLite, HDOS, and Official client), and RuneScape: Dragonwilds with direct Jagex Account login.
     </p>
-    <p>Key features include:</p>
     <ul>
-      <li>Native 64-bit execution for RuneScape 3 using official Linux binaries with full hardware acceleration.</li>
-      <li>Integrated Old School RuneScape multi-client switcher supporting RuneLite, HDOS, and the official client.</li>
-      <li>One-click launch for RuneScape: Dragonwilds with live Steam RSS patch feeds.</li>
-      <li>Direct Jagex Account OAuth 2.0 PKCE authentication with built-in Cloudflare Turnstile handling.</li>
-      <li>Preserves local ~/.runelite configuration, plugins, screenshots, and bank tags.</li>
-      <li>Zero RAM mode automatically closes the launcher after game start to optimize memory.</li>
-      <li>Optional Feral GameMode (gamemoderun) and MangoHud overlay toggles.</li>
+      <li>Launches Jagex's native 64-bit Linux RuneScape 3 NXT client with bundled OpenSSL 1.1 and GTK2 runtimes.</li>
+      <li>Runs Old School RuneScape via RuneLite, HDOS, or the Official client while keeping your ~/.runelite profile intact.</li>
+      <li>Launches RuneScape: Dragonwilds through Steam with live Steam patch notes.</li>
+      <li>Signs in directly against account.jagex.com using OAuth 2.0 PKCE.</li>
+      <li>Includes TCP world latency testing, live client logs, GameMode/MangoHud toggles, and gamepad navigation.</li>
     </ul>
   </description>
 
   <launchable type="desktop-id">dev.patchcraft.Launcher.desktop</launchable>
 
   <branding>
-    <color type="primary" scheme_preference="light">#e5b352</color>
-    <color type="primary" scheme_preference="dark">#161c28</color>
+    <color type="primary" scheme_preference="light">#d8a445</color>
+    <color type="primary" scheme_preference="dark">#171a1f</color>
   </branding>
 
   <categories>
@@ -62,6 +59,12 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="2.0.1" date="2026-11-27" type="stable">
+      <url type="details">https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.1</url>
+      <description>
+        <p>Self-Hosted Flatpak Repository: Added GPG-signed Flatpak repository publishing at repo.patchcraft.dev/flatpak with bundled OpenSSL 1.1, Java 21, and GTK2 (flatpak install --user repo.patchcraft.dev/flatpak/patchcraft.flatpakref); Vector App Icon: Replaced the raster app emblem with a flat-vector Penguin Knight SVG (resources/icon.svg) exported across all package icon sizes; Launcher UI Cleanup: Moved to a neutral dark charcoal palette, separated RS3/OSRS hero artwork from title copy so text never overlaps game banners, moved the Dragonwilds trailer button to the lower-right corner, and simplified status chrome; Website, README &amp; Store Banner: Streamlined README.md, launcher.patchcraft.dev, and 3:1 store banners, adding Flatpak repository installation instructions alongside PPA, RPM, Pacman, Snap, Steam Deck, and AppImage; Sandboxed World Ping: Replaced host ping subprocesses with pure userspace TCP connect probes so World Ping works reliably inside Flatpak and Snap sandboxes; Flatpak Sandbox Compatibility: Fixed sandbox XDG directory handling, desktop integration guards, bundled Java discovery for OSRS, Steam shortcut detection, and Flatpak update instructions.</p>
+      </description>
+    </release>
     <release version="2.0.0" date="2026-11-24" type="stable">
       <url type="details">https://github.com/cook0001/Patchcraft-Launcher/releases/tag/v2.0.0</url>
       <description>

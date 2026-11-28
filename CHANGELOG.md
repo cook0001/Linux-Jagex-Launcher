@@ -5,6 +5,22 @@ All notable changes to the **PatchCraft Launcher** project will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2026-11-27
+
+### Added
+- **Self-Hosted Flatpak Repository**: Added GPG-signed Flatpak repository publishing at `https://repo.patchcraft.dev/flatpak/` with bundled OpenSSL 1.1, Java 21, and GTK2 (`flatpak install --user https://repo.patchcraft.dev/flatpak/patchcraft.flatpakref`).
+- **Vector App Icon**: Replaced the raster app emblem with a flat-vector Penguin Knight SVG (`resources/icon.svg`) exported across all package icon sizes.
+
+### Changed
+- **Launcher UI Cleanup**: Moved to a neutral dark charcoal palette, separated RS3/OSRS hero artwork from title copy so text never overlaps game banners, moved the Dragonwilds trailer button to the lower-right corner, and simplified status chrome.
+- **Website, README & Store Banner**: Streamlined `README.md`, `launcher.patchcraft.dev`, and `3:1` store banners, adding Flatpak repository installation instructions alongside PPA, RPM, Pacman, Snap, Steam Deck, and AppImage.
+
+### Fixed
+- **Sandboxed World Ping**: Replaced host `ping` subprocesses with pure userspace TCP connect probes so World Ping works reliably inside Flatpak and Snap sandboxes.
+- **Flatpak Sandbox Compatibility**: Fixed sandbox XDG directory handling, desktop integration guards, bundled Java discovery for OSRS, Steam shortcut detection, and Flatpak update instructions.
+
+---
+
 ## [2.0.0] - 2026-11-24
 
 ### Added

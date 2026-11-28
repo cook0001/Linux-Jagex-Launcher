@@ -132,7 +132,7 @@ main() {
   LATEST_TAG=$(printf '%s\n' "$RELEASE_JSON" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | head -n1 || true)
 
   if [ -z "$LATEST_TAG" ]; then
-    LATEST_TAG="v2.0.0"
+    LATEST_TAG="v2.0.1"
   fi
 
   VERSION="${LATEST_TAG#v}"
